@@ -406,34 +406,86 @@ class CulturalMemory:
 
 
 class PredictionEngine:
-    """Predicted consequence vs actual consequence."""
+    """Predicted consequence vs actual consequence.
+
+    Phase 1.5 (2026-06): three calibration fixes after the v2 ablation
+    diagnostic showed `no_prediction` *helps* on first_apply_implication_tick
+    while *doubling* prediction error. Old behavior was:
+
+    - Per-action history keyed by transformation name only, with no per-domain
+      separation: a `move_toward` mean learned in GridWorld would leak into
+      RuleWorld if a RuleWorld action shared the name.
+    - Unweighted mean of the last 12 outcomes: a single +4 first solve gets
+      drowned by twelve +0.05 repeats, so apply_implication's predicted value
+      decays below verify_rule's predicted value within ~6 ticks.
+    - Pattern-valence fallback hardcoded to +-3.0, calibrated for GridWorld
+      resource-pickup-scale rewards. In RuleWorld where verify pays +0.02,
+      every action seen by the mote for the first time in a "GOOD"-looking
+      graph gets +3.0, so verify (cost 0.2) appears as +2.80 net score while
+      apply_implication (cost 0.4) appears as +2.60 — verify wins.
+
+    Fixes:
+
+    1. Per-action history is keyed by (domain, name). Cross-domain analogy
+       still works through pattern memory; it should not happen invisibly
+       through per-action means.
+    2. Outcomes are tracked as an exponentially-weighted running mean
+       (alpha=0.4) instead of an unweighted sliding window. A first +4 solve
+       stays informative for several ticks instead of being averaged away
+       inside 12 samples.
+    3. Pattern-valence fallback is cost-anchored: |prior| <= 1.5 * base_cost,
+       clipped at +-3.0. An action that costs 0.4 gets at most +-0.6 of prior
+       from valence alone — proportional to its skin in the game.
+    4. Unseen-action prior is discounted by `_UNSEEN_DISCOUNT` (0.5). Prior
+       uncertainty deserves a discount, not a full optimistic prior.
+
+    These changes are local to predict()/record_outcome() and do not change
+    the (predicted, actual, error) memory layout used by callers.
+    """
+
+    _UNSEEN_DISCOUNT: float = 0.5
+    _EWM_ALPHA: float = 0.4
 
     def __init__(self):
         self._predictions: Deque[Tuple[float, float, float]] = deque(maxlen=64)
         self._per_transform: Dict[str, List[float]] = {}
-        self._per_transform_net: Dict[str, List[float]] = {}
+        # Phase 1.5: keyed by (domain, name), and value is a running EW mean
+        # plus sample count instead of an unbounded list.
+        self._per_transform_net_ewm: Dict[Tuple[str, str], Tuple[float, int]] = {}
         self._per_domain: Dict[str, List[float]] = {}
 
     def predict(self, transformation: Transformation, pattern_memory: PatternMemory, graph: RealityGraph) -> float:
-        # If this exact transformation has history, use its learned expected net.
-        # This is the local anti-superstition model: prediction is about the
-        # action's consequence, not merely reward after the fact.
-        nets = self._per_transform_net.get(transformation.name, [])
-        if nets:
-            return sum(nets[-12:]) / len(nets[-12:])
+        key = (transformation.domain, transformation.name)
+        cached = self._per_transform_net_ewm.get(key)
+        if cached is not None:
+            ewm, _n = cached
+            return ewm
 
+        # No per-action history yet. Use a cost-anchored, valence-shaped prior.
         valence = pattern_memory.predict_consequence(graph)
+        # Reward scale that respects the action's own cost: a cheap action
+        # shouldn't be promised a huge return, and an expensive action gets a
+        # proportionally larger (but still bounded) prior.
+        cap = max(0.5, min(3.0, 1.5 * float(transformation.base_cost or 1.0)))
         if valence == "GOOD":
-            return 3.0
+            return cap * self._UNSEEN_DISCOUNT
         if valence == "BAD":
-            return -3.0
+            return -cap * self._UNSEEN_DISCOUNT
         return 0.0
 
     def record_outcome(self, predicted: float, actual: Consequence, transformation: Transformation, domain: str):
         error = abs(predicted - actual.net)
         self._predictions.append((predicted, actual.net, error))
         self._per_transform.setdefault(transformation.name, []).append(error)
-        self._per_transform_net.setdefault(transformation.name, []).append(actual.net)
+        # Phase 1.5: EWM with explicit alpha; first observation seeds the mean.
+        key = (transformation.domain, transformation.name)
+        cur = self._per_transform_net_ewm.get(key)
+        if cur is None:
+            self._per_transform_net_ewm[key] = (float(actual.net), 1)
+        else:
+            ewm, n = cur
+            new_ewm = (1.0 - self._EWM_ALPHA) * ewm + self._EWM_ALPHA * float(actual.net)
+            self._per_transform_net_ewm[key] = (new_ewm, n + 1)
         self._per_domain.setdefault(domain, []).append(error)
 
     def mean_error(self) -> float:

@@ -15,7 +15,7 @@ No LLM. No pretrained language model. No codebook generation.
 │       ├── gridworld.py    Tiny survival domain
 │       ├── sequences.py    Sequence prediction domain
 │       └── rules.py        Rule satisfaction domain
-├── tests/                  Test suite (24 tests)
+├── tests/                  Test suite (33 tests)
 ├── experiments/
 │   ├── ablation_runner.py         Ablation experiments (v2 strict metric)
 │   ├── cross_domain_transfer.py   Cross-domain transfer experiment
@@ -47,7 +47,7 @@ evaluate(graph, mote_state)
 PYTHONPATH=. python3 -m unittest discover -s tests -v
 ```
 
-Expected: **24 tests passing**
+Expected: **33 tests passing**
 
 ## Experiments
 
