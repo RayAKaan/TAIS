@@ -2,7 +2,16 @@
 
 from .gridworld import GridGraphWorld, make_grid_graph
 from .sequences import SequenceWorld, make_sequence_graph
-from .rules import RuleWorld, make_rule_graph
+from .rules import (
+    RuleWorld,
+    RuleWorldEasy,
+    RuleWorldChain,
+    RuleWorldDistractor,
+    make_rule_graph,
+    make_rule_graph_easy,
+    make_rule_graph_chain,
+    make_rule_graph_distractor,
+)
 
 __all__ = [
     "GridGraphWorld",
@@ -10,5 +19,11 @@ __all__ = [
     "SequenceWorld",
     "make_sequence_graph",
     "RuleWorld",
+    "RuleWorldEasy",
+    "RuleWorldChain",
+    "RuleWorldDistractor",
     "make_rule_graph",
+    "make_rule_graph_easy",
+    "make_rule_graph_chain",
+    "make_rule_graph_distractor",
 ]

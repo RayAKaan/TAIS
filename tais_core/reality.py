@@ -240,7 +240,19 @@ class GraphDelta:
 
 @dataclass
 class Consequence:
-    """What the world says back after a mote acts."""
+    """What the world says back after a mote acts.
+
+    task_signal (added Phase 2): domain-agnostic structured tag the world emits
+    when a *task-defining* event happens. Values currently used in TAIS:
+        "TASK_SUCCESS"  — the target/goal entity has just been produced
+        "TASK_PROGRESS" — measurable progress toward the goal
+        "TASK_FAILURE"  — an action that strictly worsened goal state
+        None            — no task-relevance signal (default)
+    Runners and benchmark scripts can read this without having to special-case
+    action names per domain. This was added so that strict metrics such as
+    `first_apply_implication_tick` become domain-blind: the runner just watches
+    for the first `TASK_SUCCESS`.
+    """
 
     reward: float = 0.0
     penalty: float = 0.0
@@ -249,6 +261,7 @@ class Consequence:
     explanation: Dict[str, Any] = field(default_factory=dict)
     prediction_error: float = 0.0
     graph_delta: Optional[GraphDelta] = None
+    task_signal: Optional[str] = None
 
     @property
     def net(self) -> float:
