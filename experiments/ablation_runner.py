@@ -244,7 +244,15 @@ def restore_ablation(mote: UniversalMote):
 class TrialMetrics:
     reward: float
     penalty: float
-    first_correct_tick: float
+    # Phase 2 strict task metric: first tick on which the world emitted
+    # cons.task_signal == "TASK_SUCCESS". Encoded as eval_ticks+1 when the
+    # target was never derived in the trial (worst possible value, larger
+    # than any in-trial tick so means/CIs behave correctly).
+    first_apply_implication_tick: float
+    task_completion_rate: float           # 1.0 if TASK_SUCCESS ever fired, else 0.0
+    # Kept for backward-compatibility with v1 result files; this is the old
+    # "any positive consequence" metric and should NOT be used as headline.
+    first_positive_tick_legacy: float
     invalid_actions: int
     final_energy: float
     prediction_error: float
@@ -285,7 +293,9 @@ class ExperimentResult:
             "condition": self.condition,
             "n": len(self.fresh),
             "reward": self.summarize_metric("reward"),
-            "first_correct_tick": self.summarize_metric("first_correct_tick"),
+            "first_apply_implication_tick": self.summarize_metric("first_apply_implication_tick"),
+            "task_completion_rate": self.summarize_metric("task_completion_rate"),
+            "first_positive_tick_legacy": self.summarize_metric("first_positive_tick_legacy"),
             "invalid_actions": self.summarize_metric("invalid_actions"),
             "final_energy": self.summarize_metric("final_energy"),
             "prediction_error": self.summarize_metric("prediction_error"),
@@ -345,13 +355,16 @@ def evaluate_ruleworld(mote: UniversalMote, ticks: int, start_tick: int) -> Tria
     correct0 = mote.transfer_prior_correct
     incorrect0 = mote.transfer_prior_incorrect
 
-    first_correct_tick = None
+    first_task_success_tick: Optional[float] = None  # Phase 2 strict metric
+    first_positive_tick: Optional[float] = None      # legacy / sanity
     pred_errors: List[float] = []
     for i in range(ticks):
         graph, cons, action = mote.step(world, graph, mote_position="rule_ab", tick=start_tick + i)
         pred_errors.append(abs(mote.last_prediction - cons.net))
-        if first_correct_tick is None and cons.net > 0:
-            first_correct_tick = float(i + 1)
+        if first_task_success_tick is None and cons.task_signal == "TASK_SUCCESS":
+            first_task_success_tick = float(i + 1)
+        if first_positive_tick is None and cons.net > 0:
+            first_positive_tick = float(i + 1)
         if mote.energy <= 0:
             mote.energy = 50.0
 
@@ -360,7 +373,13 @@ def evaluate_ruleworld(mote: UniversalMote, ticks: int, start_tick: int) -> Tria
     return TrialMetrics(
         reward=mote.total_reward - reward0,
         penalty=mote.total_penalty - penalty0,
-        first_correct_tick=first_correct_tick if first_correct_tick is not None else float(ticks + 1),
+        first_apply_implication_tick=(
+            first_task_success_tick if first_task_success_tick is not None else float(ticks + 1)
+        ),
+        task_completion_rate=1.0 if first_task_success_tick is not None else 0.0,
+        first_positive_tick_legacy=(
+            first_positive_tick if first_positive_tick is not None else float(ticks + 1)
+        ),
         invalid_actions=mote.invalid_actions - invalid0,
         final_energy=mote.energy,
         prediction_error=mean(pred_errors),
@@ -422,14 +441,18 @@ def run_experiment(seeds: int = 200, pretrain_ticks: int = 20, eval_ticks: int =
 # ─── OUTPUT ─────────────────────────────────────────────────────────────────
 
 METRICS = [
+    # Phase 2 strict task metric is the headline.
+    ("first_apply_implication_tick", "First Apply (TASK_SUCCESS) Tick"),
+    ("task_completion_rate", "Task Completion Rate"),
     ("reward", "Total Reward"),
-    ("first_correct_tick", "First Correct Tick"),
     ("invalid_actions", "Invalid Actions"),
     ("final_energy", "Final Energy"),
     ("prediction_error", "Prediction Error"),
     ("transfer_uses", "Transfer Uses"),
     ("transfer_strength", "Transfer Strength"),
     ("transfer_precision", "Transfer Precision"),
+    # Kept last for sanity-comparison against v1 reports only.
+    ("first_positive_tick_legacy", "First +Reward Tick (legacy v1)"),
 ]
 
 
@@ -468,36 +491,52 @@ def write_csv(results: Dict[str, ExperimentResult], path: str):
                 w.writerow([name, key, s["fresh"], s["pretrained"], s["delta"], s["ci_low"], s["ci_high"], s["p"], s["d"]])
 
 
+def _write_outputs(results, args, eval_ticks, output_path, elapsed):
+    table = format_table(results, args.seeds, args.pretrain, eval_ticks)
+    print(table)
+    print(f"\nElapsed (eval={eval_ticks}): {elapsed:.2f}s")
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(table + f"\n\nElapsed: {elapsed:.2f}s\n")
+    csv_path = output_path.rsplit(".", 1)[0] + ".csv"
+    write_csv(results, csv_path)
+    json_path = output_path.rsplit(".", 1)[0] + ".json"
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump({name: res.summary() for name, res in results.items()}, f, indent=2)
+    print(f"Wrote: {output_path}")
+    print(f"Wrote: {csv_path}")
+    print(f"Wrote: {json_path}")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--seeds", type=int, default=200)
     parser.add_argument("--pretrain", type=int, default=20)
-    parser.add_argument("--eval", type=int, default=12)
-    parser.add_argument("--output", type=str, default="ablation_results.txt")
+    parser.add_argument("--eval", type=int, default=12,
+                        help="Single eval horizon. Ignored if --horizons is given.")
+    parser.add_argument("--horizons", type=str, default=None,
+                        help="Comma-separated list of eval horizons, e.g. '12,30,50'. "
+                             "Runs the full ablation suite once per horizon.")
+    parser.add_argument("--output", type=str, default="results/ablation_v2.txt",
+                        help="Output path. When --horizons is used, the eval value is "
+                             "appended before the extension: ablation_v2_eval12.txt etc.")
     parser.add_argument("--verbose", action="store_true")
     args = parser.parse_args()
 
-    print(f"\nTAIS ablation runner: seeds={args.seeds}, pretrain={args.pretrain}, eval={args.eval}\n")
-    t0 = time.time()
-    results = run_experiment(args.seeds, args.pretrain, args.eval, args.verbose)
-    elapsed = time.time() - t0
+    horizons = [int(args.eval)] if not args.horizons else [int(h) for h in args.horizons.split(",")]
 
-    table = format_table(results, args.seeds, args.pretrain, args.eval)
-    print(table)
-    print(f"\nElapsed: {elapsed:.2f}s")
+    for eval_ticks in horizons:
+        print(f"\n{'=' * 60}\nTAIS ablation v2: seeds={args.seeds}, "
+              f"pretrain={args.pretrain}, eval={eval_ticks}\n{'=' * 60}\n")
+        t0 = time.time()
+        results = run_experiment(args.seeds, args.pretrain, eval_ticks, args.verbose)
+        elapsed = time.time() - t0
 
-    with open(args.output, "w", encoding="utf-8") as f:
-        f.write(table + f"\n\nElapsed: {elapsed:.2f}s\n")
-    csv_path = args.output.rsplit(".", 1)[0] + ".csv"
-    write_csv(results, csv_path)
-
-    json_path = args.output.rsplit(".", 1)[0] + ".json"
-    with open(json_path, "w", encoding="utf-8") as f:
-        json.dump({name: res.summary() for name, res in results.items()}, f, indent=2)
-
-    print(f"Wrote: {args.output}")
-    print(f"Wrote: {csv_path}")
-    print(f"Wrote: {json_path}")
+        if args.horizons:
+            base, _, ext = args.output.rpartition(".")
+            out = f"{base}_eval{eval_ticks}.{ext}" if ext else f"{args.output}_eval{eval_ticks}"
+        else:
+            out = args.output
+        _write_outputs(results, args, eval_ticks, out, elapsed)
 
 
 if __name__ == "__main__":

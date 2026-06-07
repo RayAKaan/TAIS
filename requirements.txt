@@ -1,2 +1,5 @@
-Flask>=3.0.0
-flask-cors>=4.0.0
+# Runtime dependencies for the swarm_v5 backend.
+# Pinned upper bounds chosen to be stable for reproducing 2026-Q2 results;
+# unpin (raise) when intentionally re-validating.
+Flask>=3.0.0,<4.0.0
+flask-cors>=4.0.0,<5.0.0

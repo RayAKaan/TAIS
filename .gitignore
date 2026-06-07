@@ -1,20 +1,44 @@
+# Python
 __pycache__/
 *.pyc
 *.pyo
-.pytest_cache/
-.DS_Store
-Thumbs.db
-node_modules/
 *.egg-info/
-dist/
-build/
-__pycache__/
-*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node / Vite
 node_modules/
 dist/
 .cache/
 .npm/
+.vite/
+
+# Environments
 .env
 .venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+build/
 release/
 *.tar.gz
+
+# ─── Generated experimental artefacts ────────────────────────────────────────
+# Colonies and replays are large (>30MB total). Regenerate with:
+#   python3 swarm_v5.py --headless --ticks 10000 --save colonies/v55_10k.json
+colonies/*.json
+!colonies/.gitkeep
+
+# Experiment outputs. Regenerate with experiments/* scripts.
+results/*.csv
+results/*.json
+results/*.txt
+!results/.gitkeep
+# Keep curated/baseline reports if any are checked in explicitly via -f.
+
+# Per-run output folders (Phase 0.2 convention)
+runs/

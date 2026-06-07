@@ -30,7 +30,7 @@ import statistics
 from typing import Callable, Dict, List, Optional
 
 from tais_core.mote import UniversalMote
-from experiments_cross_domain_transfer import pretrain_grid, run_rule_trial
+from experiments.cross_domain_transfer import pretrain_grid, run_rule_trial
 
 
 def paired_trials(seeds: int = 200, pretrain_ticks: int = 20, rule_ticks: int = 12):

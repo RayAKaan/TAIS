@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tais"
+version = "5.5.0"
+description = "TAIS — Thought-Assisted Intelligence System. No LLM, no codebook: a universal RealityGraph substrate with thermodynamic motes, grounded speech, and cross-domain role transfer."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+authors = [{name = "RayAKaan and TAIS contributors"}]
+keywords = ["agents", "multi-agent", "emergent-communication", "transfer-learning", "graph-substrate"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "Flask>=3.0.0,<4.0.0",
+  "flask-cors>=4.0.0,<5.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.4",
+]
+
+[project.urls]
+Homepage = "https://github.com/RayAKaan/TAIS"
+Issues = "https://github.com/RayAKaan/TAIS/issues"
+
+[tool.setuptools.packages.find]
+include = ["tais_core*", "experiments*"]
+exclude = ["tests*", "archive*", "colonies*", "results*", "runs*", "src*"]
