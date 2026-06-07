@@ -15,9 +15,9 @@ No LLM. No pretrained language model. No codebook generation.
 │       ├── gridworld.py    Tiny survival domain
 │       ├── sequences.py    Sequence prediction domain
 │       └── rules.py        Rule satisfaction domain
-├── tests/                  Test suite (15 tests)
+├── tests/                  Test suite (24 tests)
 ├── experiments/
-│   ├── ablation_runner.py         Ablation experiments
+│   ├── ablation_runner.py         Ablation experiments (v2 strict metric)
 │   ├── cross_domain_transfer.py   Cross-domain transfer experiment
 │   └── statistical_replication.py 200-seed statistical replication
 ├── swarm_v5.py             V5.5 ecological swarm backend
@@ -47,13 +47,16 @@ evaluate(graph, mote_state)
 PYTHONPATH=. python3 -m unittest discover -s tests -v
 ```
 
-Expected: **15 tests passing**
+Expected: **24 tests passing**
 
 ## Experiments
 
 ```bash
-# Ablation study (8 conditions, paired pretrained vs fresh)
-PYTHONPATH=. python3 experiments/ablation_runner.py --seeds 200
+# Ablation v2 — 8 conditions × strict task_signal metric × horizon sweep.
+# See docs/ABLATION_V2_REPORT.md for the analysis of the headline result.
+PYTHONPATH=. python3 experiments/ablation_runner.py \
+    --seeds 200 --pretrain 20 --horizons 12,30,50 \
+    --output results/ablation_v2.txt
 
 # Cross-domain transfer (GridWorld → RuleWorld)
 PYTHONPATH=. python3 experiments/cross_domain_transfer.py
