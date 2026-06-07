@@ -1,0 +1,256 @@
+"""
+tais_core.mote
+==============
+
+Universal domain-blind mote.
+
+This is intentionally small. It does not know chemistry, math, physics, or
+GridWorld. It knows only:
+
+    observe through a WorldInterface
+    choose a Transformation
+    predict consequence
+    act
+    receive Consequence
+    update memory and energy
+
+If this class must be edited to add a new domain, the base model has failed.
+"""
+
+from __future__ import annotations
+
+import random
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Tuple
+
+from .memory import MoteMemory
+from .reality import Consequence, RealityGraph, Transformation, WorldInterface
+from .speech import SpeechOrgan
+
+
+@dataclass
+class MetaGenes:
+    curiosity: float = 0.25
+    skepticism: float = 0.25
+    risk_tolerance: float = 0.35
+    teaching_bias: float = 0.20
+    memory_compression: float = 0.30
+    analogy_bias: float = 0.35
+
+    def mutate(self, sigma: float = 0.04) -> "MetaGenes":
+        def clamp(x):
+            return max(0.0, min(1.0, x))
+        return MetaGenes(
+            curiosity=clamp(self.curiosity + random.gauss(0, sigma)),
+            skepticism=clamp(self.skepticism + random.gauss(0, sigma)),
+            risk_tolerance=clamp(self.risk_tolerance + random.gauss(0, sigma)),
+            teaching_bias=clamp(self.teaching_bias + random.gauss(0, sigma)),
+            memory_compression=clamp(self.memory_compression + random.gauss(0, sigma)),
+            analogy_bias=clamp(self.analogy_bias + random.gauss(0, sigma)),
+        )
+
+
+class UniversalMote:
+    """A domain-blind mote operating over any WorldInterface."""
+
+    _id = 0
+
+    def __init__(self, energy: float = 100.0, parent_id: int = -1):
+        UniversalMote._id += 1
+        self.id = UniversalMote._id
+        self.parent_id = parent_id
+        self.energy = energy
+        self.age = 0
+        self.alive = True
+        self.memory = MoteMemory()
+        self.speech = SpeechOrgan(self.id)
+        self.meta = MetaGenes()
+        self.domain_history: List[str] = []
+        self.total_reward = 0.0
+        self.total_penalty = 0.0
+        self.actions_taken = 0
+        self.invalid_actions = 0
+        self.last_prediction = 0.0
+        self.last_consequence: Optional[Consequence] = None
+        self.transfer_prior_uses = 0
+        self.transfer_prior_total_strength = 0.0
+        self.transfer_prior_correct = 0
+        self.transfer_prior_incorrect = 0
+        self._last_chosen_transfer_boost = 0.0
+        self.domain_action_counts: Dict[str, int] = {}
+
+    def state(self, **extra) -> Dict[str, Any]:
+        base = {
+            "mote_id": self.id,
+            "energy": self.energy,
+            "age": self.age,
+            "curiosity": self.meta.curiosity,
+            "skepticism": self.meta.skepticism,
+            "risk_tolerance": self.meta.risk_tolerance,
+        }
+        base.update(extra)
+        return base
+
+    def classify_action_role(
+        self,
+        action: Transformation,
+        world: WorldInterface,
+        graph_before: RealityGraph,
+        graph_after: RealityGraph,
+        consequence: Consequence,
+        mote_state: Dict[str, Any],
+        predicted: float,
+    ) -> str:
+        """Classify functional action role from consequence and evaluate() delta."""
+        try:
+            score_before = world.evaluate(graph_before, mote_state)
+            score_after = world.evaluate(graph_after, mote_state)
+        except Exception:
+            score_before = score_after = 0.0
+        delta_score = score_after - score_before
+        pred_error = abs(predicted - consequence.net)
+
+        if not consequence.valid or consequence.net < -0.5:
+            return "FAILED"
+        if action.role_hint:
+            return action.role_hint
+        if delta_score > 0.25 and consequence.net > 0:
+            if action.universal_op in {"TRANSFORM", "COMPOSE"}:
+                return "TRANSFORM_TOWARD_GOAL"
+            return "APPROACH_GOOD"
+        if action.universal_op == "MOVE_TOWARD" and consequence.net > 0:
+            return "APPROACH_GOOD"
+        if action.universal_op in {"VERIFY", "TEST"} and consequence.net >= 0:
+            return "VERIFY_UNCERTAIN"
+        if action.universal_op == "MOVE_AWAY" and consequence.net > 0:
+            return "AVOID_BAD"
+        if pred_error > 2.0 and consequence.net >= -0.5:
+            return "EXPLORE_UNCERTAIN"
+        if consequence.net >= 0:
+            return "MAINTAIN_STABLE"
+        return "UNCLASSIFIED"
+
+    def choose_action(self, observation: RealityGraph, actions: List[Transformation]) -> Optional[Transformation]:
+        if not actions:
+            return None
+
+        # Explore if the memory says uncertainty is high or curiosity fires.
+        if self.memory.should_explore(actions, curiosity=self.meta.curiosity):
+            return random.choice(actions)
+
+        transfer_boosts, transfer_used = self.memory.transfer_action_priors(observation, actions)
+        if transfer_used:
+            self.transfer_prior_uses += transfer_used
+            self.transfer_prior_total_strength += sum(abs(v) for v in transfer_boosts.values())
+
+        # Transfer priors should help early in a new domain, then yield to local
+        # evidence. Otherwise old-domain confidence becomes negative transfer.
+        local_exp = self.domain_action_counts.get(observation.domain, 0)
+        transfer_decay_rate = 0.08
+        effective_analogy_weight = self.meta.analogy_bias / (1.0 + transfer_decay_rate * local_exp)
+
+        best_action = None
+        best_score = float("-inf")
+        best_transfer = 0.0
+        for action in actions:
+            predicted = self.memory.predict_action(action, observation)
+            historical = self.memory.episodic.action_value(action.name)
+            risk = self.memory.episodic.action_risk(action.name)
+            cost = action.compute_cost(observation, self.state())
+            transfer = effective_analogy_weight * transfer_boosts.get(action.name, 0.0)
+            score = predicted + historical + transfer - cost - self.meta.skepticism * risk
+            if score > best_score:
+                best_score = score
+                best_action = action
+                best_transfer = transfer
+        self._last_chosen_transfer_boost = best_transfer
+        return best_action or random.choice(actions)
+
+    def step(
+        self,
+        world: WorldInterface,
+        graph: RealityGraph,
+        mote_position: Any = None,
+        tick: int = 0,
+        extra_state: Optional[Dict[str, Any]] = None,
+    ) -> Tuple[RealityGraph, Consequence, Optional[Transformation]]:
+        """One observe→predict→act→learn cycle."""
+        if not self.alive:
+            return graph, Consequence(valid=False, penalty=999, explanation={"why": "dead"}), None
+
+        mote_state = self.state(**(extra_state or {}))
+        observation = world.observe(graph, mote_position)
+        actions = world.valid_actions(observation, mote_state)
+        action = self.choose_action(observation, actions)
+        if action is None:
+            cons = Consequence(penalty=0.2, valid=False, concept_signals={"VOID": 1.0}, explanation={"why": "no actions"})
+            self.energy += cons.net
+            self.last_consequence = cons
+            return graph, cons, None
+
+        predicted = self.memory.predict_action(action, observation)
+        self.last_prediction = predicted
+        new_graph, cons = world.act(graph, action, mote_state)
+        action_role = self.classify_action_role(action, world, graph, new_graph, cons, mote_state, predicted)
+        action_cost = action.compute_cost(observation, mote_state)
+        self.energy += cons.net - action_cost
+        self.total_reward += cons.reward
+        self.total_penalty += cons.penalty + action_cost
+        self.actions_taken += 1
+        self.invalid_actions += 0 if cons.valid else 1
+        self.domain_action_counts[world.domain_name] = self.domain_action_counts.get(world.domain_name, 0) + 1
+        if abs(self._last_chosen_transfer_boost) > 1e-9:
+            if cons.net > 0:
+                self.transfer_prior_correct += 1
+            elif cons.net < 0:
+                self.transfer_prior_incorrect += 1
+        self.age += 1
+        self.last_consequence = cons
+        self.domain_history.append(world.domain_name)
+
+        self.memory.record_episode(
+            state_before=observation,
+            transformation=action,
+            consequence=cons,
+            predicted=predicted,
+            domain=world.domain_name,
+            tick=tick,
+            action_role=action_role,
+        )
+
+        if self.energy <= 0:
+            self.alive = False
+
+        return new_graph, cons, action
+
+    def reproduce(self) -> "UniversalMote":
+        self.energy /= 2
+        child = UniversalMote(energy=self.energy, parent_id=self.id)
+        child.meta = self.meta.mutate()
+        child.speech = self.speech.spawn_child(child.id)
+        # Pattern/episodic memory is not copied wholesale. The child receives
+        # speech priors genetically; cultural memory is a separate mechanism.
+        return child
+
+    def metrics(self) -> Dict[str, Any]:
+        mean_pred = self.memory.prediction.mean_error()
+        return {
+            "id": self.id,
+            "energy": round(self.energy, 3),
+            "age": self.age,
+            "alive": self.alive,
+            "actions": self.actions_taken,
+            "invalid_actions": self.invalid_actions,
+            "total_reward": round(self.total_reward, 3),
+            "total_penalty": round(self.total_penalty, 3),
+            "mean_prediction_error": None if mean_pred == float("inf") else round(mean_pred, 3),
+            "prediction_improving": self.memory.prediction.error_trend() < 0,
+            "transfer_prior_uses": self.transfer_prior_uses,
+            "transfer_prior_total_strength": round(self.transfer_prior_total_strength, 3),
+            "transfer_prior_correct": self.transfer_prior_correct,
+            "transfer_prior_incorrect": self.transfer_prior_incorrect,
+            "transfer_prior_precision": round(self.transfer_prior_correct / max(1, self.transfer_prior_correct + self.transfer_prior_incorrect), 3),
+            "memory": self.memory.summary(),
+            "speech": self.speech.stats(),
+            "domains": sorted(set(self.domain_history)),
+        }
