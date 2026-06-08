@@ -15,11 +15,7 @@ No LLM. No pretrained language model. No codebook generation.
 │       ├── gridworld.py    Tiny survival domain
 │       ├── sequences.py    Sequence prediction domain
 │       └── rules.py        Rule satisfaction domain
-<<<<<<< HEAD
 ├── tests/                  Test suite (33 tests)
-=======
-├── tests/                  Test suite (24 tests)
->>>>>>> Phase 0 followup: drop tracked artefacts, README test count
 ├── experiments/
 │   ├── ablation_runner.py         Ablation experiments (v2 strict metric)
 │   ├── cross_domain_transfer.py   Cross-domain transfer experiment
@@ -51,11 +47,7 @@ evaluate(graph, mote_state)
 PYTHONPATH=. python3 -m unittest discover -s tests -v
 ```
 
-<<<<<<< HEAD
 Expected: **33 tests passing**
-=======
-Expected: **24 tests passing**
->>>>>>> Phase 0 followup: drop tracked artefacts, README test count
 
 ## Experiments
 
@@ -109,3 +101,4 @@ python3 swarm_v5.py --load colonies/v55_10k.json
 - `POST /player/teach` — `{ "word": "water", "concept": "WATER" }`
 - `POST /player/query` — `{ "text": "food?", "concept": "FOOD" }`
 - `GET /mote/<id>/lexicon` — inspect private lexicon and memories
+```
