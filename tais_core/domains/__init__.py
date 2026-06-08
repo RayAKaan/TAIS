@@ -17,6 +17,14 @@ from .hazard import (
     make_hazard_graph_easy,
     make_hazard_graph_distractor,
 )
+from .logic import (
+    LogicWorld,
+    LogicWorldChain,
+    LogicWorldUnsat,
+    make_logic_graph_easy,
+    make_logic_graph_chain,
+    make_logic_graph_unsat,
+)
 
 __all__ = [
     "GridGraphWorld",
@@ -34,4 +42,10 @@ __all__ = [
     "HazardGraphWorld",
     "make_hazard_graph_easy",
     "make_hazard_graph_distractor",
+    "LogicWorld",
+    "LogicWorldChain",
+    "LogicWorldUnsat",
+    "make_logic_graph_easy",
+    "make_logic_graph_chain",
+    "make_logic_graph_unsat",
 ]
