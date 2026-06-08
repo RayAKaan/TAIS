@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use TAIS in your research, please cite this software."
+title: "TAIS: Thought-Assisted Intelligence System"
+type: software
+authors:
+  - family-names: "RayAKaan"
+    given-names: "TAIS contributors"
+repository-code: "https://github.com/RayAKaan/TAIS"
+url: "https://github.com/RayAKaan/TAIS"
+license: "MIT"
+version: "6.0.0"
+abstract: "TAIS is a grounded AI research platform for studying domain-agnostic agents that learn and transfer functional action roles across typed graph domains without pretrained representations."
+keywords:
+  - grounded-ai
+  - transfer-learning
+  - multi-agent-systems
+  - causal-reasoning
+  - metacognition
+  - graph-agents
