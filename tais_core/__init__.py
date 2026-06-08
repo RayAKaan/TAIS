@@ -19,6 +19,7 @@ from .metacognition import MetacognitiveEngine, SelfModel, PredictionTracker
 from .causal import CausalReasoningEngine, CausalLink, Counterfactual
 from .planning import HierarchicalPlanner, Plan, PlanStep
 from .domains import GridGraphWorld, SequenceWorld, RuleWorld, load_domain
+from .experiments import Condition, Metric, ExperimentSuite
 
 __all__ = [
     "Entity",
@@ -55,4 +56,7 @@ __all__ = [
     "SequenceWorld",
     "RuleWorld",
     "load_domain",
+    "Condition",
+    "Metric",
+    "ExperimentSuite",
 ]

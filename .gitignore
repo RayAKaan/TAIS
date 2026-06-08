@@ -42,6 +42,9 @@ colonies/*.json
 results/*.csv
 results/*.json
 results/*.txt
+results/*.md
+results/*.tex
+results/figures/
 !results/.gitkeep
 # Keep curated/baseline reports if any are checked in explicitly via -f.
 
