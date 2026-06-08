@@ -103,18 +103,18 @@ var data = [
   },
   {
     "tick": 1,
-    "action": "check_valence",
-    "net": 0.5,
-    "reward": 0.5,
+    "action": "break_unstable",
+    "net": 1.0,
+    "reward": 1.0,
     "penalty": 0.0,
     "valid": true,
-    "task_signal": "TASK_PROGRESS",
+    "task_signal": null,
     "concept_signals": {
-      "TRUST": 0.6,
-      "UNCERTAIN": 0.3
+      "SAFE": 0.5,
+      "BAD": 0.1
     },
     "prediction_error": 0.0,
-    "energy": 100.6,
+    "energy": 100.8,
     "alive": true,
     "graph": {
       "entities": [
@@ -167,18 +167,18 @@ var data = [
   },
   {
     "tick": 2,
-    "action": "check_valence",
-    "net": 0.5,
-    "reward": 0.5,
+    "action": "break_unstable",
+    "net": 1.0,
+    "reward": 1.0,
     "penalty": 0.0,
     "valid": true,
-    "task_signal": "TASK_PROGRESS",
+    "task_signal": null,
     "concept_signals": {
-      "TRUST": 0.6,
-      "UNCERTAIN": 0.3
+      "SAFE": 0.5,
+      "BAD": 0.1
     },
     "prediction_error": 0.0,
-    "energy": 100.89999999999999,
+    "energy": 101.3,
     "alive": true,
     "graph": {
       "entities": [
@@ -231,18 +231,18 @@ var data = [
   },
   {
     "tick": 3,
-    "action": "check_valence",
-    "net": 0.5,
-    "reward": 0.5,
+    "action": "break_unstable",
+    "net": 1.0,
+    "reward": 1.0,
     "penalty": 0.0,
     "valid": true,
-    "task_signal": "TASK_PROGRESS",
+    "task_signal": null,
     "concept_signals": {
-      "TRUST": 0.6,
-      "UNCERTAIN": 0.3
+      "SAFE": 0.5,
+      "BAD": 0.1
     },
     "prediction_error": 0.0,
-    "energy": 101.19999999999999,
+    "energy": 101.8,
     "alive": true,
     "graph": {
       "entities": [
@@ -295,18 +295,18 @@ var data = [
   },
   {
     "tick": 4,
-    "action": "form_bond",
-    "net": 4.0,
-    "reward": 4.0,
+    "action": "break_unstable",
+    "net": 1.0,
+    "reward": 1.0,
     "penalty": 0.0,
     "valid": true,
-    "task_signal": "TASK_SUCCESS",
+    "task_signal": null,
     "concept_signals": {
-      "GOOD": 1.0,
-      "STABLE": 0.8
+      "SAFE": 0.5,
+      "BAD": 0.1
     },
     "prediction_error": 0.0,
-    "energy": 104.79999999999998,
+    "energy": 102.3,
     "alive": true,
     "graph": {
       "entities": [
@@ -317,7 +317,7 @@ var data = [
             "element": "C",
             "valence": 4,
             "charge": 0,
-            "bonded": true
+            "bonded": false
           }
         },
         {
@@ -327,7 +327,7 @@ var data = [
             "element": "O",
             "valence": 2,
             "charge": 0,
-            "bonded": true
+            "bonded": false
           }
         },
         {
@@ -336,14 +336,6 @@ var data = [
           "properties": {
             "formula": "CO",
             "stability": "unstable"
-          }
-        },
-        {
-          "id": "stable_molecule",
-          "type": "MOLECULE",
-          "properties": {
-            "formula": "CO",
-            "stability": "stable"
           }
         }
       ],
@@ -359,34 +351,6 @@ var data = [
           "source": "atom_o",
           "type": "PART_OF",
           "target": "unstable_molecule",
-          "properties": {},
-          "directed": true
-        },
-        {
-          "source": "atom_c",
-          "type": "BONDED_TO",
-          "target": "atom_o",
-          "properties": {},
-          "directed": false
-        },
-        {
-          "source": "atom_o",
-          "type": "BONDED_TO",
-          "target": "atom_c",
-          "properties": {},
-          "directed": false
-        },
-        {
-          "source": "atom_c",
-          "type": "PART_OF",
-          "target": "stable_molecule",
-          "properties": {},
-          "directed": true
-        },
-        {
-          "source": "atom_o",
-          "type": "PART_OF",
-          "target": "stable_molecule",
           "properties": {},
           "directed": true
         }
@@ -395,18 +359,18 @@ var data = [
   },
   {
     "tick": 5,
-    "action": "form_bond",
-    "net": 4.0,
-    "reward": 4.0,
+    "action": "break_unstable",
+    "net": 1.0,
+    "reward": 1.0,
     "penalty": 0.0,
     "valid": true,
-    "task_signal": "TASK_SUCCESS",
+    "task_signal": null,
     "concept_signals": {
-      "GOOD": 1.0,
-      "STABLE": 0.8
+      "SAFE": 0.5,
+      "BAD": 0.1
     },
     "prediction_error": 0.0,
-    "energy": 108.39999999999998,
+    "energy": 102.8,
     "alive": true,
     "graph": {
       "entities": [
@@ -417,7 +381,7 @@ var data = [
             "element": "C",
             "valence": 4,
             "charge": 0,
-            "bonded": true
+            "bonded": false
           }
         },
         {
@@ -427,7 +391,7 @@ var data = [
             "element": "O",
             "valence": 2,
             "charge": 0,
-            "bonded": true
+            "bonded": false
           }
         },
         {
@@ -436,14 +400,6 @@ var data = [
           "properties": {
             "formula": "CO",
             "stability": "unstable"
-          }
-        },
-        {
-          "id": "stable_molecule",
-          "type": "MOLECULE",
-          "properties": {
-            "formula": "CO",
-            "stability": "stable"
           }
         }
       ],
@@ -459,34 +415,6 @@ var data = [
           "source": "atom_o",
           "type": "PART_OF",
           "target": "unstable_molecule",
-          "properties": {},
-          "directed": true
-        },
-        {
-          "source": "atom_c",
-          "type": "BONDED_TO",
-          "target": "atom_o",
-          "properties": {},
-          "directed": false
-        },
-        {
-          "source": "atom_o",
-          "type": "BONDED_TO",
-          "target": "atom_c",
-          "properties": {},
-          "directed": false
-        },
-        {
-          "source": "atom_c",
-          "type": "PART_OF",
-          "target": "stable_molecule",
-          "properties": {},
-          "directed": true
-        },
-        {
-          "source": "atom_o",
-          "type": "PART_OF",
-          "target": "stable_molecule",
           "properties": {},
           "directed": true
         }
@@ -495,18 +423,18 @@ var data = [
   },
   {
     "tick": 6,
-    "action": "form_bond",
-    "net": 4.0,
-    "reward": 4.0,
+    "action": "break_unstable",
+    "net": 1.0,
+    "reward": 1.0,
     "penalty": 0.0,
     "valid": true,
-    "task_signal": "TASK_SUCCESS",
+    "task_signal": null,
     "concept_signals": {
-      "GOOD": 1.0,
-      "STABLE": 0.8
+      "SAFE": 0.5,
+      "BAD": 0.1
     },
     "prediction_error": 0.0,
-    "energy": 111.99999999999997,
+    "energy": 103.3,
     "alive": true,
     "graph": {
       "entities": [
@@ -517,7 +445,7 @@ var data = [
             "element": "C",
             "valence": 4,
             "charge": 0,
-            "bonded": true
+            "bonded": false
           }
         },
         {
@@ -527,7 +455,7 @@ var data = [
             "element": "O",
             "valence": 2,
             "charge": 0,
-            "bonded": true
+            "bonded": false
           }
         },
         {
@@ -536,14 +464,6 @@ var data = [
           "properties": {
             "formula": "CO",
             "stability": "unstable"
-          }
-        },
-        {
-          "id": "stable_molecule",
-          "type": "MOLECULE",
-          "properties": {
-            "formula": "CO",
-            "stability": "stable"
           }
         }
       ],
@@ -559,34 +479,6 @@ var data = [
           "source": "atom_o",
           "type": "PART_OF",
           "target": "unstable_molecule",
-          "properties": {},
-          "directed": true
-        },
-        {
-          "source": "atom_c",
-          "type": "BONDED_TO",
-          "target": "atom_o",
-          "properties": {},
-          "directed": false
-        },
-        {
-          "source": "atom_o",
-          "type": "BONDED_TO",
-          "target": "atom_c",
-          "properties": {},
-          "directed": false
-        },
-        {
-          "source": "atom_c",
-          "type": "PART_OF",
-          "target": "stable_molecule",
-          "properties": {},
-          "directed": true
-        },
-        {
-          "source": "atom_o",
-          "type": "PART_OF",
-          "target": "stable_molecule",
           "properties": {},
           "directed": true
         }
@@ -595,18 +487,18 @@ var data = [
   },
   {
     "tick": 7,
-    "action": "form_bond",
-    "net": 4.0,
-    "reward": 4.0,
+    "action": "break_unstable",
+    "net": 1.0,
+    "reward": 1.0,
     "penalty": 0.0,
     "valid": true,
-    "task_signal": "TASK_SUCCESS",
+    "task_signal": null,
     "concept_signals": {
-      "GOOD": 1.0,
-      "STABLE": 0.8
+      "SAFE": 0.5,
+      "BAD": 0.1
     },
     "prediction_error": 0.0,
-    "energy": 115.59999999999997,
+    "energy": 103.8,
     "alive": true,
     "graph": {
       "entities": [
@@ -617,7 +509,7 @@ var data = [
             "element": "C",
             "valence": 4,
             "charge": 0,
-            "bonded": true
+            "bonded": false
           }
         },
         {
@@ -627,7 +519,7 @@ var data = [
             "element": "O",
             "valence": 2,
             "charge": 0,
-            "bonded": true
+            "bonded": false
           }
         },
         {
@@ -636,14 +528,6 @@ var data = [
           "properties": {
             "formula": "CO",
             "stability": "unstable"
-          }
-        },
-        {
-          "id": "stable_molecule",
-          "type": "MOLECULE",
-          "properties": {
-            "formula": "CO",
-            "stability": "stable"
           }
         }
       ],
@@ -659,34 +543,6 @@ var data = [
           "source": "atom_o",
           "type": "PART_OF",
           "target": "unstable_molecule",
-          "properties": {},
-          "directed": true
-        },
-        {
-          "source": "atom_c",
-          "type": "BONDED_TO",
-          "target": "atom_o",
-          "properties": {},
-          "directed": false
-        },
-        {
-          "source": "atom_o",
-          "type": "BONDED_TO",
-          "target": "atom_c",
-          "properties": {},
-          "directed": false
-        },
-        {
-          "source": "atom_c",
-          "type": "PART_OF",
-          "target": "stable_molecule",
-          "properties": {},
-          "directed": true
-        },
-        {
-          "source": "atom_o",
-          "type": "PART_OF",
-          "target": "stable_molecule",
           "properties": {},
           "directed": true
         }
@@ -695,18 +551,18 @@ var data = [
   },
   {
     "tick": 8,
-    "action": "form_bond",
-    "net": 4.0,
-    "reward": 4.0,
+    "action": "break_unstable",
+    "net": 1.0,
+    "reward": 1.0,
     "penalty": 0.0,
     "valid": true,
-    "task_signal": "TASK_SUCCESS",
+    "task_signal": null,
     "concept_signals": {
-      "GOOD": 1.0,
-      "STABLE": 0.8
+      "SAFE": 0.5,
+      "BAD": 0.1
     },
     "prediction_error": 0.0,
-    "energy": 119.19999999999996,
+    "energy": 104.3,
     "alive": true,
     "graph": {
       "entities": [
@@ -717,7 +573,7 @@ var data = [
             "element": "C",
             "valence": 4,
             "charge": 0,
-            "bonded": true
+            "bonded": false
           }
         },
         {
@@ -727,7 +583,7 @@ var data = [
             "element": "O",
             "valence": 2,
             "charge": 0,
-            "bonded": true
+            "bonded": false
           }
         },
         {
@@ -736,14 +592,6 @@ var data = [
           "properties": {
             "formula": "CO",
             "stability": "unstable"
-          }
-        },
-        {
-          "id": "stable_molecule",
-          "type": "MOLECULE",
-          "properties": {
-            "formula": "CO",
-            "stability": "stable"
           }
         }
       ],
@@ -759,34 +607,6 @@ var data = [
           "source": "atom_o",
           "type": "PART_OF",
           "target": "unstable_molecule",
-          "properties": {},
-          "directed": true
-        },
-        {
-          "source": "atom_c",
-          "type": "BONDED_TO",
-          "target": "atom_o",
-          "properties": {},
-          "directed": false
-        },
-        {
-          "source": "atom_o",
-          "type": "BONDED_TO",
-          "target": "atom_c",
-          "properties": {},
-          "directed": false
-        },
-        {
-          "source": "atom_c",
-          "type": "PART_OF",
-          "target": "stable_molecule",
-          "properties": {},
-          "directed": true
-        },
-        {
-          "source": "atom_o",
-          "type": "PART_OF",
-          "target": "stable_molecule",
           "properties": {},
           "directed": true
         }
@@ -795,17 +615,18 @@ var data = [
   },
   {
     "tick": 9,
-    "action": "swap_atom",
-    "net": 0.3,
-    "reward": 0.5,
-    "penalty": 0.2,
+    "action": "break_unstable",
+    "net": 1.0,
+    "reward": 1.0,
+    "penalty": 0.0,
     "valid": true,
     "task_signal": null,
     "concept_signals": {
-      "REPAIR": 0.5
+      "SAFE": 0.5,
+      "BAD": 0.1
     },
     "prediction_error": 0.0,
-    "energy": 118.89999999999996,
+    "energy": 104.8,
     "alive": true,
     "graph": {
       "entities": [
@@ -816,7 +637,7 @@ var data = [
             "element": "C",
             "valence": 4,
             "charge": 0,
-            "bonded": true
+            "bonded": false
           }
         },
         {
@@ -826,7 +647,7 @@ var data = [
             "element": "O",
             "valence": 2,
             "charge": 0,
-            "bonded": true
+            "bonded": false
           }
         },
         {
@@ -835,14 +656,6 @@ var data = [
           "properties": {
             "formula": "CO",
             "stability": "unstable"
-          }
-        },
-        {
-          "id": "stable_molecule",
-          "type": "MOLECULE",
-          "properties": {
-            "formula": "CO",
-            "stability": "stable"
           }
         }
       ],
@@ -858,34 +671,6 @@ var data = [
           "source": "atom_o",
           "type": "PART_OF",
           "target": "unstable_molecule",
-          "properties": {},
-          "directed": true
-        },
-        {
-          "source": "atom_c",
-          "type": "BONDED_TO",
-          "target": "atom_o",
-          "properties": {},
-          "directed": false
-        },
-        {
-          "source": "atom_o",
-          "type": "BONDED_TO",
-          "target": "atom_c",
-          "properties": {},
-          "directed": false
-        },
-        {
-          "source": "atom_c",
-          "type": "PART_OF",
-          "target": "stable_molecule",
-          "properties": {},
-          "directed": true
-        },
-        {
-          "source": "atom_o",
-          "type": "PART_OF",
-          "target": "stable_molecule",
           "properties": {},
           "directed": true
         }

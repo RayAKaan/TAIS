@@ -48,5 +48,13 @@ results/figures/
 !results/.gitkeep
 # Keep curated/baseline reports if any are checked in explicitly via -f.
 
+# Generated examples
+results/example_*/
+results/smoke_*/
+
+# Nested ad-hoc result files; curated phase artifacts may be force-added.
+results/**/*.tmp
+results/**/*.log
+
 # Per-run output folders (Phase 0.2 convention)
 runs/
