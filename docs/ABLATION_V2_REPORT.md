@@ -173,6 +173,49 @@ These map onto the roadmap's Phase 3 → Phase 4 → Phase 6.
 
 ---
 
+## Supplementary: Analogy bias sensitivity
+
+The `analogy_bias` hyperparameter (default 0.35) controls how much weight
+cross-domain pattern transfer gets in the choose_action score formula.
+A sweep over the Grid→Logic domain pair shows this value sits near the
+optimum of an inverted-U curve:
+
+| analogy_bias | first_task Δ | d |
+|---|---:|---:|
+| 0.00 | −2.15 | −0.317 |
+| 0.10 | −3.24 | −0.468 |
+| 0.25 | −4.26 | −0.651 |
+| **0.35** | **−4.32** | **−0.666** |
+| 0.50 | −4.10 | −0.628 |
+| 0.75 | −2.68 | −0.423 |
+| 1.00 | −1.94 | −0.305 |
+
+Moderate transfer weighting (0.25–0.50) is optimal; setting it too low
+under-uses pattern memory, too high over-prioritises the old domain.
+
+---
+
+## Supplementary: Non-monotonic same-domain ceiling
+
+Same-domain (Logic) pretraining does not monotonically improve with longer
+pretraining. EpisodicMemory saturation reverses the benefit beyond 20 ticks:
+
+| Same-domain pretrain ticks | first_task Δ | d |
+|---|---:|---:|
+| 10 | −3.81 | −0.55 |
+| **20** | **−4.52** | **−0.66** |
+| 50 | −3.26 | −0.48 |
+| 100 | −0.84 | −0.12 |
+| 200 | +1.54 | +0.22 |
+
+The ceiling peaks at ~20 ticks. Beyond that, EpisodicMemory overwrites early
+success episodes with later neutral/failed episodes, reducing action-value
+precision. The paper should state: "Grid→Logic transfer at 20 ticks matches
+the peak of same-domain pretraining; longer same-domain pretraining is
+non-monotonic due to EpisodicMemory saturation at ~64 episodes."
+
+---
+
 ## Files
 
 - `experiments/ablation_runner.py` — runner

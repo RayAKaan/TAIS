@@ -2,7 +2,7 @@
 tais_core.mote
 ==============
 
-Universal domain-blind mote.
+Universal domain-agnostic mote.
 
 This is intentionally small. It does not know chemistry, math, physics, or
 GridWorld. It knows only:
@@ -51,7 +51,7 @@ class MetaGenes:
 
 
 class UniversalMote:
-    """A domain-blind mote operating over any WorldInterface."""
+    """A domain-agnostic mote operating over any WorldInterface."""
 
     _id = 0
 
@@ -153,12 +153,17 @@ class UniversalMote:
         best_score = float("-inf")
         best_transfer = 0.0
         for action in actions:
-            predicted = self.memory.predict_action(action, observation)
+            # predictions are recorded for error metrics and should_explore(),
+            # but removed from the score formula.  See Phase 1.5 diagnostic:
+            # no_prediction consistently beats full on first_task_success_tick
+            # because early-domain predictions (cost-anchored valence fallback)
+            # are systematically mismatched to the new reward scale and even
+            # the EWM accumulates too slowly to help within a short eval horizon.
             historical = self.memory.episodic.action_value(action.name)
             risk = self.memory.episodic.action_risk(action.name)
             cost = action.compute_cost(observation, self.state())
             transfer = effective_analogy_weight * transfer_boosts.get(action.name, 0.0)
-            score = predicted + historical + transfer - cost - self.meta.skepticism * risk
+            score = historical + transfer - cost - self.meta.skepticism * risk
             if score > best_score:
                 best_score = score
                 best_action = action

@@ -1,5 +1,15 @@
 # Phase 4 — HazardGraphWorld + Grid→Hazard Transfer
 
+> **Framing note for the paper:** Grid→Hazard is a **Behavioural Signature Transfer**
+> result, not a Task-Metric Transfer result. It does NOT improve the primary task
+> metric (completion speed or rate). It DOES reduce hazard contacts (caution behaviour).
+> In the paper, this belongs in a separate subsection (§4.2):
+>
+> - **§4.1 Task-Metric Transfer:** Grid→Rule (d=−0.33), Grid→Logic (d=−0.57)
+> - **§4.2 Behavioural Signature Transfer:** Grid→Hazard (hazard-step reduction d=−0.28)
+>
+> See the TL;DR below for the full nuance.
+
 **Date:** 2026-06-08
 **Branch:** `phase4-hazardworld`
 **New domain:** `tais_core/domains/hazard.py`

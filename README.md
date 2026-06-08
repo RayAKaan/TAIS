@@ -2,7 +2,7 @@
 
 No LLM. No pretrained language model. No codebook generation.
 
-TAIS is a grounded learning substrate built around **domain-blind thermodynamic motes** operating over typed **RealityGraphs**. The core research claim is that the same mote architecture can transfer functional action roles across structurally different graph domains through consequence, prediction, pattern memory, and action-role priors.
+TAIS is a grounded learning substrate built around **energy-budgeted motes** operating over typed **RealityGraphs**. The core research claim is that the same mote architecture can transfer functional action roles across structurally different graph domains through consequence, prediction, pattern memory, and action-role priors.
 
 ---
 
@@ -14,7 +14,7 @@ TAIS is a grounded learning substrate built around **domain-blind thermodynamic 
 │   ├── reality.py              Entity, Relation, RealityGraph, WorldInterface
 │   ├── memory.py               EpisodicMemory, PatternMemory, PredictionEngine
 │   ├── speech.py               Lexicon, SpeechOrgan, UnderstandingAudit
-│   ├── mote.py                 UniversalMote: domain-blind agent
+│   ├── mote.py                 UniversalMote: domain-agnostic agent
 │   └── domains/
 │       ├── gridworld.py        Tiny survival/resource-threat domain
 │       ├── sequences.py        Sequence prediction domain
@@ -47,7 +47,7 @@ TAIS is a grounded learning substrate built around **domain-blind thermodynamic 
 
 Everything is a `RealityGraph`. Every domain implements `WorldInterface`.
 
-The `UniversalMote` is domain-blind: it observes, predicts, acts, and learns through a uniform four-function contract:
+The `UniversalMote` is domain-agnostic: it observes, predicts, acts, and learns through a uniform four-function contract:
 
 ```python
 observe(graph, mote_position) -> RealityGraph
@@ -92,7 +92,7 @@ observe graph
 
 Current TAIS can:
 
-- run a domain-blind `UniversalMote` across multiple graph domains,
+- run a domain-agnostic `UniversalMote` across multiple graph domains,
 - represent domains as typed `RealityGraph`s,
 - store graph patterns in `PatternMemory`,
 - analogize patterns across domains,

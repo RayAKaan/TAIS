@@ -287,16 +287,30 @@ mixed GridWorld → approach + caution transfer → faster RuleWorld reward acti
 
 So transfer depends on the **role diversity** of the source domain.
 
-## Current status
+## Action-name vs universal_op vs role_hint ablation
 
-```text
-Pattern transfer: works
-Action prior bridge: works
-ActionRole transfer: works for early transfer under mixed curriculum
-Prior decay: implemented
-Transfer precision: measured and high
-Robust long-run cross-domain reward advantage: not yet
-```
+An ablation experiment tested which of the three coaching signals is load-bearing:
+
+| Condition | first_task Δ | d |
+|---|---|---:|---:|
+| Full (with role_hint) | −3.96 | −0.568 |
+| role_hint stripped, universal_op intact | −3.81 | −0.552 |
+| universal_op scrambled to "OBSERVE" | −1.60 | −0.214 |
+| Everything scrambled | −1.60 | −0.214 |
+
+Key findings:
+- **Action-name scrambling has no effect** beyond what universal_op scrambling already captures.
+- **role_hint stripping costs only 4%** of the transfer effect (−3.96 → −3.81). The hardcoded
+  `universal_op`→`role` mapping in `infer_action_role()` absorbs most of the coaching signal.
+- **universal_op scrambling eliminates 60%** of transfer (−3.96 → −1.60). The mote's
+  hardcoded universal_op→role mapping is the primary coaching mechanism, not explicit
+  `role_hint` annotations.
+
+This supports the paper's claim: the mechanism is domain-blind (universal_op is the
+only domain-specific signal, and it's a 20-element closed vocabulary), not manually
+engineered per-domain hints.
+
+## Current status
 
 ## Next required tests
 

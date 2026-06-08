@@ -2,7 +2,7 @@
 
 ## Mission
 
-Build TAIS into a validated, universal, grounded learning substrate where domain-blind thermodynamic motes can learn, communicate, repair misunderstanding, predict consequences, preserve patterns, and transfer functional roles across typed reality domains.
+Build TAIS into a validated, universal, grounded learning substrate where domain-agnostic motes can learn, communicate, repair misunderstanding, predict consequences, preserve patterns, and transfer functional roles across typed reality domains.
 
 The goal is not to build a chatbot first. The goal is to build a base ecology of intelligence:
 
@@ -29,7 +29,7 @@ TAIS currently has:
 
 But TAIS has not yet fully proven the base model claim.
 
-The next stage is to prove which components are load-bearing and then extend into ChemistryLite and additional domains.
+The next stage is to prove which components are load-bearing and then extend into additional domains.
 
 ---
 
@@ -40,15 +40,15 @@ Phase 0 — Stabilize the codebase
 Phase 1 — Clean ablation suite
 Phase 2 — Fix RuleWorld metrics and evaluation design
 Phase 3 — Prove or falsify ActionRole transfer
-Phase 4 — Add closer transfer domain: HazardGraphWorld
-Phase 5 — Add ChemistryLiteDomain
+Phase 4 — Add HazardGraphWorld (behavioural-signature transfer)
+Phase 5 — Add LogicWorld (propositional SAT; replaces ChemistryLite)
 Phase 6 — Repair convergence experiments
 Phase 7 — Cultural memory under cost
 Phase 8 — Long-horizon planning
 Phase 9 — Multi-domain curriculum
 Phase 10 — Paper-grade benchmarks and baselines
-Phase 11 — Scaling and GPU/vectorization
-Phase 12 — Research paper packaging
+Phase 11 — Paper submission with honest claim framing
+Phase 12 — (Deferred) ChemistryLite — requires domain-validity review
 ```
 
 ---
@@ -419,121 +419,57 @@ If close-domain transfer fails, the analogy/action-role mechanism is still too w
 
 ---
 
-# Phase 5 — ChemistryLiteDomain
+# Phase 5 — LogicWorld (propositional SAT)
 
 ## Goal
 
-Move from toy symbolic domains toward a scientific design domain.
+Add a domain with objective, ungameable rewards (SAT solving) as the fourth
+transfer target.
 
 ## Why
 
-ChemistryLite is the first domain that makes TAIS relevant to real scientific search, without overclaiming real drug discovery.
+LogicWorld was chosen over ChemistryLite because:
+- SAT solving has **objective rewards** — a formula is either satisfied or not.
+  No reward-scale calibration ambiguity.
+- The task-metric signal is **sharp and reviewable**: first `TASK_SUCCESS` tick
+  corresponds to finding a satisfying assignment.
+- Eliminates the "did we accidentally tune the reward to favour transfer?"
+  concern that ChemistryLite would raise.
 
-## Domain representation
+## Domain
 
-Entities:
+`tais_core/domains/logic.py` (544 LOC). Three variants:
+- `LogicWorldEasy` — single clause (A ∨ B), solve with one `assert_literal`
+- `LogicWorldChain` — A → B → C chain, requires 2+ `assert_literal` steps
+- `LogicWorldUnsat` — A ∧ ¬A, contradict within horizon
 
-```text
-MOLECULE
-ATOM
-BOND
-FRAGMENT
-TOXIC_GROUP
-BINDING_SITE
-POLAR_GROUP
-HYDROPHOBIC_GROUP
-SIZE_LIMIT
-```
+## Headline result
 
-Relations:
-
-```text
-BONDED_TO
-PART_OF
-ADJACENT_TO
-BINDS_TO
-CLASHES_WITH
-HAS_GROUP
-NEAR_SITE
-VIOLATES
-SATISFIES
-```
-
-Actions:
-
-```text
-add_fragment
-remove_fragment
-replace_fragment
-verify_valence
-check_toxicity
-improve_binding
-reduce_size
-```
-
-Constraints:
-
-```text
-max valence
-max atom count
-no toxic group adjacent to binding site
-binding contact required
-size/polarity constraints
-```
-
-Consequence examples:
-
-```text
-valid fragment addition → reward
-invalid valence → penalty
-toxic group near binding site → penalty + DANGER concept
-binding contact improved → reward + RESOURCE/GOOD concept
-size too large → penalty
-```
-
-## Transfer experiments
-
-```text
-GridWorld mixed → ChemistryLite
-HazardGraphWorld → ChemistryLite
-RuleWorld → ChemistryLite
-```
-
-## Baselines
-
-```text
-fresh
-empty pretrain
-random pretrain
-same-domain ChemistryLite pretrain
-```
-
-## Metrics
-
-```text
-valid molecule rate
-toxicity violations
-binding score proxy
-first valid improvement tick
-final chemistry score
-energy efficiency
-prediction error
-transfer prior precision
-```
+Grid→Logic transfer produces the **largest effect size** in the TAIS suite:
+**d = −0.57** on first_task_success_tick. This exceeds Grid→Rule (d = −0.33)
+and is the strongest evidence for the action-role mechanism.
 
 ## Acceptance
 
-Minimum paper signal:
-
 ```text
-Grid/Hazard pretraining reduces toxic/invalid actions or improves early valid-binding score vs fresh/random controls.
+Grid→Logic transfer shows first_task Δ < 0, p < 0.01, d < −0.3.
+Role-balanced pretraining (GridWorld mixed) beats danger-only pretraining.
+Pattern transfer ablation kills the effect.
 ```
 
-Strong signal:
+## Deferred: ChemistryLite
 
-```text
-ActionRole ablation removes ChemistryLite transfer benefit.
-```
+ChemistryLite (molecular fragment design domain) is **deferred** and requires
+a domain-validity review before any transfer experiments. Rationale:
+
+1. **Reward-scale ambiguity** — what is a "good molecule"? Without an external
+   oracle, the reward function is a design decision, not a ground truth.
+2. **Reviewer risk** — ChemistryLite transfer would be the most sceptically
+   scrutinised claim in the paper. Better to build the case on SAT (LogicWorld)
+   where the metric is non-negotiable.
+3. **Phase 5 selection was driven by reviewer-defensibility (objective SAT
+   rewards) rather than scientific necessity.** If the paper is accepted,
+   ChemistryLite can be added as a follow-up with the same architecture.
 
 ---
 
@@ -830,80 +766,66 @@ prediction-only policy
 
 ---
 
-# Phase 11 — Scaling and Optimization
+# Phase 11 — Paper submission with honest claim framing
 
 ## Goal
 
-Make larger experiments practical.
+Submit the TAIS transfer paper with a defensible, reviewer-respecting claim.
 
-## Tasks
+## Why
 
-### 11.1 Headless batch runner
+The data supports a specific, narrow claim. The paper should say exactly that:
 
-```text
-parallel seeds
-multiprocessing
-structured result folders
-resume failed runs
-```
+> Given conformance to a 20-element universal-operation vocabulary and an
+> optional 9-role functional ontology, the TAIS substrate enables automatic
+> cross-domain transfer of action-role priors via pattern-memory-weighted
+> role-compatibility lookup. We demonstrate the mechanism on two task-metric-
+> improving domain pairs (Grid→Rule, d=−0.33; Grid→Logic, d=−0.57) and one
+> behavioural-signature pair (Grid→Hazard, hazard-step reduction d=−0.28).
 
-### 11.2 Vectorization
+## Submission requirements
 
-Move from object loops to arrays where possible:
+- 64 passing tests (test_tais_core, test_base_validation, test_cross_domain_transfer,
+  test_ruleworld_v2, test_hazardworld, test_logicworld, test_prediction_v15,
+  test_runner_rng_isolation)
+- 200-seed ablation suite for all 3 transfer pairs
+- Supplementary: analogy_bias sensitivity sweep, non-monotonic ceiling data
+- Honest HazardWorld framing (behavioural-signature, not task-metric transfer)
+- No "thermodynamic", "AGI", "drug discovery", or "domain-blind" overclaims
 
-```text
-mote energy arrays
-trust matrices
-lexicon tensors
-pattern indices
-```
+## Post-submission
 
-### 11.3 GPU later
-
-Your GTX 1650 can help once state is tensorized, but current code is Python-object bound.
-
-### 11.4 Profiling
-
-Measure:
-
-```text
-graph analogy cost
-pattern matching cost
-speech audit cost
-world stepping cost
-```
-
-Optimize the bottleneck that actually dominates.
+If accepted, ChemistryLite and GPU/vectorization become natural follow-ups.
+Do not add them before submission — they introduce reviewer risk without
+strengthening the core claim.
 
 ---
 
-# Phase 12 — Research Paper Packaging
+# Phase 12 — (Deferred) ChemistryLite
 
-## Target claim
+## Goal
 
-A careful claim:
+Molecular fragment design domain (deferred until post-submission).
 
-```text
-TAIS demonstrates that thermodynamic, speech-capable motes operating over typed
-RealityGraphs can transfer functional action roles across domains under controlled
-curricula, with statistically significant early learning improvements and measurable
-semantic repair dynamics.
-```
+## Why deferred
 
-Avoid overclaiming:
+ChemistryLite was the original Phase 5 target but was replaced by LogicWorld
+for reviewer-defensibility reasons. It remains a scientifically interesting
+direction, but:
 
-```text
-not AGI
-not real drug discovery
-not human-like language
-not theorem proving at scale
-```
+1. **Reward-scale ambiguity** — what is a "good molecule"? Without an external
+   oracle, the reward function is a design decision, not a ground truth.
+2. **Reviewer risk** — ChemistryLite transfer would be the most sceptically
+   scrutinised claim in the paper. The case should be built on SAT (LogicWorld)
+   where the metric is non-negotiable.
+3. **Phase 5 selection was driven by reviewer-defensibility** rather than
+   scientific necessity.
 
-## Possible title
+## When to revisit
 
-```text
-Consequence Before Language: Thermodynamic Agent Swarms for Grounded Communication and Cross-Domain Role Transfer
-```
+- After paper acceptance
+- With a domain expert collaborator who can validate the reward model
+- With a clear objective metric (e.g., known molecule properties from PubChem)
 
 or:
 
@@ -915,7 +837,7 @@ RealityGraphs and ActionRoles: A Grounded Multi-Agent Substrate for Cross-Domain
 
 ```text
 1. RealityGraph universal substrate
-2. UniversalMote thermodynamic architecture
+2. UniversalMote architecture
 3. Emergent speech + repair + audit
 4. ActionRole mechanism for cross-domain transfer
 5. Controlled transfer and ablation experiments
@@ -930,7 +852,7 @@ ActionRole transfer diagram
 learning curves
 ablation table
 repair convergence plot
-ChemistryLite transfer plot
+LogicWorld transfer plot (replaces ChemistryLite)
 ```
 
 ## Paper artifacts
@@ -948,35 +870,49 @@ reproduction instructions
 
 # Immediate Next 10 Tasks
 
-1. Fix/confirm ablation runner metrics:
+1. Fix prediction puzzle — remove predicted from choose_action score (DONE)
    ```text
-   first_apply_implication_tick, eval-only reward, strict invalid action count
+   score = historical + transfer - cost - skepticism * risk
    ```
 
-2. Rerun ablation suite with:
+2. Add cross-domain transfer unit test (DONE)
    ```text
-   full, no_action_role, no_prior_decay, no_pattern_transfer, no_prediction,
-   empty, random, ruleworld controls
+   tests/test_cross_domain_transfer.py — 5 tests
    ```
 
-3. Run horizons:
+3. Add analogy_bias sweep and non-monotonic ceiling data (DONE)
    ```text
-   12, 30, 50, 100 ticks
+   docs/ABLATION_V2_REPORT.md — Supplementary sections
    ```
 
-4. Build HazardGraphWorld.
+4. Fix HazardWorld framing (DONE)
+   ```text
+   docs/PHASE4_HAZARD_TRANSFER_REPORT.md — behavioural-signature section
+   ```
 
-5. Run Grid → Hazard transfer.
+5. Update roadmap with honest claim framing (DONE)
+   ```text
+   docs/TAIS_FULL_DETAILED_ROADMAP.md — LogicWorld replaces ChemistryLite
+   ```
 
-6. Build ChemistryLiteDomain.
+6. Run full 200-seed ablation suite for all 3 transfer pairs
+   ```text
+   Grid→Rule, Grid→Logic, Grid→Hazard
+   ```
 
-7. Run Grid/Hazard → ChemistryLite transfer.
+7. Run Grid→Sequence experiment (optional fourth domain)
+   ```text
+   experiments/sequence_transfer_runner.py
+   ```
 
-8. Build repair convergence experiment.
+8. Build Grid→RuleWorld V2 (chain) experiment
+   ```text
+   Tests that transfer works on harder RuleWorld variants
+   ```
 
-9. Build cultural memory cost experiment.
+9. Write first draft of paper methods section using only validated claims.
 
-10. Write first draft of paper methods section using only validated claims.
+10. Submit with honest framing.
 
 ---
 
