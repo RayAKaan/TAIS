@@ -27,6 +27,9 @@ build/
 release/
 *.tar.gz
 
+# SQLite databases (V6 persistence)
+*.db
+
 # ─── Generated experimental artefacts ────────────────────────────────────────
 # Colonies and replays are large (>30MB total). Regenerate with:
 #   python3 swarm_v5.py --headless --ticks 10000 --save colonies/v55_10k.json
