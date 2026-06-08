@@ -18,7 +18,7 @@ from .mote import UniversalMote, MetaGenes
 from .metacognition import MetacognitiveEngine, SelfModel, PredictionTracker
 from .causal import CausalReasoningEngine, CausalLink, Counterfactual
 from .planning import HierarchicalPlanner, Plan, PlanStep
-from .domains import GridGraphWorld, SequenceWorld, RuleWorld
+from .domains import GridGraphWorld, SequenceWorld, RuleWorld, load_domain
 
 __all__ = [
     "Entity",
@@ -54,4 +54,5 @@ __all__ = [
     "GridGraphWorld",
     "SequenceWorld",
     "RuleWorld",
+    "load_domain",
 ]

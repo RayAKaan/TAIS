@@ -25,6 +25,7 @@ from .logic import (
     make_logic_graph_chain,
     make_logic_graph_unsat,
 )
+from .registry import load_domain
 
 __all__ = [
     "GridGraphWorld",
@@ -48,4 +49,5 @@ __all__ = [
     "make_logic_graph_easy",
     "make_logic_graph_chain",
     "make_logic_graph_unsat",
+    "load_domain",
 ]

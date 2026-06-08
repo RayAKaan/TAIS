@@ -1,0 +1,144 @@
+name: ChemistryLite
+domain_name: chemistry_lite
+version: 1.0
+description: Declarative toy chemistry domain for DSL smoke tests.
+
+entities:
+  ATOM:
+    attributes: [element, valence, charge, bonded]
+  BOND:
+    attributes: [order, polarity]
+  MOLECULE:
+    attributes: [formula, stability]
+  REACTION:
+    attributes: [direction, energy]
+
+relations:
+  BONDED_TO:
+    src: ATOM
+    tgt: ATOM
+    symmetric: true
+  PART_OF:
+    src: ATOM
+    tgt: MOLECULE
+  YIELDS:
+    src: MOLECULE
+    tgt: MOLECULE
+
+action_roles:
+  APPROACH_GOOD: form_bond
+  AVOID_BAD: break_unstable
+  VERIFY_UNCERTAIN: check_valence
+  REPAIR_MISMATCH: swap_atom
+
+world_defaults:
+  energy: 100
+  horizon: 30
+  step_cost: 0.2
+  observe_hops: 1
+
+graph:
+  id: chemistry_lite_initial
+  entities:
+    - id: atom_c
+      type: ATOM
+      properties:
+        element: C
+        valence: 4
+        charge: 0
+        bonded: false
+    - id: atom_o
+      type: ATOM
+      properties:
+        element: O
+        valence: 2
+        charge: 0
+        bonded: false
+    - id: unstable_molecule
+      type: MOLECULE
+      properties:
+        formula: CO
+        stability: unstable
+  relations:
+    - source: atom_c
+      type: PART_OF
+      target: unstable_molecule
+    - source: atom_o
+      type: PART_OF
+      target: unstable_molecule
+
+actions:
+  - name: form_bond
+    universal_op: TRANSFORM
+    base_cost: 0.4
+    role_hint: APPROACH_GOOD
+    reward: 4.0
+    penalty: 0.0
+    valid: true
+    task_signal: TASK_SUCCESS
+    concept_signals:
+      GOOD: 1.0
+      STABLE: 0.8
+    effects:
+      add_entities:
+        - id: stable_molecule
+          type: MOLECULE
+          properties:
+            formula: CO
+            stability: stable
+      add_relations:
+        - source: atom_c
+          type: BONDED_TO
+          target: atom_o
+          directed: false
+        - source: atom_c
+          type: PART_OF
+          target: stable_molecule
+        - source: atom_o
+          type: PART_OF
+          target: stable_molecule
+      set_properties:
+        - id: atom_c
+          properties:
+            bonded: true
+        - id: atom_o
+          properties:
+            bonded: true
+
+  - name: check_valence
+    universal_op: VERIFY
+    base_cost: 0.2
+    role_hint: VERIFY_UNCERTAIN
+    reward: 0.5
+    penalty: 0.0
+    valid: true
+    task_signal: TASK_PROGRESS
+    concept_signals:
+      TRUST: 0.6
+      UNCERTAIN: 0.3
+
+  - name: break_unstable
+    universal_op: TRANSFORM
+    base_cost: 0.5
+    role_hint: AVOID_BAD
+    reward: 1.0
+    penalty: 0.0
+    valid: true
+    concept_signals:
+      SAFE: 0.5
+      BAD: 0.1
+
+  - name: swap_atom
+    universal_op: MUTATE
+    base_cost: 0.6
+    role_hint: REPAIR_MISMATCH
+    reward: 0.5
+    penalty: 0.2
+    valid: true
+    concept_signals:
+      REPAIR: 0.5
+
+evaluation:
+  success_entity: stable_molecule
+  success_score: 10.0
+  default_score: 0.0

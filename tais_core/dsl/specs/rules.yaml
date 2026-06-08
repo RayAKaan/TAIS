@@ -1,0 +1,37 @@
+name: RuleWorld
+domain_name: rules
+version: 1.0
+description: Builtin-backed RuleWorld spec.
+
+backend:
+  world_class: tais_core.domains.rules.RuleWorld
+  graph_factory: tais_core.domains.rules.make_rule_graph_easy
+
+entities:
+  FACT:
+    attributes: [truth, derived]
+  RULE:
+    attributes: [kind]
+  TARGET:
+    attributes: [derive_id]
+
+relations:
+  SATISFIES:
+    src: FACT
+    tgt: RULE
+  IMPLIES:
+    src: RULE
+    tgt: FACT
+  SUPPORTS:
+    src: FACT
+    tgt: FACT
+
+action_roles:
+  APPROACH_GOOD: apply_implication
+  VERIFY_UNCERTAIN: verify_rule
+  AVOID_BAD: random_assert
+
+world_defaults:
+  energy: 100
+  horizon: 30
+  step_cost: 0.2
