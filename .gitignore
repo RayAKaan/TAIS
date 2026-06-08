@@ -29,6 +29,8 @@ release/
 
 # SQLite databases (V6 persistence)
 *.db
+*.db-shm
+*.db-wal
 
 # ─── Generated experimental artefacts ────────────────────────────────────────
 # Colonies and replays are large (>30MB total). Regenerate with:

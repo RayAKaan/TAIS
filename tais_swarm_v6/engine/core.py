@@ -20,17 +20,25 @@ from ..agents.speech_v6 import UtteranceV6, UtteranceV6Booklet
 
 
 class SwarmV6:
-    def __init__(self, config: Optional[SwarmConfig] = None):
+    def __init__(self, config: Optional[SwarmConfig] = None, seed: Optional[int] = None):
         self.config = config or CONFIG_PRESETS["standard"]
+        if seed is not None:
+            d = self.config.to_dict()
+            d["seed"] = seed
+            self.config = SwarmConfig.from_dict(d)
         self.world = WorldV6(self.config.world)
         self.motes: List[MoteV6] = []
         self.event_bus = EventBus()
         self.persistence = PersistenceLayer(self.config.db_path)
         self.tick = 0
         self.booklet = UtteranceV6Booklet()
+        self._mote_factory = MoteV6
 
         if self.config.seed is not None:
             random.seed(self.config.seed)
+
+    def set_mote_factory(self, factory):
+        self._mote_factory = factory
 
     def add_mote(self, mote: MoteV6):
         self.motes.append(mote)
@@ -46,8 +54,14 @@ class SwarmV6:
         for _ in range(count):
             x = random.uniform(self.world.size * 0.2, self.world.size * 0.8)
             y = random.uniform(self.world.size * 0.2, self.world.size * 0.8)
-            mote = MoteV6(x, y, self.config)
+            mote = self._mote_factory(x, y, self.config)
             self.add_mote(mote)
+
+    def init_population(self, count: int = 20):
+        self.initialize_population(count)
+
+    def get_motes(self) -> List[MoteV6]:
+        return self.motes
 
     def step(self):
         self.tick += 1
@@ -61,7 +75,7 @@ class SwarmV6:
 
         # Phase 2: Plan execution (before utterances — drives behavior, not reaction)
         for mote in self.motes:
-            if not mote.alive:
+            if not mote.alive or mote.planner is None:
                 continue
             plan_step = mote.planner.next_step()
             if plan_step is not None:
@@ -180,6 +194,37 @@ class SwarmV6:
                 alive = sum(1 for m in self.motes if m.alive)
                 print(f"Tick {self.tick}: {alive}/{len(self.motes)} alive, "
                       f"avg energy={sum(m.state.energy for m in self.motes if m.alive) / max(alive, 1):.1f}")
+
+    def tick_step(self) -> dict:
+        self.step()
+        alive = sum(1 for m in self.motes if m.alive)
+        population = alive
+        avg_energy = sum(m.state.energy for m in self.motes if m.alive) / max(alive, 1) if alive else 0.0
+        avg_hydration = sum(m.state.hydration for m in self.motes if m.alive) / max(alive, 1) if alive else 0.0
+        avg_pred_acc = sum(m.metacog.get_confidence() for m in self.motes if m.alive and m.metacog is not None) / max(alive, 1) if alive else 0.0
+
+        plans_created = sum(len(m.planner._plan_library) for m in self.motes if m.alive and m.planner is not None)
+        births = 0
+        deaths = 0
+        for event in self.event_bus.get_history(tick_start=self.tick, mote_id=None):
+            if event.type == EventType.MOTE_BORN:
+                births += 1
+            elif event.type == EventType.MOTE_DEATH:
+                deaths += 1
+
+        return {
+            "tick": self.tick,
+            "population": population,
+            "avg_energy": round(avg_energy, 2),
+            "avg_hydration": round(avg_hydration, 2),
+            "avg_prediction_accuracy": round(avg_pred_acc, 3),
+            "plans_created": plans_created,
+            "plans_completed": 0,
+            "plans_failed": 0,
+            "births": births,
+            "deaths": deaths,
+            "predator_kills": 0,
+        }
 
     def to_dict(self) -> dict:
         return {

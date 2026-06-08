@@ -139,6 +139,24 @@ class CausalReasoningEngine:
             self._counterfactuals = self._counterfactuals[-50:]
         return cf
 
+    def record_outcome(self, tick: int, outcome: str, delta: float, context: dict):
+        positive = delta > 0
+        self.record_action(tick, "unknown", outcome, positive)
+
+    def get_causal_strength(self, action: str, outcome_concept: str) -> float:
+        link = self._links.get(outcome_concept)
+        return link.delta_p if link else 0.0
+
+    def counterfactual(self, action: str, outcome_concept: str) -> Optional[dict]:
+        cf = self.compute_counterfactual(action, outcome_concept, 0)
+        if cf is None:
+            return None
+        return {"would_occur": cf.expected_result > cf.counterfactual_result, "strength": abs(cf.expected_result - cf.counterfactual_result)}
+
+    @property
+    def links(self) -> Dict[str, CausalLink]:
+        return self._links
+
     def to_dict(self) -> dict:
         return {
             "links": [l.to_dict() for l in self._links.values()],

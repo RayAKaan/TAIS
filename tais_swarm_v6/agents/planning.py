@@ -156,6 +156,28 @@ class HierarchicalPlanner:
             old_plan.is_active = False
         return self.create_plan(goal, new_causal_links, tick)
 
+    @property
+    def active_plan(self) -> Optional[Plan]:
+        return self._active_plan
+
+    @active_plan.setter
+    def active_plan(self, plan: Optional[Plan]):
+        self._active_plan = plan
+
+    def execute_step(self) -> Optional[PlanStep]:
+        step = self.next_step()
+        if step is not None:
+            self.advance_step()
+        return step
+
+    def plan_for_goal(self, goal: dict, causal_engine) -> Optional[Plan]:
+        links = causal_engine.get_all_links() if hasattr(causal_engine, 'get_all_links') else []
+        causal_links = [(l.action, l.outcome, l.delta_p) for l in links if l.is_causal]
+        if not causal_links:
+            return None
+        goal_str = goal.get("type", str(goal)) if isinstance(goal, dict) else str(goal)
+        return self.create_plan(goal_str, causal_links, 0)
+
     def to_dict(self) -> dict:
         return {
             "active_plan": self._active_plan.to_dict() if self._active_plan else None,

@@ -107,6 +107,24 @@ class MetacognitiveEngine:
         accuracies = [self.predictions.accuracy(s) for s in self.predictions.strategies]
         return sum(accuracies) / max(len(accuracies), 1)
 
+    def record_prediction(self, tick: int, cue: str, expected: Any, confidence: float):
+        self.predictions.record("prediction", {"cue": cue, "expected": expected, "confidence": confidence}, None, True)
+        self.self_model.prediction_count += 1
+
+    def resolve_prediction(self, expected: Any, actual: Any):
+        correct = expected == actual
+        self.predictions.record("prediction", {"expected": expected}, {"actual": actual}, correct)
+        if self.self_model.prediction_count >= 10 and self.self_model.prediction_count % 10 == 0:
+            overall = sum(self.predictions.accuracy(s) for s in self.predictions.strategies)
+            n = len(self.predictions.strategies)
+            self.self_model.update_from_accuracy(overall / max(n, 1), confidence=0.6)
+
+    def get_accuracy(self) -> float:
+        return self.get_confidence()
+
+    def get_exploration_rate(self) -> float:
+        return self.self_model.exploration_tendency
+
     def to_dict(self) -> dict:
         return {
             "predictions": self.predictions.to_dict(),

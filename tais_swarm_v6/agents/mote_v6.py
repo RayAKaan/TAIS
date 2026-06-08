@@ -100,7 +100,10 @@ class MoteV6:
         if self.state.heat > 50 or self.state.toxicity > 30:
             urgency = 0.6
 
-        strategy = self.metacog.select_strategy(tick, strategies, urgency)
+        if self.metacog is not None:
+            strategy = self.metacog.select_strategy(tick, strategies, urgency)
+        else:
+            strategy = random.choice(strategies)
 
         if strategy == "forage_food":
             return "FOOD"
@@ -142,7 +145,7 @@ class MoteV6:
             fitness=self.state.vitality,
             energy=self.state.energy,
             tick=tick,
-            confidence=self.metacog.get_confidence(),
+            confidence=self.metacog.get_confidence() if self.metacog is not None else 0.5,
         )
         self._last_utterance = utt
         return utt
@@ -182,14 +185,16 @@ class MoteV6:
 
     def act_on_inbox(self, sensed: dict, tick: int):
         for utt in self.inbox:
-            self.causal.record_no_action(tick, utt.intended_concept, True)
-            self.metacog.record_outcome(
-                "listen",
-                prediction={"speaker": utt.speaker_id, "concept": utt.intended_concept},
-                outcome={"heard": True},
-                correct=True,
-                tick=tick,
-            )
+            if self.causal is not None:
+                self.causal.record_no_action(tick, utt.intended_concept, True)
+            if self.metacog is not None:
+                self.metacog.record_outcome(
+                    "listen",
+                    prediction={"speaker": utt.speaker_id, "concept": utt.intended_concept},
+                    outcome={"heard": True},
+                    correct=True,
+                    tick=tick,
+                )
         self.inbox.clear()
 
     def update_from_outcome(self, action: str, sensed_before: dict, sensed_after: dict, tick: int):
@@ -204,16 +209,17 @@ class MoteV6:
         elif action == "explore":
             positive = sensed_after.get("food", 0) > sensed_before.get("food", 0)
 
-        if action != "NO_ACTION":
+        if self.causal is not None and action != "NO_ACTION":
             self.causal.record_action(tick, action, action, positive)
 
-        self.metacog.record_outcome(
-            action,
-            prediction={"expected_energy_change": sensed_after.get("food", 0) - sensed_before.get("food", 0)},
-            outcome={"energy_change": 0},
-            correct=positive,
-            tick=tick,
-        )
+        if self.metacog is not None:
+            self.metacog.record_outcome(
+                action,
+                prediction={"expected_energy_change": sensed_after.get("food", 0) - sensed_before.get("food", 0)},
+                outcome={"energy_change": 0},
+                correct=positive,
+                tick=tick,
+            )
 
     def _act(self, intent: str, sensed: dict) -> Tuple[str, float, float]:
         dd = 1.0
@@ -238,7 +244,7 @@ class MoteV6:
             return ("rest", 0.0, 0.0)
 
     def explore(self) -> Tuple[float, float]:
-        tendency = self.metacog.self_model.exploration_tendency
+        tendency = self.metacog.self_model.exploration_tendency if self.metacog is not None else 0.3
         if random.random() < tendency:
             angle = random.uniform(0, 2 * math.pi)
             dist = random.uniform(0.5, 2.0)
@@ -271,19 +277,28 @@ class MoteV6:
         child.vocab = list(self.vocab)
         child.inbox = []
 
-        child.metacog = MetacognitiveEngine()
-        child.metacog.self_model.learning_speed = self.metacog.self_model.learning_speed
-        child.metacog.self_model.exploration_tendency = self.metacog.self_model.exploration_tendency
-        child.metacog.self_model.memory_reliability = self.metacog.self_model.memory_reliability
+        if self.metacog is not None:
+            child.metacog = MetacognitiveEngine()
+            child.metacog.self_model.learning_speed = self.metacog.self_model.learning_speed
+            child.metacog.self_model.exploration_tendency = self.metacog.self_model.exploration_tendency
+            child.metacog.self_model.memory_reliability = self.metacog.self_model.memory_reliability
+        else:
+            child.metacog = None
 
-        child.planner = HierarchicalPlanner()
-        for goal, plans in self.planner._plan_library.items():
-            child.planner._plan_library[goal] = list(plans)
+        if self.planner is not None:
+            child.planner = HierarchicalPlanner()
+            for goal, plans in self.planner._plan_library.items():
+                child.planner._plan_library[goal] = list(plans)
+        else:
+            child.planner = None
 
-        child.causal = CausalReasoningEngine()
-        for out, link in self.causal._links.items():
-            if link.confidence > 0.3:
-                child.causal._links[out] = link
+        if self.causal is not None:
+            child.causal = CausalReasoningEngine()
+            for out, link in self.causal._links.items():
+                if link.confidence > 0.3:
+                    child.causal._links[out] = link
+        else:
+            child.causal = None
 
         child._in_shelter = False
         child._last_utterance = None
@@ -343,6 +358,7 @@ class MoteV6:
         }
 
     def to_dict(self) -> dict:
+        last_utt = self._last_utterance
         return {
             "id": self.id,
             "x": round(self.x, 2),
@@ -350,6 +366,7 @@ class MoteV6:
             "age": self.age,
             "alive": self.alive,
             "parent_id": self.parent_id,
+            "energy": round(self.state.energy, 2),
             "state": {
                 "energy": round(self.state.energy, 2),
                 "hydration": round(self.state.hydration, 2),
@@ -358,7 +375,15 @@ class MoteV6:
                 "vitality": round(self.state.vitality, 2),
             },
             "in_shelter": self._in_shelter,
+            "last_utterance": " ".join(last_utt.tokens) if last_utt else None,
+            "last_utterance_tick": last_utt.tick if last_utt else None,
             "metacognition": self.metacog.to_dict(),
             "causal": self.causal.to_dict(),
             "planner": self.planner.to_dict(),
+            "trust_vector": dict(self.reputation.vectors),
+            "genome": {
+                "max_len": self.genome.max_len,
+                "rule_count": len(self.genome.rules),
+            },
+            "lexicon": {tok: {"token": tok, "concept": "UNKNOWN", "confidence": 0.0, "grounded_count": 0} for tok in self.vocab},
         }

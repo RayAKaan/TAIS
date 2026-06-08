@@ -178,6 +178,11 @@ class SwarmConfig:
     def from_json(cls, s: str) -> "SwarmConfig":
         return cls.from_dict(json.loads(s))
 
+    @classmethod
+    def from_file(cls, path: str) -> "SwarmConfig":
+        with open(path) as f:
+            return cls.from_json(f.read())
+
 
 CONFIG_PRESETS = {
     "standard": SwarmConfig(),

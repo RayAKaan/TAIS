@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tais"
-version = "5.5.0"
-description = "TAIS — Thought-Assisted Intelligence System. No LLM, no codebook: a universal RealityGraph substrate with thermodynamic motes, grounded speech, and cross-domain role transfer."
+version = "6.0.0"
+description = "TAIS — Substrate-native swarm with metacognition, causal reasoning, and hierarchical planning. No LLM, no codebook."
 readme = "README.md"
 requires-python = ">=3.10"
 license = {file = "LICENSE"}
 authors = [{name = "RayAKaan and TAIS contributors"}]
-keywords = ["agents", "multi-agent", "emergent-communication", "transfer-learning", "graph-substrate"]
+keywords = ["agents", "multi-agent", "emergent-communication", "metacognition", "causal-reasoning", "planning"]
 classifiers = [
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
@@ -24,17 +24,30 @@ classifiers = [
 dependencies = [
   "Flask>=3.0.0,<4.0.0",
   "flask-cors>=4.0.0,<5.0.0",
+  "numpy>=1.24,<3.0",
+  "scipy>=1.10,<2.0",
+  "matplotlib>=3.7,<5.0",
+  "tqdm>=4.65,<5.0",
 ]
 
 [project.optional-dependencies]
 dev = [
   "pytest>=7.4",
 ]
+server = [
+  "fastapi>=0.104,<1.0",
+  "uvicorn[standard]>=0.24,<1.0",
+  "websockets>=12.0,<14.0",
+  "pydantic>=2.0,<3.0",
+]
+
+[project.scripts]
+tais-v6 = "cli:main"
 
 [project.urls]
 Homepage = "https://github.com/RayAKaan/TAIS"
 Issues = "https://github.com/RayAKaan/TAIS/issues"
 
 [tool.setuptools.packages.find]
-include = ["tais_core*", "experiments*"]
+include = ["tais_core*", "tais_swarm_v6*", "experiments*"]
 exclude = ["tests*", "archive*", "colonies*", "results*", "runs*", "src*"]
