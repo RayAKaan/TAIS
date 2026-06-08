@@ -15,6 +15,9 @@ from .reality import (
 from .memory import MoteMemory, CulturalMemory, Episode, PatternMemory, PredictionEngine
 from .speech import SpeechOrgan, Lexicon, Utterance, SpeechGenome
 from .mote import UniversalMote, MetaGenes
+from .metacognition import MetacognitiveEngine, SelfModel, PredictionTracker
+from .causal import CausalReasoningEngine, CausalLink, Counterfactual
+from .planning import HierarchicalPlanner, Plan, PlanStep
 from .domains import GridGraphWorld, SequenceWorld, RuleWorld
 
 __all__ = [
@@ -39,6 +42,15 @@ __all__ = [
     "SpeechGenome",
     "UniversalMote",
     "MetaGenes",
+    "MetacognitiveEngine",
+    "SelfModel",
+    "PredictionTracker",
+    "CausalReasoningEngine",
+    "CausalLink",
+    "Counterfactual",
+    "HierarchicalPlanner",
+    "Plan",
+    "PlanStep",
     "GridGraphWorld",
     "SequenceWorld",
     "RuleWorld",
