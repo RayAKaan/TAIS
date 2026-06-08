@@ -26,6 +26,9 @@ from typing import Any, Dict, List, Optional, Tuple
 from .memory import MoteMemory
 from .reality import Consequence, RealityGraph, Transformation, WorldInterface
 from .speech import SpeechOrgan
+from .metacognition import MetacognitiveEngine
+from .causal import CausalReasoningEngine
+from .planning import HierarchicalPlanner
 
 
 @dataclass
@@ -78,6 +81,25 @@ class UniversalMote:
         self.transfer_prior_incorrect = 0
         self._last_chosen_transfer_boost = 0.0
         self.domain_action_counts: Dict[str, int] = {}
+
+        # ── Cognitive engines (None = ablation mode, mote works as before) ──
+        self.metacog: Optional[MetacognitiveEngine] = None
+        self.causal: Optional[CausalReasoningEngine] = None
+        self.planner: Optional[HierarchicalPlanner] = None
+
+    def enable_cognitive_engines(
+        self,
+        metacognition: bool = True,
+        causal_reasoning: bool = True,
+        hierarchical_planning: bool = True,
+    ):
+        """Activate cognitive engines. Call after construction."""
+        if metacognition:
+            self.metacog = MetacognitiveEngine()
+        if causal_reasoning:
+            self.causal = CausalReasoningEngine()
+        if hierarchical_planning:
+            self.planner = HierarchicalPlanner()
 
     def state(self, **extra) -> Dict[str, Any]:
         base = {
@@ -134,8 +156,18 @@ class UniversalMote:
         if not actions:
             return None
 
-        # Explore if the memory says uncertainty is high or curiosity fires.
-        if self.memory.should_explore(actions, curiosity=self.meta.curiosity):
+        # ── Metacognitive exploration modulation ──
+        # If metacog is active and confidence is low, boost exploration.
+        # If confidence is high, suppress unnecessary exploration.
+        explore = self.memory.should_explore(actions, curiosity=self.meta.curiosity)
+        if self.metacog is not None:
+            confidence = self.metacog.get_confidence()
+            explore_rate = self.metacog.get_exploration_rate()
+            if confidence < 0.3 and random.random() < explore_rate:
+                explore = True
+            elif confidence > 0.7 and explore and random.random() > explore_rate:
+                explore = False
+        if explore:
             return random.choice(actions)
 
         transfer_boosts, transfer_used = self.memory.transfer_action_priors(observation, actions)
@@ -197,6 +229,32 @@ class UniversalMote:
         self.last_prediction = predicted
         new_graph, cons = world.act(graph, action, mote_state)
         action_role = self.classify_action_role(action, world, graph, new_graph, cons, mote_state, predicted)
+
+        # ── Cognitive engine updates (None-safe) ──────────────────────
+        # Causal: record action→outcome
+        if self.causal is not None:
+            positive = cons.net > 0
+            outcome_concept = list(cons.concept_signals.keys())[0] if cons.concept_signals else "unknown"
+            self.causal.record_action(tick, action.name, outcome_concept, positive)
+
+        # Metacognitive: record prediction accuracy
+        if self.metacog is not None:
+            pred_correct = abs(predicted - cons.net) < 1.0
+            self.metacog.record_outcome(
+                strategy=action_role,
+                prediction={"expected": predicted, "action": action.name},
+                outcome={"actual": cons.net, "role": action_role},
+                correct=pred_correct,
+                tick=tick,
+            )
+
+        # Planner: advance on success, rollback on failure
+        if self.planner is not None and self.planner.active_plan is not None:
+            if cons.net > 0:
+                self.planner.advance_step()
+            elif cons.net < -0.5:
+                self.planner.rollback()
+
         action_cost = action.compute_cost(observation, mote_state)
         self.energy += cons.net - action_cost
         self.total_reward += cons.reward
@@ -233,13 +291,21 @@ class UniversalMote:
         child = UniversalMote(energy=self.energy, parent_id=self.id)
         child.meta = self.meta.mutate()
         child.speech = self.speech.spawn_child(child.id)
+        # Cognitive engines: children inherit self-model parameters but get fresh trackers
+        if self.metacog is not None:
+            child.enable_cognitive_engines(metacognition=True, causal_reasoning=False, hierarchical_planning=False)
+            child.metacog.self_model.learning_speed = self.metacog.self_model.learning_speed
+            child.metacog.self_model.exploration_tendency = self.metacog.self_model.exploration_tendency
+            child.metacog.self_model.memory_reliability = self.metacog.self_model.memory_reliability
+        # Causal and planner are NOT inherited — child must learn its own causal model.
+        # This is intentional: inherited causal beliefs would be domain-specific.
         # Pattern/episodic memory is not copied wholesale. The child receives
         # speech priors genetically; cultural memory is a separate mechanism.
         return child
 
     def metrics(self) -> Dict[str, Any]:
         mean_pred = self.memory.prediction.mean_error()
-        return {
+        result = {
             "id": self.id,
             "energy": round(self.energy, 3),
             "age": self.age,
@@ -259,3 +325,15 @@ class UniversalMote:
             "speech": self.speech.stats(),
             "domains": sorted(set(self.domain_history)),
         }
+
+        # ── Cognitive engine metrics ──
+        if self.metacog is not None:
+            result["metacog_confidence"] = round(self.metacog.get_confidence(), 3)
+            result["metacog_exploration_rate"] = round(self.metacog.get_exploration_rate(), 3)
+        if self.causal is not None:
+            result["causal_links_count"] = len(self.causal.links)
+            result["causal_is_causal_count"] = sum(1 for l in self.causal.links.values() if l.is_causal)
+        if self.planner is not None:
+            result["planner_active"] = self.planner.active_plan is not None
+            result["planner_library_size"] = sum(len(plans) for plans in self.planner._plan_library.values())
+        return result
