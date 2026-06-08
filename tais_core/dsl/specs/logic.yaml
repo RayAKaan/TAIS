@@ -1,0 +1,39 @@
+name: LogicWorld
+domain_name: logic
+version: 1.0
+description: Builtin-backed LogicWorld easy spec.
+
+backend:
+  world_class: tais_core.domains.logic.LogicWorld
+  graph_factory: tais_core.domains.logic.make_logic_graph_easy
+
+entities:
+  VARIABLE:
+    attributes: [name, value]
+  CLAUSE:
+    attributes: [satisfied]
+  ASSIGNMENT:
+    attributes: [solved]
+  TARGET:
+    attributes: [goal]
+
+relations:
+  CONTAINS:
+    src: CLAUSE
+    tgt: VARIABLE
+  ASSIGNS:
+    src: ASSIGNMENT
+    tgt: VARIABLE
+  SATISFIES:
+    src: VARIABLE
+    tgt: CLAUSE
+
+action_roles:
+  APPROACH_GOOD: assert_literal
+  VERIFY_UNCERTAIN: check_consistency
+  AVOID_BAD: random_assert
+
+world_defaults:
+  energy: 100
+  horizon: 30
+  step_cost: 0.2

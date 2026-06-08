@@ -1,0 +1,36 @@
+name: GridWorld
+domain_name: grid
+version: 1.0
+description: Builtin-backed GridGraphWorld spec.
+
+backend:
+  world_class: tais_core.domains.gridworld.GridGraphWorld
+  graph_factory: tais_core.domains.gridworld.make_grid_graph
+  graph_factory_kwargs:
+    threat_near_resource: true
+
+entities:
+  AGENT:
+    attributes: [x, y]
+  RESOURCE:
+    attributes: [kind, value]
+  THREAT:
+    attributes: [kind, danger]
+
+relations:
+  SEES:
+    src: AGENT
+    tgt: "*"
+  NEAR:
+    src: THREAT
+    tgt: RESOURCE
+
+action_roles:
+  APPROACH_GOOD: approach_resource
+  AVOID_BAD: avoid_threat
+  VERIFY_UNCERTAIN: verify_safety
+
+world_defaults:
+  energy: 100
+  horizon: 30
+  step_cost: 0.2
