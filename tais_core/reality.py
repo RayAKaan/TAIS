@@ -250,7 +250,7 @@ class Consequence:
         None            — no task-relevance signal (default)
     Runners and benchmark scripts can read this without having to special-case
     action names per domain. This was added so that strict metrics such as
-    `first_apply_implication_tick` become domain-blind: the runner just watches
+    `first_apply_implication_tick` become domain-agnostic: the runner just watches
     for the first `TASK_SUCCESS`.
     """
 

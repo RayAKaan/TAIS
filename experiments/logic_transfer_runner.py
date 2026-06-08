@@ -9,7 +9,7 @@ Conditions:
     no_action_role
     no_prior_decay
     no_pattern_transfer
-    no_prediction
+    no_prediction       - predict_action zeroed; affects should_explore() gating only, not action scoring
     empty_pretrain      - 20 ticks EmptyNovelWorld -> Logic
     random_pretrain     - 20 ticks RandomWorld -> Logic
     logic_pretrain      - 20 ticks LogicWorld -> Logic (same-domain ceiling)

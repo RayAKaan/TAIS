@@ -290,7 +290,7 @@ class PatternMemory:
                     if action.universal_op in pattern.failed_action_ops:
                         boosts[action.name] -= base * 0.50
                     # Generic safety bias for bad/danger patterns. This remains
-                    # domain-blind: it boosts universal verification/caution roles.
+                    # domain-agnostic: it boosts universal verification/caution roles.
                     if target_role in {"VERIFY_UNCERTAIN", "AVOID_BAD"}:
                         boosts[action.name] += base * 0.30
                     if target_role in {"EXPLORE_UNCERTAIN"}:

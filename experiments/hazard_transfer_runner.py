@@ -18,7 +18,7 @@ Conditions:
     no_action_role      - role classification -> UNCLASSIFIED
     no_prior_decay      - hide domain_action_counts during choose_action
     no_pattern_transfer - transfer_action_priors -> zero
-    no_prediction       - predict_action -> 0
+    no_prediction       - predict_action zeroed; affects should_explore() gating only, not action scoring
     empty_pretrain      - 20 ticks EmptyNovelWorld -> Hazard
     random_pretrain     - 20 ticks RandomWorld -> Hazard
     hazard_pretrain     - 20 ticks Hazard -> Hazard (same-domain upper bound)

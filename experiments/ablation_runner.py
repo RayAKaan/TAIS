@@ -17,7 +17,7 @@ Conditions:
     no_action_role      — role classification returns UNCLASSIFIED, leaving op fallback only
     no_prior_decay      — local domain counts hidden during choose_action, so transfer priors do not decay
     no_pattern_transfer — transfer_action_priors returns zero boosts
-    no_prediction       — predict_action returns 0.0
+    no_prediction       — predict_action zeroed; affects should_explore() gating only, not action scoring
 
 Controls:
     empty_pretrain      — 20 ticks in EmptyNovelWorld before RuleWorld

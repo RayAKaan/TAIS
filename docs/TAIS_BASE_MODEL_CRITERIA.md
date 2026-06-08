@@ -381,7 +381,7 @@ The base breakthrough is conceptual stability, not perfect implementation.
 TAIS becomes a base model when:
 
 ```text
-A thermodynamic, epistemic, speech-capable mote can enter any typed RealityGraph,
+An energy-budgeted, epistemic, speech-capable mote can enter any typed RealityGraph,
 observe a local subgraph, choose universal transformations, predict consequences,
 learn from validity/reward/error, communicate patterns to other motes, repair
 misunderstanding, preserve useful patterns, and transfer strategies across domains
