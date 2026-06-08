@@ -306,7 +306,14 @@ class ExperimentResult:
 
 
 def run_grid_pretrain(mote: UniversalMote, ticks: int, seed: int, mixed: bool = True):
-    random.seed(seed)
+    # Phase 1.6: do NOT re-seed inside the pretrain helper. The outer
+    # run_trial() already calls random.seed(seed) once before constructing the
+    # mote; re-seeding here after construction causes the pretraining
+    # trajectory to consume the same RNG sequence that just built the mote's
+    # lexicon (~30 numbers from Lexicon + SpeechGenome init). That correlation
+    # between mote identity and pretraining decisions suppressed the measured
+    # transfer effect by ~0.8 ticks (42%) relative to the cleaner sweep.
+    # The `seed` parameter is kept in the signature for callsite stability.
     world = GridGraphWorld()
     graph = make_grid_graph(threat_near_resource=True)
     for t in range(ticks):
@@ -327,6 +334,10 @@ def run_empty_pretrain(mote: UniversalMote, ticks: int):
 
 
 def run_random_pretrain(mote: UniversalMote, ticks: int, seed: int):
+    # Phase 1.6: RandomWorld owns its own RNG (seeded once at construction),
+    # so the pretrain helper no longer reseeds the global RNG. Same reason
+    # as run_grid_pretrain above. The world's per-action randomness is
+    # decoupled from the mote's choose_action RNG.
     world = RandomWorld(seed=seed)
     graph = make_control_graph("random_noise")
     for t in range(ticks):
