@@ -393,10 +393,98 @@ class HazardGraphWorld(WorldInterface):
         return ["GOOD", "BAD", "DANGER", "SAFE", "RESOURCE", "CONFIRM", "VOID"]
 
 
+class HazardGraphWorldLarge(HazardGraphWorld):
+    """Large hazard navigation variant; use with ``make_hazard_graph_large``."""
+    domain_name = "hazard_large"
+
+
+def _random_connected_topology(rng: random.Random, n_nodes: int) -> List[Tuple[str, str]]:
+    """Generate a random connected undirected graph on integer-labeled nodes.
+
+    Guarantees connectivity by first building a random spanning tree (each new
+    node attached to an existing one), then adding extra edges up to ~1.5x
+    tree density.
+    """
+    nodes = [f"N{i}" for i in range(n_nodes)]
+    edges: List[Tuple[str, str]] = []
+
+    connected = [nodes[0]]
+    remaining = nodes[1:]
+    rng.shuffle(remaining)
+
+    for node in remaining:
+        parent = rng.choice(connected)
+        edges.append((parent, node))
+        connected.append(node)
+
+    extra = rng.randint(0, max(1, n_nodes // 2))
+    for _ in range(extra):
+        a = rng.choice(nodes)
+        b = rng.choice(nodes)
+        if a != b and (a, b) not in edges and (b, a) not in edges:
+            edges.append((a, b))
+
+    return edges
+
+
+def make_hazard_graph_large(seed: int = 0, n_nodes: int = 15, hazard_density: float = 0.2) -> RealityGraph:
+    """Generates a larger hazard navigation graph. Deterministic from seed.
+
+    Construction:
+      1. Generate a random connected topology of *n_nodes* NODE entities.
+      2. Pick the first node as start (S), last node as exit (E).
+      3. Assign ~n_nodes * hazard_density nodes as HAZARD_NODE.
+      4. Place 2-3 RESOURCE_NODE entities along the path.
+      5. Mark NEAR_HAZARD edges for hazard neighbors.
+
+    Compatible with existing HazardGraphWorld.act() — same entity types, actions.
+    """
+    rng = random.Random(seed)
+
+    raw_edges = _random_connected_topology(rng, n_nodes)
+    all_ids = sorted(set(e[0] for e in raw_edges) | set(e[1] for e in raw_edges))
+    rng.shuffle(all_ids)
+
+    start_id = "S"
+    exit_id = "E"
+    node_ids = [start_id] + all_ids[:n_nodes - 2] + [exit_id]
+
+    n_hazards = max(1, int(n_nodes * hazard_density))
+    hazard_ids = set(rng.sample(node_ids[1:-1], min(n_hazards, n_nodes - 2)))
+    n_resources = rng.randint(2, 3)
+    resource_candidates = [n for n in node_ids[1:-1] if n not in hazard_ids]
+    resource_ids = set(rng.sample(resource_candidates, min(n_resources, len(resource_candidates))))
+
+    g = RealityGraph("hazard", "hazard_large")
+    for nid in node_ids:
+        if nid == exit_id:
+            _add_node(g, nid, "EXIT_NODE")
+        elif nid in hazard_ids:
+            _add_node(g, nid, "HAZARD_NODE", danger=1.0)
+        elif nid in resource_ids:
+            _add_node(g, nid, "RESOURCE_NODE")
+        else:
+            _add_node(g, nid, "NODE")
+    _add_node(g, "agent", "AGENT")
+    g.add_relation(Relation("agent", "AT", start_id))
+
+    edge_map: Dict[str, set] = {n: set() for n in node_ids}
+    for a, b in raw_edges:
+        if a in edge_map and b in edge_map:
+            _connect(g, a, b)
+            edge_map[a].add(b)
+            edge_map[b].add(a)
+
+    _mark_near_hazards(g)
+    _add_target(g, exit_id)
+    return g
+
+
 __all__ = [
-    "HazardGraphWorld",
+    "HazardGraphWorld", "HazardGraphWorldLarge",
     "make_hazard_graph_easy",
     "make_hazard_graph_distractor",
+    "make_hazard_graph_large",
     "EXIT_REWARD_FIRST",
     "EXIT_REWARD_REPEAT",
     "HAZARD_PENALTY",

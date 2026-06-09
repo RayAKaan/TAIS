@@ -198,7 +198,7 @@ See `docs/PHASE_R2_ROLE_ONTOLOGY_ROBUSTNESS_REPORT.md` for full details.
 ## Phase R3 Addendum — Baseline Agents Comparison
 
 **Date:** 2026-06-09  
-**Commit:** TBD  
+**Commit:** `c9e51c5`  
 **Branch:** `phase-r3-baseline-agents`  
 **Tests:** 238 passed (218 prior + 20 new)
 
@@ -237,3 +237,57 @@ See `docs/PHASE_R3_BASELINE_COMPARISON_REPORT.md` for full details.
 - `experiments/phase_r/baseline_comparison.py` — runner
 - `tais_core/baselines/` — baseline agent package (base.py, random_agent.py, heuristic_agent.py, tabular_q_agent.py, llm_prompt_agent.py)
 - `tests/test_baselines.py` — 20 tests
+
+---
+
+## Phase R4 Addendum — Large Domain Variants Transfer
+
+**Date:** 2026-06-09  
+**Branch:** `phase-r4-large-domain-variants`  
+**Tests:** 261 passed (238 prior + 18 large domain + 5 runner)
+
+### Motivation
+
+All prior TAIS experiments use small synthetic domains (LogicWorld: 3 vars, 3 clauses;
+HazardWorld: 6 nodes; RuleWorld: 3-step chain). Phase R4 tests whether TAIS
+role-transfer survives on larger versions (LogicWorldLarge: 6 vars, 12 clauses;
+HazardGraphWorldLarge: 15 nodes; RuleWorldChainLong: 5-step chain).
+
+### Design
+
+3 target domains × 5 conditions paired experiment (seeds=100, pretrain=20, eval=30).
+
+### Impact on Paper Claims
+
+**Transfer survives to larger domains but with caveats:**
+
+1. **Same-domain pretrain helps strongly on logic_large** (92% completion vs 77%
+   fresh, d=+0.404, p=0.002) and **reduces hazard_large failure rate** (5.61 vs
+   7.70 hazard steps, d=−0.620, p<0.001). But **fails on rules_chain_long** (12%
+   same as fresh) — the 20-tick pretrain budget is insufficient.
+
+2. **Cross-domain Grid→Logic_large produces negative transfer** (49% completion
+   vs 77% fresh, d=−0.686, p<0.001). This is the first clear negative transfer
+   result in TAIS and bounds the Grid→Logic claim.
+
+3. **Three-domain pretrain is the strongest cross-domain condition for
+   rules_chain_long** (54% completion, d=+0.713, p<0.001), extending the
+   diversity-benefit evidence from Phase F2.
+
+**Ruling:** Phase R4 extends the empirical scope but does not change core paper
+claims. The negative Grid→Logic_large result is a boundary condition worth noting.
+The three_domain→rules_chain_long result supports the diversity-benefit narrative.
+
+See `docs/PHASE_R4_LARGE_DOMAIN_TRANSFER_REPORT.md` for full details.
+
+### Artifacts
+
+- `docs/PHASE_R4_LARGE_DOMAIN_TRANSFER_REPORT.md` — full report
+- `results/phase_r/large_domain_transfer/large_domain_transfer.{txt,csv,json,md}` — data
+- `experiments/phase_r/large_domain_transfer.py` — runner
+- `tais_core/domains/logic.py` — `LogicWorldLarge`, `make_logic_graph_large()`
+- `tais_core/domains/hazard.py` — `HazardGraphWorldLarge`, `make_hazard_graph_large()`
+- `tais_core/domains/rules.py` — `RuleWorldChainLong`, `make_rule_graph_chain_long()`
+- `tais_core/dsl/specs/{logic_large,hazard_large,rules_chain_long}.yaml` — DSL specs
+- `tests/test_large_domains.py` — 18 domain tests
+- `tests/test_large_domain_transfer_runner.py` — 5 runner tests

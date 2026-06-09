@@ -1,0 +1,39 @@
+name: RuleWorldChainLong
+domain_name: rules_chain_long
+version: 1.0
+description: Builtin-backed RuleWorldChainLong spec (length 5 chain).
+
+backend:
+  world_class: tais_core.domains.rules.RuleWorldChainLong
+  graph_factory: tais_core.domains.rules.make_rule_graph_chain_long
+  graph_factory_kwargs:
+    length: 5
+
+entities:
+  FACT:
+    attributes: [truth, derived]
+  RULE:
+    attributes: [kind]
+  TARGET:
+    attributes: [derive_id]
+
+relations:
+  SATISFIES:
+    src: FACT
+    tgt: RULE
+  IMPLIES:
+    src: RULE
+    tgt: FACT
+  SUPPORTS:
+    src: FACT
+    tgt: FACT
+
+action_roles:
+  APPROACH_GOOD: apply_implication
+  VERIFY_UNCERTAIN: verify_rule
+  AVOID_BAD: random_assert
+
+world_defaults:
+  energy: 100
+  horizon: 30
+  step_cost: 0.2

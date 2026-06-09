@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-09T13:39:01.437716+00:00",
-  "commit": "3c41338a1d0d13bde79d0271d4e0986a28bb82fd",
+  "generated_at": "2026-06-09T14:34:44.049362+00:00",
+  "commit": "c9e51c538b058b05a22a4e9cce138962b5099f7f",
   "results": [
     {
       "id": "legacy_grid_logic",
@@ -602,6 +602,26 @@
           "d": "0.378013"
         }
       ]
+    },
+    {
+      "id": "phase_r3_baseline_comparison",
+      "phase": "Phase R3",
+      "runner": "experiments/phase_r/baseline_comparison.py",
+      "artifact": "results/phase_r/baseline_comparison/baseline_comparison.csv",
+      "exists": true,
+      "paper_status": "include_as_limitation",
+      "notes": "HeuristicAgent and TabularQAgent outperform TAIS on Grid->Logic evaluation.",
+      "key_metrics": []
+    },
+    {
+      "id": "phase_r4_large_domain_transfer",
+      "phase": "Phase R4",
+      "runner": "experiments/phase_r/large_domain_transfer.py",
+      "artifact": "results/phase_r/large_domain_transfer/large_domain_transfer.json",
+      "exists": true,
+      "paper_status": "appendix_or_future_work",
+      "notes": "Transfer survives to larger domains but Grid->Logic_large shows negative transfer.",
+      "key_metrics": []
     }
   ]
 }

@@ -148,6 +148,14 @@ KNOWN_RESULTS = [
         "paper_status": "include_as_limitation",
         "notes": "HeuristicAgent and TabularQAgent outperform TAIS on Grid->Logic evaluation.",
     },
+    {
+        "id": "phase_r4_large_domain_transfer",
+        "phase": "Phase R4",
+        "runner": "experiments/phase_r/large_domain_transfer.py",
+        "artifact": "results/phase_r/large_domain_transfer/large_domain_transfer.json",
+        "paper_status": "appendix_or_future_work",
+        "notes": "Transfer survives to larger domains but Grid->Logic_large shows negative transfer.",
+    },
 ]
 
 METRICS_TO_EXTRACT = [
