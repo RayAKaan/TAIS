@@ -23,6 +23,7 @@ import random
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 
+from .engine_policy import EnginePolicyDecision, decide_engine_usage
 from .memory import MoteMemory
 from .reality import Consequence, RealityGraph, Transformation, WorldInterface
 from .speech import SpeechOrgan
@@ -86,6 +87,10 @@ class UniversalMote:
         self.metacog: Optional[MetacognitiveEngine] = None
         self.causal: Optional[CausalReasoningEngine] = None
         self.planner: Optional[HierarchicalPlanner] = None
+
+        # ── Phase A: engine selection policy ──
+        self.use_engine_policy: bool = True
+        self._engine_policy: Optional["EnginePolicyDecision"] = None
 
     def enable_cognitive_engines(
         self,
@@ -159,8 +164,8 @@ class UniversalMote:
         # ── Metacognitive exploration modulation ──
         # If metacog is active and confidence is low, boost exploration.
         # If confidence is high, suppress unnecessary exploration.
-        explore = self.memory.should_explore(actions, curiosity=self.meta.curiosity)
-        if self.metacog is not None:
+        explore = self.memory.should_explore(actions, curiosity=self.meta.curiosity, domain=observation.domain)
+        if self.metacog is not None and (self._engine_policy is None or self._engine_policy.use_metacognition):
             confidence = self.metacog.get_confidence()
             explore_rate = self.metacog.get_exploration_rate()
             if confidence < 0.3 and random.random() < explore_rate:
@@ -230,15 +235,21 @@ class UniversalMote:
         new_graph, cons = world.act(graph, action, mote_state)
         action_role = self.classify_action_role(action, world, graph, new_graph, cons, mote_state, predicted)
 
-        # ── Cognitive engine updates (None-safe) ──────────────────────
+        # ── Phase A: engine selection policy ──
+        if self.use_engine_policy and actions:
+            self._engine_policy = decide_engine_usage(actions)
+        else:
+            self._engine_policy = None
+
+        # ── Cognitive engine updates (None-safe, policy-gated) ────────
         # Causal: record action→outcome
-        if self.causal is not None:
+        if self.causal is not None and (self._engine_policy is None or self._engine_policy.use_causal_reasoning):
             positive = cons.net > 0
             outcome_concept = list(cons.concept_signals.keys())[0] if cons.concept_signals else "unknown"
             self.causal.record_action(tick, action.name, outcome_concept, positive)
 
         # Metacognitive: record prediction accuracy
-        if self.metacog is not None:
+        if self.metacog is not None and (self._engine_policy is None or self._engine_policy.use_metacognition):
             pred_correct = abs(predicted - cons.net) < 1.0
             self.metacog.record_outcome(
                 strategy=action_role,
@@ -249,11 +260,12 @@ class UniversalMote:
             )
 
         # Planner: advance on success, rollback on failure
-        if self.planner is not None and self.planner.active_plan is not None:
-            if cons.net > 0:
-                self.planner.advance_step()
-            elif cons.net < -0.5:
-                self.planner.rollback()
+        if self.planner is not None and (self._engine_policy is None or self._engine_policy.use_planning):
+            if self.planner.active_plan is not None:
+                if cons.net > 0:
+                    self.planner.advance_step()
+                elif cons.net < -0.5:
+                    self.planner.rollback()
 
         action_cost = action.compute_cost(observation, mote_state)
         self.energy += cons.net - action_cost

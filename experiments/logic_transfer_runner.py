@@ -27,6 +27,7 @@ import csv
 import json
 import math
 import random
+import sys
 import time
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
@@ -381,13 +382,13 @@ def format_table(results, seeds, pretrain_ticks, eval_ticks):
     order = list(CONDITIONS)
     lines = []
     lines.append("=" * 122)
-    lines.append("  TAIS PHASE 5 TRANSFER — mixed GridWorld/controls/Logic → LogicWorld")
+    lines.append("  TAIS PHASE 5 TRANSFER - mixed GridWorld/controls/Logic -> LogicWorld")
     lines.append("=" * 122)
     lines.append(f"\n  Seeds: {seeds} | Pretrain ticks: {pretrain_ticks} | Eval ticks: {eval_ticks}\n")
     for key, label in METRICS:
-        lines.append(f"\n  ─── {label} ───")
+        lines.append(f"\n  --- {label} ---")
         lines.append(f"  {'Condition':<22} {'Fresh':>10} {'Pretrained':>11} {'Delta':>10} {'95% CI':>20} {'p':>10} {'d':>8}")
-        lines.append(f"  {'─'*22} {'─'*10} {'─'*11} {'─'*10} {'─'*20} {'─'*10} {'─'*8}")
+        lines.append(f"  {'-'*22} {'-'*10} {'-'*11} {'-'*10} {'-'*20} {'-'*10} {'-'*8}")
         for name in order:
             s = results[name].summary()[key]
             sig = " ***" if s["p"] < 0.001 else " **" if s["p"] < 0.01 else " *" if s["p"] < 0.05 else ""
@@ -436,8 +437,14 @@ def main():
         else:
             out = args.output
         table = format_table(results, args.seeds, args.pretrain, eval_ticks)
-        print(table)
-        print(f"\nElapsed: {elapsed:.2f}s")
+        try:
+            print(table)
+        except UnicodeEncodeError:
+            sys.stderr.buffer.write(table.encode("utf-8") + b"\n")
+        try:
+            print(f"\nElapsed: {elapsed:.2f}s")
+        except UnicodeEncodeError:
+            pass
         with open(out, "w", encoding="utf-8") as f:
             f.write(table + f"\n\nElapsed: {elapsed:.2f}s\n")
         csv_path = out.rsplit(".", 1)[0] + ".csv"
