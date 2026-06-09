@@ -8,6 +8,14 @@ TAIS is a research platform for studying domain-agnostic agents that learn and t
 
 ---
 
+## Research release
+
+Current research release: **v0.2.0-grtl-paper**
+
+This release freezes the code and artifacts for the foundational GRTL paper draft. See `REPRODUCIBILITY.md` for reproduction instructions.
+
+---
+
 ## One-line pitch
 
 TAIS is a grounded AI system where the same mote can learn, transfer, communicate, reason, run controlled experiments, load new domains from YAML, and generate publication-ready figures — without pretrained representations.
