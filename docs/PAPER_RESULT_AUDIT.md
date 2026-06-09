@@ -140,3 +140,55 @@ is the strongest positive claim.
 - `results/paper_locked/phase_a/` — Phase A calibration reports
 - `results/paper_locked/phase_d/` — Phase D experiment results
 - `results/paper_locked/phase_f2/` — Phase F2 experiment results + figures
+
+---
+
+## Phase R2 Addendum — Role-Ontology Robustness
+
+**Date:** 2026-06-09  
+**Commit:** TBD  
+**Branch:** `phase-r2-role-ontology-robustness`  
+**Tests:** 218 passed (197 prior + 21 new)
+
+### Motivation
+
+The role ontology used in TAIS role-based transfer is hand-designed.
+Phase R2 tests whether these hardcoded roles and the compatibility table
+are load-bearing — or whether the transfer benefit survives arbitrary
+corruption of the role signals.
+
+### Design
+
+7-condition paired experiment (seeds=200), GridWorld(20 ticks)→LogicWorld(15 ticks):
+
+| Condition | What is corrupted |
+|---|---|
+| `canonical_roles` | None (baseline) |
+| `shuffled_target_role_hints` | `role_hint` on LogicWorld actions permuted per seed |
+| `shuffled_target_universal_ops` | `universal_op` on LogicWorld actions permuted per seed |
+| `shuffled_source_roles` | `classify_action_role` output shuffled during GridWorld pretrain |
+| `random_compatibility` | `role_compatibility()` table replaced by uniform random values |
+| `identity_only_compatibility` | `role_compatibility()` returns 1.0 only if source==target |
+| `no_role_transfer` | `transfer_action_priors` returns all zeros |
+
+### Impact on Paper Claims
+
+**The role ontology is NOT load-bearing.**  All 5 role-corruption conditions preserve
+significant transfer (d for first_success: −0.193 to −0.441, all p<0.01 except
+no_role_transfer which blocks all priors).  Random and identity-only compatibility
+tables produce **stronger** transfer than the canonical hand-designed table
+(d=−0.388, −0.441 vs −0.328), suggesting the role system may add friction.
+
+**Ruling:** The paper should de-emphasize role-based transfer as a mechanistic
+necessity and frame roles as a diagnostic/interpretive tool instead.  If causal
+claims about role generalization enabling transfer appear in the paper, they
+must be softened with this evidence.
+
+See `docs/PHASE_R2_ROLE_ONTOLOGY_ROBUSTNESS_REPORT.md` for full details.
+
+### Artifacts
+
+- `docs/PHASE_R2_ROLE_ONTOLOGY_ROBUSTNESS_REPORT.md` — full report
+- `results/phase_r/role_ontology_robustness/report.{txt,csv,json}` — data
+- `experiments/phase_r/role_ontology_robustness.py` — runner
+- `tests/test_role_ontology_robustness.py` — 21 tests
