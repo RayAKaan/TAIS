@@ -1,0 +1,33 @@
+name: SequenceWorld
+domain_name: sequence
+version: 1.0
+description: Builtin-backed SequenceWorld spec.
+
+backend:
+  world_class: tais_core.domains.sequences.SequenceWorld
+  graph_factory: tais_core.domains.sequences.make_sequence_graph
+  graph_factory_kwargs:
+    values: [1, 2, 3]
+
+entities:
+  VALUE:
+    attributes: [index, value]
+  TARGET:
+    attributes: [next]
+
+relations:
+  NEXT:
+    src: VALUE
+    tgt: VALUE
+  DELTA:
+    src: VALUE
+    tgt: VALUE
+    attributes: [delta]
+
+action_roles:
+  PREDICT: predict_delta_0
+
+world_defaults:
+  energy: 100
+  horizon: 30
+  step_cost: 0.2
