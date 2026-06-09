@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-09T14:47:29.035643+00:00",
-  "commit": "389adc8658a20bc394da4cb2761b8abd74d50847",
+  "generated_at": "2026-06-09T15:08:52.287658+00:00",
+  "commit": "0f89c8b3b9aee082ef1a2c4f09f96368cb62f051",
   "results": [
     {
       "id": "legacy_grid_logic",
@@ -768,6 +768,16 @@
           "d": "-0.120571"
         }
       ]
+    },
+    {
+      "id": "phase_r6_learned_role_compatibility",
+      "phase": "Phase R6",
+      "runner": "experiments/phase_r/learned_role_compatibility.py",
+      "artifact": "results/phase_r/learned_role_compatibility/learned_role_compatibility.csv",
+      "exists": true,
+      "paper_status": "future_work_or_limitations",
+      "notes": "Learned compatibility partially recovers transfer on logic (d=-0.378) but neutral on rules/hazard. Hand-coded table still competitive.",
+      "key_metrics": []
     }
   ]
 }
