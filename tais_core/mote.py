@@ -83,6 +83,11 @@ class UniversalMote:
         self._last_chosen_transfer_boost = 0.0
         self.domain_action_counts: Dict[str, int] = {}
 
+        # ── Phase R5: prediction gating (opt-in, default preserves legacy behavior) ──
+        self.use_prediction_in_score: bool = False
+        self.prediction_score_weight: float = 0.25
+        self.prediction_min_domain_observations: int = 0
+
         # ── Cognitive engines (None = ablation mode, mote works as before) ──
         self.metacog: Optional[MetacognitiveEngine] = None
         self.causal: Optional[CausalReasoningEngine] = None
@@ -201,6 +206,10 @@ class UniversalMote:
             cost = action.compute_cost(observation, self.state())
             transfer = effective_analogy_weight * transfer_boosts.get(action.name, 0.0)
             score = historical + transfer - cost - self.meta.skepticism * risk
+            if self.use_prediction_in_score:
+                n = self.memory.prediction.domain_observation_count(observation.domain)
+                if n >= self.prediction_min_domain_observations:
+                    score += self.prediction_score_weight * self.memory.predict_action(action, observation)
             if score > best_score:
                 best_score = score
                 best_action = action

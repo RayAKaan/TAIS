@@ -1,0 +1,1621 @@
+{
+  "logic": {
+    "no_prediction": {
+      "condition": "logic/no_prediction",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 9.815,
+        "std": 6.433328,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.53,
+        "std": 0.500352,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 1.0,
+        "std": 0.89105,
+        "n": 200
+      },
+      "reward": {
+        "mean": 2.8888,
+        "std": 2.246166,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 1.615,
+        "std": 1.214144,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 136.9763,
+        "std": 11.966362,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.311087,
+        "std": 0.168917,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 24.98,
+        "std": 5.455125,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 31.42289,
+        "std": 19.313645,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.850054,
+        "std": 0.096938,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 200
+      }
+    },
+    "prediction_disabled_current": {
+      "condition": "logic/prediction_disabled_current",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 9.775,
+        "std": 6.425794,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.53,
+        "std": 0.500352,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 1.09,
+        "std": 0.993395,
+        "n": 200
+      },
+      "reward": {
+        "mean": 2.88215,
+        "std": 2.222988,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 1.675,
+        "std": 1.27574,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 140.28215,
+        "std": 13.50392,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.404188,
+        "std": 0.289545,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 24.45,
+        "std": 6.066425,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 32.241537,
+        "std": 19.101166,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.842078,
+        "std": 0.110156,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 200
+      }
+    },
+    "prediction_k0_w025": {
+      "condition": "logic/prediction_k0_w025",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 9.345,
+        "std": 6.328207,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.58,
+        "std": 0.494797,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 1.085,
+        "std": 1.001394,
+        "n": 200
+      },
+      "reward": {
+        "mean": 3.0974,
+        "std": 2.202896,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 1.695,
+        "std": 1.296294,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 140.0284,
+        "std": 13.113575,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.432149,
+        "std": 0.281948,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 24.665,
+        "std": 5.981779,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 33.017937,
+        "std": 18.515307,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.84156,
+        "std": 0.112062,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 200
+      }
+    },
+    "prediction_k3_w025": {
+      "condition": "logic/prediction_k3_w025",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 9.355,
+        "std": 6.31891,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.58,
+        "std": 0.494797,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 1.08,
+        "std": 1.004312,
+        "n": 200
+      },
+      "reward": {
+        "mean": 3.09705,
+        "std": 2.202602,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 1.69,
+        "std": 1.29704,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 140.03505,
+        "std": 13.112818,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.431627,
+        "std": 0.28155,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 24.66,
+        "std": 5.983596,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 32.997937,
+        "std": 18.508747,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.842298,
+        "std": 0.112178,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 200
+      }
+    },
+    "prediction_k5_w025": {
+      "condition": "logic/prediction_k5_w025",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 9.51,
+        "std": 6.308636,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.575,
+        "std": 0.495584,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 1.1,
+        "std": 1.022363,
+        "n": 200
+      },
+      "reward": {
+        "mean": 3.07415,
+        "std": 2.203826,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 1.7,
+        "std": 1.303262,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 140.01765,
+        "std": 13.158109,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.428069,
+        "std": 0.281436,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 24.595,
+        "std": 6.067541,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 32.660554,
+        "std": 18.654026,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.842662,
+        "std": 0.111514,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 200
+      }
+    },
+    "prediction_k10_w025": {
+      "condition": "logic/prediction_k10_w025",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 9.66,
+        "std": 6.327288,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.57,
+        "std": 0.496318,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 1.095,
+        "std": 1.010485,
+        "n": 200
+      },
+      "reward": {
+        "mean": 3.0589,
+        "std": 2.203015,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 1.68,
+        "std": 1.28681,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 140.0324,
+        "std": 13.153097,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.423954,
+        "std": 0.280645,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 24.53,
+        "std": 6.049137,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 32.279146,
+        "std": 18.856159,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.843113,
+        "std": 0.111387,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 200
+      }
+    },
+    "prediction_k3_w05": {
+      "condition": "logic/prediction_k3_w05",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 8.445,
+        "std": 5.927279,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.685,
+        "std": 0.465682,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 1.075,
+        "std": 0.987039,
+        "n": 200
+      },
+      "reward": {
+        "mean": 3.53165,
+        "std": 2.111949,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 1.695,
+        "std": 1.304024,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 140.13965,
+        "std": 13.280662,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.485779,
+        "std": 0.260204,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 25.18,
+        "std": 6.038203,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 35.204574,
+        "std": 17.870453,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.841269,
+        "std": 0.112153,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 200
+      }
+    },
+    "prediction_k5_w05": {
+      "condition": "logic/prediction_k5_w05",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 8.575,
+        "std": 5.908377,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.68,
+        "std": 0.467647,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 1.095,
+        "std": 1.0055,
+        "n": 200
+      },
+      "reward": {
+        "mean": 3.50935,
+        "std": 2.118469,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 1.7,
+        "std": 1.314779,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 140.12085,
+        "std": 13.324989,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.483841,
+        "std": 0.260579,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 25.11,
+        "std": 6.122526,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 34.883207,
+        "std": 18.016103,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.842486,
+        "std": 0.111655,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 200
+      }
+    },
+    "prediction_k10_w05": {
+      "condition": "logic/prediction_k10_w05",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 9.29,
+        "std": 6.07457,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.65,
+        "std": 0.478167,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 1.1,
+        "std": 1.012485,
+        "n": 200
+      },
+      "reward": {
+        "mean": 3.39045,
+        "std": 2.145646,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 1.69,
+        "std": 1.285364,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 140.08945,
+        "std": 13.228575,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.463019,
+        "std": 0.261154,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 24.71,
+        "std": 6.100984,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 33.071593,
+        "std": 18.610741,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.842943,
+        "std": 0.111475,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 200
+      }
+    }
+  },
+  "rules": {
+    "no_prediction": {
+      "condition": "rules/no_prediction",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 6.515,
+        "std": 5.87985,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.815,
+        "std": 0.389272,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 1.53,
+        "std": 1.202635,
+        "n": 200
+      },
+      "reward": {
+        "mean": 3.6397,
+        "std": 1.60943,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 1.53,
+        "std": 1.202635,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 134.2547,
+        "std": 13.113708,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.548647,
+        "std": 0.270569,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 27.59,
+        "std": 5.448885,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 30.464065,
+        "std": 14.941565,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.896593,
+        "std": 0.08015,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 200
+      }
+    },
+    "prediction_disabled_current": {
+      "condition": "rules/prediction_disabled_current",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 6.865,
+        "std": 5.918778,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.805,
+        "std": 0.397195,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 1.82,
+        "std": 1.39547,
+        "n": 200
+      },
+      "reward": {
+        "mean": 3.58,
+        "std": 1.631783,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 1.82,
+        "std": 1.39547,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 136.7835,
+        "std": 14.889381,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.84492,
+        "std": 0.369961,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 24.64,
+        "std": 6.132572,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 27.219539,
+        "std": 13.136987,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.878051,
+        "std": 0.092549,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 200
+      }
+    },
+    "prediction_k0_w025": {
+      "condition": "rules/prediction_k0_w025",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 6.84,
+        "std": 5.918576,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.805,
+        "std": 0.397195,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 1.81,
+        "std": 1.394137,
+        "n": 200
+      },
+      "reward": {
+        "mean": 3.5856,
+        "std": 1.634581,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 1.81,
+        "std": 1.394137,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 136.4146,
+        "std": 14.612519,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.849845,
+        "std": 0.372577,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 24.715,
+        "std": 6.186691,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 27.152304,
+        "std": 13.198252,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.878857,
+        "std": 0.092206,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 200
+      }
+    },
+    "prediction_k3_w025": {
+      "condition": "rules/prediction_k3_w025",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 6.84,
+        "std": 5.918576,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.805,
+        "std": 0.397195,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 1.81,
+        "std": 1.394137,
+        "n": 200
+      },
+      "reward": {
+        "mean": 3.5856,
+        "std": 1.634581,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 1.81,
+        "std": 1.394137,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 136.4146,
+        "std": 14.612519,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.849845,
+        "std": 0.372577,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 24.715,
+        "std": 6.186691,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 27.152304,
+        "std": 13.198252,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.878857,
+        "std": 0.092206,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 200
+      }
+    },
+    "prediction_k5_w025": {
+      "condition": "rules/prediction_k5_w025",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 6.84,
+        "std": 5.918576,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.805,
+        "std": 0.397195,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 1.81,
+        "std": 1.394137,
+        "n": 200
+      },
+      "reward": {
+        "mean": 3.5856,
+        "std": 1.634581,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 1.81,
+        "std": 1.394137,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 136.4146,
+        "std": 14.612519,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.849845,
+        "std": 0.372577,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 24.715,
+        "std": 6.186691,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 27.152304,
+        "std": 13.198252,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.878857,
+        "std": 0.092206,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 200
+      }
+    },
+    "prediction_k10_w025": {
+      "condition": "rules/prediction_k10_w025",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 6.84,
+        "std": 5.918576,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.805,
+        "std": 0.397195,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 1.81,
+        "std": 1.394137,
+        "n": 200
+      },
+      "reward": {
+        "mean": 3.58365,
+        "std": 1.63362,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 1.81,
+        "std": 1.394137,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 136.42565,
+        "std": 14.607909,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.848274,
+        "std": 0.371547,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 24.715,
+        "std": 6.186691,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 27.152304,
+        "std": 13.198252,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.878968,
+        "std": 0.092097,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 200
+      }
+    },
+    "prediction_k3_w05": {
+      "condition": "rules/prediction_k3_w05",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 6.845,
+        "std": 5.914888,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.805,
+        "std": 0.397195,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 1.815,
+        "std": 1.418037,
+        "n": 200
+      },
+      "reward": {
+        "mean": 3.593,
+        "std": 1.638196,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 1.815,
+        "std": 1.418037,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 136.11,
+        "std": 14.575837,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.857745,
+        "std": 0.377011,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 24.725,
+        "std": 6.158654,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 27.059892,
+        "std": 13.176811,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.878756,
+        "std": 0.092536,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 200
+      }
+    },
+    "prediction_k5_w05": {
+      "condition": "rules/prediction_k5_w05",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 6.845,
+        "std": 5.914888,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.805,
+        "std": 0.397195,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 1.815,
+        "std": 1.418037,
+        "n": 200
+      },
+      "reward": {
+        "mean": 3.593,
+        "std": 1.638196,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 1.815,
+        "std": 1.418037,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 136.11,
+        "std": 14.575837,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.857745,
+        "std": 0.377011,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 24.725,
+        "std": 6.158654,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 27.059892,
+        "std": 13.176811,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.878756,
+        "std": 0.092536,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 200
+      }
+    },
+    "prediction_k10_w05": {
+      "condition": "rules/prediction_k10_w05",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 6.84,
+        "std": 5.918576,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.805,
+        "std": 0.397195,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 1.81,
+        "std": 1.394137,
+        "n": 200
+      },
+      "reward": {
+        "mean": 3.58995,
+        "std": 1.636692,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 1.81,
+        "std": 1.394137,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 136.17645,
+        "std": 14.53868,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.855387,
+        "std": 0.375452,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 24.72,
+        "std": 6.188951,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 27.077693,
+        "std": 13.198879,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.878642,
+        "std": 0.092594,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 200
+      }
+    }
+  },
+  "hazard": {
+    "no_prediction": {
+      "condition": "hazard/no_prediction",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 10.57,
+        "std": 5.393566,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.6,
+        "std": 0.491127,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 0.42,
+        "std": 0.514708,
+        "n": 200
+      },
+      "reward": {
+        "mean": 4.338,
+        "std": 3.002051,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 0.42,
+        "std": 0.514708,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 139.749,
+        "std": 13.185707,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.3732,
+        "std": 0.227802,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 26.27,
+        "std": 5.230093,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 60.079495,
+        "std": 26.912757,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.971637,
+        "std": 0.034853,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.42,
+        "std": 0.514708,
+        "n": 200
+      }
+    },
+    "prediction_disabled_current": {
+      "condition": "hazard/prediction_disabled_current",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 10.7,
+        "std": 5.493715,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.575,
+        "std": 0.495584,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 0.48,
+        "std": 0.548731,
+        "n": 200
+      },
+      "reward": {
+        "mean": 4.15555,
+        "std": 2.998171,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 0.48,
+        "std": 0.548731,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 142.83605,
+        "std": 14.882752,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.469447,
+        "std": 0.359589,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 25.435,
+        "std": 5.67953,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 58.184029,
+        "std": 25.98325,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.968322,
+        "std": 0.036334,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.48,
+        "std": 0.548731,
+        "n": 200
+      }
+    },
+    "prediction_k0_w025": {
+      "condition": "hazard/prediction_k0_w025",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 10.96,
+        "std": 5.453172,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.555,
+        "std": 0.498213,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 0.485,
+        "std": 0.548891,
+        "n": 200
+      },
+      "reward": {
+        "mean": 4.0367,
+        "std": 3.010692,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 0.485,
+        "std": 0.548891,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 142.3307,
+        "std": 14.44539,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.465366,
+        "std": 0.365847,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 25.41,
+        "std": 5.623166,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 57.040527,
+        "std": 24.832241,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.967572,
+        "std": 0.036457,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.485,
+        "std": 0.548891,
+        "n": 200
+      }
+    },
+    "prediction_k3_w025": {
+      "condition": "hazard/prediction_k3_w025",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 10.96,
+        "std": 5.453172,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.555,
+        "std": 0.498213,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 0.485,
+        "std": 0.548891,
+        "n": 200
+      },
+      "reward": {
+        "mean": 4.0373,
+        "std": 3.009973,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 0.485,
+        "std": 0.548891,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 142.3313,
+        "std": 14.445775,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.465366,
+        "std": 0.365847,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 25.41,
+        "std": 5.623166,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 57.040527,
+        "std": 24.832241,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.967572,
+        "std": 0.036457,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.485,
+        "std": 0.548891,
+        "n": 200
+      }
+    },
+    "prediction_k5_w025": {
+      "condition": "hazard/prediction_k5_w025",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 10.96,
+        "std": 5.453172,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.555,
+        "std": 0.498213,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 0.485,
+        "std": 0.548891,
+        "n": 200
+      },
+      "reward": {
+        "mean": 4.034,
+        "std": 3.013613,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 0.485,
+        "std": 0.548891,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 142.328,
+        "std": 14.447657,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.464576,
+        "std": 0.365628,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 25.44,
+        "std": 5.65298,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 57.075181,
+        "std": 24.811946,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.967572,
+        "std": 0.036457,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.485,
+        "std": 0.548891,
+        "n": 200
+      }
+    },
+    "prediction_k10_w025": {
+      "condition": "hazard/prediction_k10_w025",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 10.96,
+        "std": 5.453172,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.555,
+        "std": 0.498213,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 0.48,
+        "std": 0.548731,
+        "n": 200
+      },
+      "reward": {
+        "mean": 4.032,
+        "std": 3.011253,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 0.48,
+        "std": 0.548731,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 142.341,
+        "std": 14.461429,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.463767,
+        "std": 0.364283,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 25.425,
+        "std": 5.666119,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 57.118925,
+        "std": 24.845212,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.967906,
+        "std": 0.036447,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.48,
+        "std": 0.548731,
+        "n": 200
+      }
+    },
+    "prediction_k3_w05": {
+      "condition": "hazard/prediction_k3_w05",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 11.04,
+        "std": 5.376143,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.555,
+        "std": 0.498213,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 0.47,
+        "std": 0.548273,
+        "n": 200
+      },
+      "reward": {
+        "mean": 4.0454,
+        "std": 3.013312,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 0.47,
+        "std": 0.548273,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 142.1389,
+        "std": 14.349711,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.465443,
+        "std": 0.369103,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 25.345,
+        "std": 5.680432,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 56.230104,
+        "std": 24.368849,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.96879,
+        "std": 0.036159,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.47,
+        "std": 0.548273,
+        "n": 200
+      }
+    },
+    "prediction_k5_w05": {
+      "condition": "hazard/prediction_k5_w05",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 11.04,
+        "std": 5.376143,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.555,
+        "std": 0.498213,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 0.47,
+        "std": 0.548273,
+        "n": 200
+      },
+      "reward": {
+        "mean": 4.0421,
+        "std": 3.016957,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 0.47,
+        "std": 0.548273,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 142.1356,
+        "std": 14.351562,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.464602,
+        "std": 0.368814,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 25.375,
+        "std": 5.71029,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 56.264757,
+        "std": 24.349328,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.96879,
+        "std": 0.036159,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.47,
+        "std": 0.548273,
+        "n": 200
+      }
+    },
+    "prediction_k10_w05": {
+      "condition": "hazard/prediction_k10_w05",
+      "n": 200,
+      "first_task_success_tick": {
+        "mean": 11.03,
+        "std": 5.389278,
+        "n": 200
+      },
+      "task_completion_rate": {
+        "mean": 0.555,
+        "std": 0.498213,
+        "n": 200
+      },
+      "contradictions": {
+        "mean": 0.475,
+        "std": 0.566551,
+        "n": 200
+      },
+      "reward": {
+        "mean": 4.02955,
+        "std": 3.005093,
+        "n": 200
+      },
+      "invalid_actions": {
+        "mean": 0.475,
+        "std": 0.566551,
+        "n": 200
+      },
+      "final_energy": {
+        "mean": 142.14005,
+        "std": 14.316687,
+        "n": 200
+      },
+      "prediction_error": {
+        "mean": 0.464097,
+        "std": 0.36729,
+        "n": 200
+      },
+      "transfer_uses": {
+        "mean": 25.345,
+        "std": 5.662712,
+        "n": 200
+      },
+      "transfer_strength": {
+        "mean": 56.318416,
+        "std": 24.101928,
+        "n": 200
+      },
+      "transfer_precision": {
+        "mean": 0.968374,
+        "std": 0.037488,
+        "n": 200
+      },
+      "hazard_steps": {
+        "mean": 0.475,
+        "std": 0.566551,
+        "n": 200
+      }
+    }
+  },
+  "_meta": {
+    "phase": "R5",
+    "description": "Prediction gating sweep experiment",
+    "conditions": [
+      "no_prediction",
+      "prediction_disabled_current",
+      "prediction_k0_w025",
+      "prediction_k3_w025",
+      "prediction_k5_w025",
+      "prediction_k10_w025",
+      "prediction_k3_w05",
+      "prediction_k5_w05",
+      "prediction_k10_w05"
+    ],
+    "targets": [
+      "logic",
+      "rules",
+      "hazard"
+    ]
+  }
+}

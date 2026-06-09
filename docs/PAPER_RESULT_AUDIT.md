@@ -291,3 +291,52 @@ See `docs/PHASE_R4_LARGE_DOMAIN_TRANSFER_REPORT.md` for full details.
 - `tais_core/dsl/specs/{logic_large,hazard_large,rules_chain_long}.yaml` — DSL specs
 - `tests/test_large_domains.py` — 18 domain tests
 - `tests/test_large_domain_transfer_runner.py` — 5 runner tests
+
+---
+
+## Phase R5 Addendum — Prediction Gating
+
+**Date:** 2026-06-09  
+**Branch:** `phase-r5-prediction-gating`  
+**Tests:** 272 passed (261 prior + 11 new)
+
+### Motivation
+
+Reviewer objection: prediction is implemented but not clearly load-bearing for
+transfer. Phase R5 tests whether prediction can improve transfer when gated by
+sufficient target-domain evidence (k observations) and weighted by w.
+
+### Design
+
+3 targets (logic, rules, hazard) × 9 conditions + GridWorld pretrain (20 ticks),
+paired by seed (200 seeds, 15 eval ticks). Prediction scoring enabled via
+opt-in `use_prediction_in_score` flag (default off, preserving all legacy
+behavior).
+
+### Impact on Paper Claims
+
+**Prediction is conditionally useful.** On LogicWorld, `prediction_k3_w05`
+(k=3 target-domain observations, w=0.5 weight) achieves 68.5% completion vs
+53.0% baseline (d=+0.427, p<0.001) and first_success 8.45 vs 9.78
+(d=−0.430, p<0.001). `no_prediction` is identical to default on all targets
+(d=0.000 on logic completion).
+
+However, prediction scoring is **neutral on Rules and Hazard targets** — no
+condition shows significant improvement over baseline.
+
+**Ruling:** Prediction should remain in Paper 1 as an auxiliary mechanism
+but not be framed as a core transfer driver. The `prediction_k3_w05` result
+demonstrates load-bearing for at least one target, satisfying the reviewer
+requirement. The paper should present prediction as a domain-specific
+complement to pattern-based role transfer.
+
+See `docs/PHASE_R5_PREDICTION_GATING_REPORT.md` for full details.
+
+### Artifacts
+
+- `docs/PHASE_R5_PREDICTION_GATING_REPORT.md` — full report
+- `results/phase_r/prediction_gating_sweep/prediction_gating_sweep.{txt,csv,json,md}` — data
+- `experiments/phase_r/prediction_gating_sweep.py` — runner
+- `tests/test_prediction_gating.py` — 11 tests
+- `tais_core/mote.py` — `UniversalMote` gating params (`use_prediction_in_score`, etc.)
+- `tais_core/memory.py` — `PredictionEngine.domain_observation_count()`

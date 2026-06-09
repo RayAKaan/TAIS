@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-09T14:34:44.049362+00:00",
-  "commit": "c9e51c538b058b05a22a4e9cce138962b5099f7f",
+  "generated_at": "2026-06-09T14:47:29.035643+00:00",
+  "commit": "389adc8658a20bc394da4cb2761b8abd74d50847",
   "results": [
     {
       "id": "legacy_grid_logic",
@@ -622,6 +622,152 @@
       "paper_status": "appendix_or_future_work",
       "notes": "Transfer survives to larger domains but Grid->Logic_large shows negative transfer.",
       "key_metrics": []
+    },
+    {
+      "id": "phase_r5_prediction_gating",
+      "phase": "Phase R5",
+      "runner": "experiments/phase_r/prediction_gating_sweep.py",
+      "artifact": "results/phase_r/prediction_gating_sweep/prediction_gating_sweep.csv",
+      "exists": true,
+      "paper_status": "include_appendix_or_limitations",
+      "notes": "Prediction is conditionally useful on logic (d=+0.427) but neutral on rules/hazard.",
+      "key_metrics": [
+        {
+          "condition": "no_prediction",
+          "metric": "first_task_success_tick",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "0.04",
+          "p": "0.910623",
+          "d": "0.007937"
+        },
+        {
+          "condition": "no_prediction",
+          "metric": "task_completion_rate",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "0.0",
+          "p": "1.0",
+          "d": "0.0"
+        },
+        {
+          "condition": "no_prediction",
+          "metric": "transfer_uses",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "0.53",
+          "p": "0.109139",
+          "d": "0.113284"
+        },
+        {
+          "condition": "no_prediction",
+          "metric": "transfer_precision",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "0.007976",
+          "p": "0.113916",
+          "d": "0.111782"
+        },
+        {
+          "condition": "no_prediction",
+          "metric": "hazard_steps",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "0.0",
+          "p": "1.0",
+          "d": "0.0"
+        },
+        {
+          "condition": "no_prediction",
+          "metric": "first_task_success_tick",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "-0.35",
+          "p": "0.332315",
+          "d": "-0.068551"
+        },
+        {
+          "condition": "no_prediction",
+          "metric": "task_completion_rate",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "0.01",
+          "p": "0.683717",
+          "d": "0.028807"
+        },
+        {
+          "condition": "no_prediction",
+          "metric": "transfer_uses",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "2.95",
+          "p": "0.0",
+          "d": "0.507895"
+        },
+        {
+          "condition": "no_prediction",
+          "metric": "transfer_precision",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "0.018542",
+          "p": "0.001358",
+          "d": "0.226514"
+        },
+        {
+          "condition": "no_prediction",
+          "metric": "hazard_steps",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "0.0",
+          "p": "1.0",
+          "d": "0.0"
+        },
+        {
+          "condition": "no_prediction",
+          "metric": "first_task_success_tick",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "-0.13",
+          "p": "0.724937",
+          "d": "-0.024881"
+        },
+        {
+          "condition": "no_prediction",
+          "metric": "task_completion_rate",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "0.025",
+          "p": "0.423757",
+          "d": "0.056563"
+        },
+        {
+          "condition": "no_prediction",
+          "metric": "transfer_uses",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "0.835",
+          "p": "0.025158",
+          "d": "0.158319"
+        },
+        {
+          "condition": "no_prediction",
+          "metric": "transfer_precision",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "0.003315",
+          "p": "0.156099",
+          "d": "0.10029"
+        },
+        {
+          "condition": "no_prediction",
+          "metric": "hazard_steps",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "-0.06",
+          "p": "0.08817",
+          "d": "-0.120571"
+        }
+      ]
     }
   ]
 }
