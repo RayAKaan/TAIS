@@ -1,0 +1,607 @@
+{
+  "generated_at": "2026-06-09T13:39:01.437716+00:00",
+  "commit": "3c41338a1d0d13bde79d0271d4e0986a28bb82fd",
+  "results": [
+    {
+      "id": "legacy_grid_logic",
+      "phase": "Phase 5 legacy",
+      "runner": "experiments/logic_transfer_runner.py",
+      "artifact": "docs/PHASE5_LOGIC_TRANSFER_REPORT.md",
+      "exists": true,
+      "paper_status": "include_legacy_context",
+      "notes": "Strong legacy Grid->Logic result; not directly comparable to F2.",
+      "key_metrics": []
+    },
+    {
+      "id": "legacy_grid_hazard",
+      "phase": "Phase 4 legacy",
+      "runner": "experiments/hazard_transfer_runner.py",
+      "artifact": "docs/PHASE4_HAZARD_TRANSFER_REPORT.md",
+      "exists": true,
+      "paper_status": "include_as_asymmetric_transfer",
+      "notes": "Caution transfer positive; task-speed negative.",
+      "key_metrics": []
+    },
+    {
+      "id": "phase_a_prediction_calibration",
+      "phase": "Phase A paper readiness",
+      "runner": "experiments/logic_transfer_runner.py",
+      "artifact": "docs/PHASE_A_PREDICTION_CALIBRATION_REPORT.md",
+      "exists": true,
+      "paper_status": "include_limitations",
+      "notes": "Prediction paradox reduced but not fully eliminated.",
+      "key_metrics": []
+    },
+    {
+      "id": "phase_a_engine_selection",
+      "phase": "Phase A paper readiness",
+      "runner": "experiments/phase_d/cognitive_contribution.py",
+      "artifact": "docs/PHASE_A_ENGINE_SELECTION_REPORT.md",
+      "exists": true,
+      "paper_status": "appendix_or_exclude_paper1",
+      "notes": "Engine policy implemented; not central to Paper 1.",
+      "key_metrics": []
+    },
+    {
+      "id": "phase_a_speech_token",
+      "phase": "Phase A paper readiness",
+      "runner": "experiments/speech_token_portability.py",
+      "artifact": "docs/PHASE_A_SPEECH_TOKEN_PORTABILITY_REPORT.md",
+      "exists": true,
+      "paper_status": "exclude_paper1",
+      "notes": "Null speech result; Paper 2 material.",
+      "key_metrics": []
+    },
+    {
+      "id": "phase_d_composition",
+      "phase": "Phase D",
+      "runner": "experiments/phase_d/composition.py",
+      "artifact": "results/phase_d/composition/composition.csv",
+      "exists": true,
+      "paper_status": "appendix_or_context",
+      "notes": "Framework protocol; do not mix with legacy table.",
+      "key_metrics": []
+    },
+    {
+      "id": "phase_d_curriculum",
+      "phase": "Phase D",
+      "runner": "experiments/phase_d/curriculum.py",
+      "artifact": "results/phase_d/curriculum/curriculum.csv",
+      "exists": true,
+      "paper_status": "include_as_domain_diversity",
+      "notes": "Strong 3-domain curriculum results.",
+      "key_metrics": []
+    },
+    {
+      "id": "phase_d_scaling",
+      "phase": "Phase D",
+      "runner": "experiments/phase_d/scaling_law.py",
+      "artifact": "results/phase_d/scaling_law/scaling_summary.csv",
+      "exists": true,
+      "paper_status": "appendix",
+      "notes": "Earlier scaling sweep.",
+      "key_metrics": []
+    },
+    {
+      "id": "phase_d_cognitive",
+      "phase": "Phase D",
+      "runner": "experiments/phase_d/cognitive_contribution.py",
+      "artifact": "results/phase_d/cognitive_contribution/cognitive_contribution.csv",
+      "exists": true,
+      "paper_status": "exclude_paper1_or_limitations",
+      "notes": "Cognitive engines hurt; Paper 3 material.",
+      "key_metrics": []
+    },
+    {
+      "id": "phase_f2_role_balanced",
+      "phase": "Phase F2",
+      "runner": "experiments/phase_f2/role_balanced_curriculum.py",
+      "artifact": "results/phase_f2/role_balanced_curriculum.csv",
+      "exists": true,
+      "paper_status": "include_negative_result",
+      "notes": "Role-balanced hypothesis failed; approach-only strongest.",
+      "key_metrics": [
+        {
+          "condition": "grid_standard",
+          "metric": "first_task_success_tick",
+          "fresh": "11.75",
+          "pretrained": "9.41",
+          "delta": "-2.34",
+          "p": "3e-06",
+          "d": "-0.328283"
+        },
+        {
+          "condition": "grid_standard",
+          "metric": "task_completion_rate",
+          "fresh": "0.5",
+          "pretrained": "0.56",
+          "delta": "0.06",
+          "p": "0.16771",
+          "d": "0.097552"
+        },
+        {
+          "condition": "grid_standard",
+          "metric": "transfer_uses",
+          "fresh": "2.675",
+          "pretrained": "24.88",
+          "delta": "22.205",
+          "p": "0.0",
+          "d": "3.787306"
+        },
+        {
+          "condition": "grid_standard",
+          "metric": "transfer_precision",
+          "fresh": "0.424986",
+          "pretrained": "0.840115",
+          "delta": "0.415129",
+          "p": "0.0",
+          "d": "0.930636"
+        },
+        {
+          "condition": "approach_only",
+          "metric": "first_task_success_tick",
+          "fresh": "11.75",
+          "pretrained": "4.065",
+          "delta": "-7.685",
+          "p": "0.0",
+          "d": "-1.234236"
+        },
+        {
+          "condition": "approach_only",
+          "metric": "task_completion_rate",
+          "fresh": "0.5",
+          "pretrained": "0.89",
+          "delta": "0.39",
+          "p": "0.0",
+          "d": "0.689971"
+        },
+        {
+          "condition": "approach_only",
+          "metric": "transfer_uses",
+          "fresh": "2.675",
+          "pretrained": "25.795",
+          "delta": "23.12",
+          "p": "0.0",
+          "d": "3.394957"
+        },
+        {
+          "condition": "approach_only",
+          "metric": "transfer_precision",
+          "fresh": "0.424986",
+          "pretrained": "0.817897",
+          "delta": "0.392911",
+          "p": "0.0",
+          "d": "0.902788"
+        },
+        {
+          "condition": "role_balanced",
+          "metric": "first_task_success_tick",
+          "fresh": "11.75",
+          "pretrained": "12.71",
+          "delta": "0.96",
+          "p": "0.037881",
+          "d": "0.146805"
+        },
+        {
+          "condition": "role_balanced",
+          "metric": "task_completion_rate",
+          "fresh": "0.5",
+          "pretrained": "0.395",
+          "delta": "-0.105",
+          "p": "0.022917",
+          "d": "-0.160854"
+        },
+        {
+          "condition": "role_balanced",
+          "metric": "transfer_uses",
+          "fresh": "2.675",
+          "pretrained": "11.675",
+          "delta": "9.0",
+          "p": "0.0",
+          "d": "1.604399"
+        },
+        {
+          "condition": "role_balanced",
+          "metric": "transfer_precision",
+          "fresh": "0.424986",
+          "pretrained": "0.801334",
+          "delta": "0.376348",
+          "p": "0.0",
+          "d": "0.738047"
+        }
+      ]
+    },
+    {
+      "id": "phase_f2_domain_count",
+      "phase": "Phase F2",
+      "runner": "experiments/phase_f2/domain_count_scaling.py",
+      "artifact": "results/phase_f2/domain_count_scaling.csv",
+      "exists": true,
+      "paper_status": "include_main",
+      "notes": "Best current diversity evidence.",
+      "key_metrics": [
+        {
+          "condition": "three_grid_rules_chem",
+          "metric": "first_task_success_tick",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "-6.66",
+          "p": "0.0",
+          "d": "-0.811404"
+        },
+        {
+          "condition": "three_grid_rules_chem",
+          "metric": "task_completion_rate",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "0.315",
+          "p": "0.0",
+          "d": "0.487296"
+        },
+        {
+          "condition": "three_grid_rules_chem",
+          "metric": "transfer_uses",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "44.28",
+          "p": "0.0",
+          "d": "2.650656"
+        },
+        {
+          "condition": "three_grid_rules_chem",
+          "metric": "transfer_precision",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "0.404228",
+          "p": "0.0",
+          "d": "0.898494"
+        },
+        {
+          "condition": "four_grid_rules_chem_hazard",
+          "metric": "first_task_success_tick",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "-7.43",
+          "p": "0.0",
+          "d": "-1.063064"
+        },
+        {
+          "condition": "four_grid_rules_chem_hazard",
+          "metric": "task_completion_rate",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "0.375",
+          "p": "0.0",
+          "d": "0.656779"
+        },
+        {
+          "condition": "four_grid_rules_chem_hazard",
+          "metric": "transfer_uses",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "53.94",
+          "p": "0.0",
+          "d": "3.29037"
+        },
+        {
+          "condition": "four_grid_rules_chem_hazard",
+          "metric": "transfer_precision",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "0.415252",
+          "p": "0.0",
+          "d": "0.956373"
+        },
+        {
+          "condition": "five_grid_rules_chem_hazard_sequences",
+          "metric": "first_task_success_tick",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "-7.83",
+          "p": "0.0",
+          "d": "-1.048484"
+        },
+        {
+          "condition": "five_grid_rules_chem_hazard_sequences",
+          "metric": "task_completion_rate",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "0.38",
+          "p": "0.0",
+          "d": "0.610417"
+        },
+        {
+          "condition": "five_grid_rules_chem_hazard_sequences",
+          "metric": "transfer_uses",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "82.375",
+          "p": "0.0",
+          "d": "4.036162"
+        },
+        {
+          "condition": "five_grid_rules_chem_hazard_sequences",
+          "metric": "transfer_precision",
+          "fresh": "",
+          "pretrained": "",
+          "delta": "0.408014",
+          "p": "0.0",
+          "d": "0.944843"
+        }
+      ]
+    },
+    {
+      "id": "phase_f2_repair",
+      "phase": "Phase F2",
+      "runner": "experiments/phase_f2/repair_convergence.py",
+      "artifact": "results/phase_f2/repair_convergence.json",
+      "exists": true,
+      "paper_status": "exclude_paper1",
+      "notes": "Paper 2 material; modest divergence reduction.",
+      "key_metrics": []
+    },
+    {
+      "id": "phase_f2_grid_logic_1000",
+      "phase": "Phase F2",
+      "runner": "experiments/phase_f2/grid_logic_1000_replication.py",
+      "artifact": "results/phase_f2/grid_logic_1000_replication.csv",
+      "exists": true,
+      "paper_status": "include_main",
+      "notes": "Canonical current Grid->Logic replication.",
+      "key_metrics": [
+        {
+          "condition": "full",
+          "metric": "first_task_success_tick",
+          "fresh": "11.5",
+          "pretrained": "9.718",
+          "delta": "-1.782",
+          "p": "0.0",
+          "d": "-0.238491"
+        },
+        {
+          "condition": "full",
+          "metric": "task_completion_rate",
+          "fresh": "0.519",
+          "pretrained": "0.544",
+          "delta": "0.025",
+          "p": "0.23163",
+          "d": "0.037826"
+        },
+        {
+          "condition": "full",
+          "metric": "transfer_uses",
+          "fresh": "2.791",
+          "pretrained": "24.213",
+          "delta": "21.422",
+          "p": "0.0",
+          "d": "3.318805"
+        },
+        {
+          "condition": "full",
+          "metric": "transfer_precision",
+          "fresh": "0.46118",
+          "pretrained": "0.849162",
+          "delta": "0.387982",
+          "p": "0.0",
+          "d": "0.842508"
+        },
+        {
+          "condition": "no_action_role",
+          "metric": "first_task_success_tick",
+          "fresh": "11.5",
+          "pretrained": "11.707",
+          "delta": "0.207",
+          "p": "0.372148",
+          "d": "0.028222"
+        },
+        {
+          "condition": "no_action_role",
+          "metric": "task_completion_rate",
+          "fresh": "0.519",
+          "pretrained": "0.502",
+          "delta": "-0.017",
+          "p": "0.449452",
+          "d": "-0.023917"
+        },
+        {
+          "condition": "no_action_role",
+          "metric": "transfer_uses",
+          "fresh": "2.791",
+          "pretrained": "23.772",
+          "delta": "20.981",
+          "p": "0.0",
+          "d": "3.428465"
+        },
+        {
+          "condition": "no_action_role",
+          "metric": "transfer_precision",
+          "fresh": "0.461345",
+          "pretrained": "0.812617",
+          "delta": "0.351273",
+          "p": "0.0",
+          "d": "0.693287"
+        },
+        {
+          "condition": "no_pattern_transfer",
+          "metric": "first_task_success_tick",
+          "fresh": "11.5",
+          "pretrained": "11.668",
+          "delta": "0.168",
+          "p": "0.471312",
+          "d": "0.022779"
+        },
+        {
+          "condition": "no_pattern_transfer",
+          "metric": "task_completion_rate",
+          "fresh": "0.519",
+          "pretrained": "0.502",
+          "delta": "-0.017",
+          "p": "0.449452",
+          "d": "-0.023917"
+        },
+        {
+          "condition": "no_pattern_transfer",
+          "metric": "transfer_uses",
+          "fresh": "0.0",
+          "pretrained": "0.0",
+          "delta": "0.0",
+          "p": "1.0",
+          "d": "0.0"
+        },
+        {
+          "condition": "no_pattern_transfer",
+          "metric": "transfer_precision",
+          "fresh": "0.0",
+          "pretrained": "0.0",
+          "delta": "0.0",
+          "p": "1.0",
+          "d": "0.0"
+        },
+        {
+          "condition": "no_prediction",
+          "metric": "first_task_success_tick",
+          "fresh": "11.467",
+          "pretrained": "9.36",
+          "delta": "-2.107",
+          "p": "0.0",
+          "d": "-0.281858"
+        },
+        {
+          "condition": "no_prediction",
+          "metric": "task_completion_rate",
+          "fresh": "0.521",
+          "pretrained": "0.57",
+          "delta": "0.049",
+          "p": "0.01773",
+          "d": "0.074984"
+        },
+        {
+          "condition": "no_prediction",
+          "metric": "transfer_uses",
+          "fresh": "2.902",
+          "pretrained": "25.163",
+          "delta": "22.261",
+          "p": "0.0",
+          "d": "3.44676"
+        },
+        {
+          "condition": "no_prediction",
+          "metric": "transfer_precision",
+          "fresh": "0.470978",
+          "pretrained": "0.855121",
+          "delta": "0.384143",
+          "p": "0.0",
+          "d": "0.831645"
+        },
+        {
+          "condition": "empty_pretrain",
+          "metric": "first_task_success_tick",
+          "fresh": "11.5",
+          "pretrained": "11.697",
+          "delta": "0.197",
+          "p": "0.386047",
+          "d": "0.027411"
+        },
+        {
+          "condition": "empty_pretrain",
+          "metric": "task_completion_rate",
+          "fresh": "0.519",
+          "pretrained": "0.504",
+          "delta": "-0.015",
+          "p": "0.49856",
+          "d": "-0.021401"
+        },
+        {
+          "condition": "empty_pretrain",
+          "metric": "transfer_uses",
+          "fresh": "2.791",
+          "pretrained": "2.677",
+          "delta": "-0.114",
+          "p": "0.413886",
+          "d": "-0.025838"
+        },
+        {
+          "condition": "empty_pretrain",
+          "metric": "transfer_precision",
+          "fresh": "0.46118",
+          "pretrained": "0.441843",
+          "delta": "-0.019338",
+          "p": "0.321637",
+          "d": "-0.031341"
+        },
+        {
+          "condition": "random_pretrain",
+          "metric": "first_task_success_tick",
+          "fresh": "11.5",
+          "pretrained": "12.345",
+          "delta": "0.845",
+          "p": "0.000242",
+          "d": "0.116092"
+        },
+        {
+          "condition": "random_pretrain",
+          "metric": "task_completion_rate",
+          "fresh": "0.519",
+          "pretrained": "0.429",
+          "delta": "-0.09",
+          "p": "5e-05",
+          "d": "-0.128259"
+        },
+        {
+          "condition": "random_pretrain",
+          "metric": "transfer_uses",
+          "fresh": "2.791",
+          "pretrained": "12.311",
+          "delta": "9.52",
+          "p": "0.0",
+          "d": "1.791836"
+        },
+        {
+          "condition": "random_pretrain",
+          "metric": "transfer_precision",
+          "fresh": "0.46118",
+          "pretrained": "0.82803",
+          "delta": "0.36685",
+          "p": "0.0",
+          "d": "0.756805"
+        },
+        {
+          "condition": "logic_pretrain",
+          "metric": "first_task_success_tick",
+          "fresh": "11.5",
+          "pretrained": "7.696",
+          "delta": "-3.804",
+          "p": "0.0",
+          "d": "-0.562158"
+        },
+        {
+          "condition": "logic_pretrain",
+          "metric": "task_completion_rate",
+          "fresh": "0.519",
+          "pretrained": "0.685",
+          "delta": "0.166",
+          "p": "0.0",
+          "d": "0.292189"
+        },
+        {
+          "condition": "logic_pretrain",
+          "metric": "transfer_uses",
+          "fresh": "2.791",
+          "pretrained": "7.769",
+          "delta": "4.978",
+          "p": "0.0",
+          "d": "1.220327"
+        },
+        {
+          "condition": "logic_pretrain",
+          "metric": "transfer_precision",
+          "fresh": "0.46118",
+          "pretrained": "0.65265",
+          "delta": "0.19147",
+          "p": "0.0",
+          "d": "0.378013"
+        }
+      ]
+    }
+  ]
+}
