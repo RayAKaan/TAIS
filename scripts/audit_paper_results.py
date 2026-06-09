@@ -164,6 +164,14 @@ KNOWN_RESULTS = [
         "paper_status": "include_appendix_or_limitations",
         "notes": "Prediction is conditionally useful on logic (d=+0.427) but neutral on rules/hazard.",
     },
+    {
+        "id": "phase_r6_learned_role_compatibility",
+        "phase": "Phase R6",
+        "runner": "experiments/phase_r/learned_role_compatibility.py",
+        "artifact": "results/phase_r/learned_role_compatibility/learned_role_compatibility.csv",
+        "paper_status": "future_work_or_limitations",
+        "notes": "Learned compatibility partially recovers transfer on logic (d=-0.378) but neutral on rules/hazard. Hand-coded table still competitive.",
+    },
 ]
 
 METRICS_TO_EXTRACT = [

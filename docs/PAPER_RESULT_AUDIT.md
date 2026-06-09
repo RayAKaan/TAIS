@@ -340,3 +340,55 @@ See `docs/PHASE_R5_PREDICTION_GATING_REPORT.md` for full details.
 - `tests/test_prediction_gating.py` — 11 tests
 - `tais_core/mote.py` — `UniversalMote` gating params (`use_prediction_in_score`, etc.)
 - `tais_core/memory.py` — `PredictionEngine.domain_observation_count()`
+
+---
+
+## Phase R6 Addendum — Learned Role Compatibility
+
+**Date:** 2026-06-09  
+**Branch:** `phase-r6-learned-role-compatibility`  
+**Tests:** 306 passed (272 prior + 34 new, excluding 1 pre-existing flaky speech test)
+
+### Motivation
+
+The hand-designed `role_compatibility()` table is a known limitation (Phase R2
+found it is not load-bearing). Phase R6 tests whether a simple learned
+alternative — consequence-based EWM per (role, universal_op) — can approach
+or replace the hand-coded table.
+
+### Design
+
+3 targets (logic, rules, hazard) × 5 conditions paired experiment (seeds=200,
+GridWorld pretrain=20, eval=15):
+
+| Condition | Description |
+|-----------|-------------|
+| `hardcoded_compatibility` | Normal behaviour (baseline) |
+| `learned_compatibility` | `role_compatibility` patched to use learned `role_score` |
+| `learned_plus_hardcoded` | 0.5 × learned + 0.5 × hardcoded |
+| `random_compatibility` | Seed-deterministic random table (replicating R2) |
+| `no_compatibility` | Cross-role compatibility returns 0.0 |
+
+### Impact on Paper Claims
+
+**Learned compatibility partially recovers transfer on LogicWorld but is
+neutral on Rules and Hazard.** On LogicWorld, `learned_compatibility`
+significantly improves first success tick (Δ=−2.805, d=−0.378, p<0.001)
+while the hardcoded baseline is non-significant. However,
+`learned_plus_hardcoded` never beats hardcoded alone.
+
+**Ruling:** The learned approach provides initial evidence that
+consequence-driven learning is viable but does not replace the hand-coded
+table. The reviewer risk note about hand-designed role ontology remains.
+Learned compatibility should be noted as future work.
+
+See `docs/PHASE_R6_LEARNED_ROLE_COMPATIBILITY_REPORT.md` for full details.
+
+### Artifacts
+
+- `docs/PHASE_R6_LEARNED_ROLE_COMPATIBILITY_REPORT.md` — full report
+- `results/phase_r/learned_role_compatibility/learned_role_compatibility.{txt,csv,json}` — data
+- `experiments/phase_r/learned_role_compatibility.py` — runner
+- `tais_core/role_learning.py` — `LearnedRoleCompatibility` + `make_learned_role_compatibility_fn()`
+- `tais_core/mote.py` — `enable_learned_role_compatibility()`, `use_learned_role_compatibility` flag
+- `tests/test_role_learning.py` — 34 tests

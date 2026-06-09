@@ -26,6 +26,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from .engine_policy import EnginePolicyDecision, decide_engine_usage
 from .memory import MoteMemory
 from .reality import Consequence, RealityGraph, Transformation, WorldInterface
+from .role_learning import LearnedRoleCompatibility
 from .speech import SpeechOrgan
 from .metacognition import MetacognitiveEngine
 from .causal import CausalReasoningEngine
@@ -88,6 +89,10 @@ class UniversalMote:
         self.prediction_score_weight: float = 0.25
         self.prediction_min_domain_observations: int = 0
 
+        # ── Phase R6: learned role compatibility (opt-in, None = disabled) ──
+        self.learned_role_compatibility: Optional[LearnedRoleCompatibility] = None
+        self.use_learned_role_compatibility: bool = False
+
         # ── Cognitive engines (None = ablation mode, mote works as before) ──
         self.metacog: Optional[MetacognitiveEngine] = None
         self.causal: Optional[CausalReasoningEngine] = None
@@ -110,6 +115,10 @@ class UniversalMote:
             self.causal = CausalReasoningEngine()
         if hierarchical_planning:
             self.planner = HierarchicalPlanner()
+
+    def enable_learned_role_compatibility(self, alpha: float = 0.3):
+        self.learned_role_compatibility = LearnedRoleCompatibility(alpha=alpha)
+        self.use_learned_role_compatibility = True
 
     def state(self, **extra) -> Dict[str, Any]:
         base = {
@@ -243,6 +252,14 @@ class UniversalMote:
         self.last_prediction = predicted
         new_graph, cons = world.act(graph, action, mote_state)
         action_role = self.classify_action_role(action, world, graph, new_graph, cons, mote_state, predicted)
+
+        # ── Phase R6: learned role compatibility update (opt-in) ──
+        if self.learned_role_compatibility is not None:
+            self.learned_role_compatibility.update(
+                role=action_role,
+                op=action.universal_op,
+                outcome_net=cons.net,
+            )
 
         # ── Phase A: engine selection policy ──
         if self.use_engine_policy and actions:
