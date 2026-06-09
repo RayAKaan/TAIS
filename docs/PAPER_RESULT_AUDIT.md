@@ -146,8 +146,8 @@ is the strongest positive claim.
 ## Phase R2 Addendum — Role-Ontology Robustness
 
 **Date:** 2026-06-09  
-**Commit:** TBD  
-**Branch:** `phase-r2-role-ontology-robustness`  
+**Commit:** `4385e74`  
+**Branch:** `phase-r2-role-ontology-robustness` → merged to main  
 **Tests:** 218 passed (197 prior + 21 new)
 
 ### Motivation
@@ -192,3 +192,48 @@ See `docs/PHASE_R2_ROLE_ONTOLOGY_ROBUSTNESS_REPORT.md` for full details.
 - `results/phase_r/role_ontology_robustness/report.{txt,csv,json}` — data
 - `experiments/phase_r/role_ontology_robustness.py` — runner
 - `tests/test_role_ontology_robustness.py` — 21 tests
+
+---
+
+## Phase R3 Addendum — Baseline Agents Comparison
+
+**Date:** 2026-06-09  
+**Commit:** TBD  
+**Branch:** `phase-r3-baseline-agents`  
+**Tests:** 238 passed (218 prior + 20 new)
+
+### Motivation
+
+TAIS had never been systematically compared against non-TAIS baselines on the Grid→Logic transfer task. Phase R3 adds RandomAgent, HeuristicAgent, and TabularQAgent under the same paired-experiment protocol (200 seeds, 20 GridWorld pretrain ticks, 15 LogicWorld eval ticks).
+
+### Design
+
+5-condition paired comparison (all conditions share the same seeds):
+
+| Condition | Type |
+|---|---|
+| TAIS_full | UniversalMote (all mechanisms) |
+| TAIS_no_pattern_transfer | UniversalMote (priors zeroed) |
+| RandomAgent | Uniform random (statistical baseline) |
+| HeuristicAgent | Op-weight heuristic (TRANSFORM > MUTATE > other) |
+| TabularQAgent | Q-learning (α=0.1, γ=0.9, ε=0.1) via `graph_structural_key()` |
+
+### Impact on Paper Claims
+
+**Simple baselines dominate TAIS on LogicWorld.** HeuristicAgent achieves 100% task completion and 0 contradictions on every seed. TabularQAgent follows at 93.5%. TAIS_full reaches only 62% (d=+0.189 vs RandomAgent, p=0.008).
+
+**The Grid→Logic transfer task is not challenging enough to distinguish agent capabilities.** A hardcoded op-weight heuristic (prefer TRANSFORM) solves the eval domain perfectly. This does not invalidate TAIS's transfer claims but establishes that the evaluation benchmark is saturated.
+
+**TAIS still shows significant transfer** compared to RandomAgent (first_success d=−0.285, p<0.001; contradictions d=−1.143, p<0.001), consistent with the F2 1000-seed replication (d=−0.238).
+
+**Ruling:** The paper must acknowledge that simple, domain-appropriate baselines outperform TAIS on Grid→Logic. TAIS's comparative advantage should be framed in terms of multi-domain generalization (3+ domain threshold) rather than peak performance on a single eval domain.
+
+See `docs/PHASE_R3_BASELINE_COMPARISON_REPORT.md` for full details.
+
+### Artifacts
+
+- `docs/PHASE_R3_BASELINE_COMPARISON_REPORT.md` — full report
+- `results/phase_r/baseline_comparison/baseline_comparison.{txt,csv,json,md}` — data
+- `experiments/phase_r/baseline_comparison.py` — runner
+- `tais_core/baselines/` — baseline agent package (base.py, random_agent.py, heuristic_agent.py, tabular_q_agent.py, llm_prompt_agent.py)
+- `tests/test_baselines.py` — 20 tests
