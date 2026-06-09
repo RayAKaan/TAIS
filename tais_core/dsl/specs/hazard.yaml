@@ -1,0 +1,36 @@
+name: HazardWorld
+domain_name: hazard
+version: 1.0
+description: Builtin-backed HazardGraphWorld spec.
+
+backend:
+  world_class: tais_core.domains.hazard.HazardGraphWorld
+  graph_factory: tais_core.domains.hazard.make_hazard_graph_easy
+
+entities:
+  AGENT:
+    attributes: [x, y]
+  RESOURCE_NODE:
+    attributes: [kind, value]
+  HAZARD_NODE:
+    attributes: [danger]
+  EXIT_NODE:
+    attributes: [x, y]
+
+relations:
+  CONNECTED_TO:
+    src: "*"
+    tgt: "*"
+  NEAR_HAZARD:
+    src: "*"
+    tgt: HAZARD_NODE
+
+action_roles:
+  APPROACH_GOOD: approach_resource
+  AVOID_BAD: avoid_hazard
+  VERIFY_UNCERTAIN: verify_node
+
+world_defaults:
+  energy: 100
+  horizon: 30
+  step_cost: 0.2

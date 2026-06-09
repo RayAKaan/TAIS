@@ -13,6 +13,10 @@ BUILTIN_SPEC_NAMES = {
     "logic": _HERE / "logic.yaml",
     "logicworld": _HERE / "logic.yaml",
     "chemistry_lite": _HERE / "chemistry_lite.yaml",
+    "hazard": _HERE / "hazard.yaml",
+    "hazardworld": _HERE / "hazard.yaml",
+    "sequences": _HERE / "sequences.yaml",
+    "sequenceworld": _HERE / "sequences.yaml",
 }
 
 
