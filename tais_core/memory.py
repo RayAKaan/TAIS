@@ -453,6 +453,29 @@ class PredictionEngine:
         # plus sample count instead of an unbounded list.
         self._per_transform_net_ewm: Dict[Tuple[str, str], Tuple[float, int]] = {}
         self._per_domain: Dict[str, List[float]] = {}
+        # Phase A: per-domain reward scale for prediction calibration
+        self._domain_abs_mean: Dict[str, float] = {}
+        self._domain_obs_count: Dict[str, int] = {}
+
+    def _calibrate(self, raw: float, domain: str) -> float:
+        """Scale prediction to match domain reward scale.
+
+        For domains with tiny rewards (e.g. LogicWorld ~0.02), the
+        cost-anchored prior (0.25) hugely overestimates the outcome,
+        inflating prediction error.  We damp the prior proportionally
+        to the domain's typical |reward| so the first prediction error
+        is no larger than what no_prediction sees.
+        """
+        scale = self._domain_abs_mean.get(domain)
+        if scale is not None and 0.0 < scale < 1.0:
+            return raw * scale
+        return raw
+
+    def _update_domain_scale(self, domain: str, abs_net: float):
+        old = self._domain_abs_mean.get(domain, 0.0)
+        count = self._domain_obs_count.get(domain, 0)
+        self._domain_abs_mean[domain] = (old * count + abs_net) / (count + 1)
+        self._domain_obs_count[domain] = count + 1
 
     def predict(self, transformation: Transformation, pattern_memory: PatternMemory, graph: RealityGraph) -> float:
         key = (transformation.domain, transformation.name)
@@ -468,10 +491,14 @@ class PredictionEngine:
         # proportionally larger (but still bounded) prior.
         cap = max(0.5, min(3.0, 1.5 * float(transformation.base_cost or 1.0)))
         if valence == "GOOD":
-            return cap * self._UNSEEN_DISCOUNT
-        if valence == "BAD":
-            return -cap * self._UNSEEN_DISCOUNT
-        return 0.0
+            raw = cap * self._UNSEEN_DISCOUNT
+        elif valence == "BAD":
+            raw = -cap * self._UNSEEN_DISCOUNT
+        else:
+            raw = 0.0
+
+        # Calibrate to domain reward scale (Phase A)
+        return self._calibrate(raw, transformation.domain)
 
     def record_outcome(self, predicted: float, actual: Consequence, transformation: Transformation, domain: str):
         error = abs(predicted - actual.net)
@@ -487,6 +514,8 @@ class PredictionEngine:
             new_ewm = (1.0 - self._EWM_ALPHA) * ewm + self._EWM_ALPHA * float(actual.net)
             self._per_transform_net_ewm[key] = (new_ewm, n + 1)
         self._per_domain.setdefault(domain, []).append(error)
+        # Phase A: update per-domain reward scale
+        self._update_domain_scale(domain, abs(actual.net))
 
     def mean_error(self) -> float:
         if not self._predictions:
@@ -565,11 +594,15 @@ class MoteMemory:
                 best, best_score = t, score
         return best
 
-    def should_explore(self, candidates: List[Transformation], curiosity: float = 0.3) -> bool:
+    def should_explore(self, candidates: List[Transformation], curiosity: float = 0.3, domain: Optional[str] = None) -> bool:
         import random
         if not candidates:
             return False
-        uncertainty = 0.0 if math.isinf(self.prediction.mean_error()) else min(0.4, self.prediction.mean_error() * 0.1)
+        if domain is not None:
+            err = self.prediction.domain_error(domain)
+        else:
+            err = self.prediction.mean_error()
+        uncertainty = 0.0 if math.isinf(err) else min(0.4, err * 0.1)
         return random.random() < curiosity + uncertainty
 
     def transfer_patterns_to(self, target_graph: RealityGraph) -> List[Tuple[GraphPattern, AnalogyMapping]]:
