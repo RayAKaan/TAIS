@@ -140,6 +140,14 @@ KNOWN_RESULTS = [
         "paper_status": "include_main",
         "notes": "Canonical current Grid->Logic replication.",
     },
+    {
+        "id": "phase_r3_baseline_comparison",
+        "phase": "Phase R3",
+        "runner": "experiments/phase_r/baseline_comparison.py",
+        "artifact": "results/phase_r/baseline_comparison/baseline_comparison.csv",
+        "paper_status": "include_as_limitation",
+        "notes": "HeuristicAgent and TabularQAgent outperform TAIS on Grid->Logic evaluation.",
+    },
 ]
 
 METRICS_TO_EXTRACT = [
