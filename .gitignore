@@ -58,3 +58,13 @@ results/**/*.log
 
 # Per-run output folders (Phase 0.2 convention)
 runs/
+
+# Local paper drafts (Phase R7)
+paper/*.tex
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.toc
+paper/*.bbl
+paper/*.blg
+paper/build/
