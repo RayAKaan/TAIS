@@ -17,6 +17,9 @@ BUILTIN_SPEC_NAMES = {
     "hazardworld": _HERE / "hazard.yaml",
     "sequences": _HERE / "sequences.yaml",
     "sequenceworld": _HERE / "sequences.yaml",
+    "logic_large": _HERE / "logic_large.yaml",
+    "hazard_large": _HERE / "hazard_large.yaml",
+    "rules_chain_long": _HERE / "rules_chain_long.yaml",
 }
 
 

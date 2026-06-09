@@ -1,0 +1,40 @@
+name: HazardWorldLarge
+domain_name: hazard_large
+version: 1.0
+description: Builtin-backed HazardWorldLarge spec (15 nodes, 0.2 hazard density).
+
+backend:
+  world_class: tais_core.domains.hazard.HazardGraphWorldLarge
+  graph_factory: tais_core.domains.hazard.make_hazard_graph_large
+  graph_factory_kwargs:
+    seed: 0
+    n_nodes: 15
+    hazard_density: 0.2
+
+entities:
+  AGENT:
+    attributes: [x, y]
+  RESOURCE_NODE:
+    attributes: [kind, value]
+  HAZARD_NODE:
+    attributes: [danger]
+  EXIT_NODE:
+    attributes: [x, y]
+
+relations:
+  CONNECTED_TO:
+    src: "*"
+    tgt: "*"
+  NEAR_HAZARD:
+    src: "*"
+    tgt: HAZARD_NODE
+
+action_roles:
+  APPROACH_GOOD: approach_resource
+  AVOID_BAD: avoid_hazard
+  VERIFY_UNCERTAIN: verify_node
+
+world_defaults:
+  energy: 100
+  horizon: 30
+  step_cost: 0.2

@@ -535,9 +535,53 @@ class LogicWorldUnsat(LogicWorld):
     domain_name = "logic_unsat"
 
 
+class LogicWorldLarge(LogicWorld):
+    """Large propositional satisfaction variant; use with ``make_logic_graph_large``."""
+    domain_name = "logic_large"
+
+
+def make_logic_graph_large(seed: int = 0, n_vars: int = 6, n_clauses: int = 12) -> RealityGraph:
+    """Generates a larger satisfiable SAT formula. Deterministic from seed.
+
+    Construction:
+      1. Generate a hidden satisfying assignment via seeded RNG.
+      2. For each clause, pick 2-3 random variables and assign literal signs
+         such that the clause is guaranteed satisfied by the hidden assignment.
+      3. This guarantees satisfiability by construction.
+
+    Compatible with existing LogicWorld.act() — same entity types, same action set.
+    """
+    rng = random.Random(seed)
+
+    var_ids = [f"x{i}" for i in range(1, n_vars + 1)]
+    hidden = {v: rng.choice([True, False]) for v in var_ids}
+
+    g = RealityGraph("logic", "logic_large")
+    _ensure_variables(g, var_ids)
+    _make_assignment_entity(g)
+
+    for ci in range(1, n_clauses + 1):
+        cid = f"C{ci}"
+        n_lits = rng.randint(2, 3)
+        lit_vars = rng.sample(var_ids, min(n_lits, len(var_ids)))
+        pos, neg = [], []
+        for v in lit_vars:
+            if hidden[v]:
+                pos.append(v)
+            else:
+                neg.append(v)
+        if not pos and not neg:
+            pos.append(rng.choice(lit_vars))
+        _add_clause(g, cid, positive=pos, negative=neg)
+
+    _add_target(g, "formula_large")
+    return g
+
+
 __all__ = [
-    "LogicWorld", "LogicWorldChain", "LogicWorldUnsat",
+    "LogicWorld", "LogicWorldChain", "LogicWorldUnsat", "LogicWorldLarge",
     "make_logic_graph_easy", "make_logic_graph_chain", "make_logic_graph_unsat",
+    "make_logic_graph_large",
     "SAT_REWARD", "PROGRESS_REWARD", "CONTRADICTION_PENALTY",
     "ASSERT_NOOP_REWARD", "RETRACT_RECOVERY_REWARD", "RETRACT_WASTE_PENALTY",
     "CHECK_CONSISTENCY_REWARD", "RANDOM_ASSERT_PENALTY", "INVALID_PENALTY",

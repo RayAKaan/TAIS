@@ -1,0 +1,909 @@
+{
+  "logic_large": {
+    "fresh": {
+      "condition": "logic_large/fresh",
+      "n": 100,
+      "first_task_success_tick": {
+        "mean": 18.26,
+        "std": 9.519379,
+        "n": 100
+      },
+      "task_completion_rate": {
+        "mean": 0.77,
+        "std": 0.422953,
+        "n": 100
+      },
+      "contradictions": {
+        "mean": 1.77,
+        "std": 1.448475,
+        "n": 100
+      },
+      "reward": {
+        "mean": 4.8647,
+        "std": 2.254025,
+        "n": 100
+      },
+      "invalid_actions": {
+        "mean": 2.82,
+        "std": 1.659865,
+        "n": 100
+      },
+      "final_energy": {
+        "mean": 94.2707,
+        "std": 2.769146,
+        "n": 100
+      },
+      "prediction_error": {
+        "mean": 0.264742,
+        "std": 0.11855,
+        "n": 100
+      },
+      "transfer_uses": {
+        "mean": 9.03,
+        "std": 6.979704,
+        "n": 100
+      },
+      "transfer_strength": {
+        "mean": 36.0,
+        "std": 27.943666,
+        "n": 100
+      },
+      "transfer_precision": {
+        "mean": 0.655858,
+        "std": 0.388073,
+        "n": 100
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 100
+      }
+    },
+    "grid_pretrain": {
+      "condition": "logic_large/grid_pretrain",
+      "n": 100,
+      "first_task_success_tick": {
+        "mean": 19.84,
+        "std": 12.577614,
+        "n": 100
+      },
+      "task_completion_rate": {
+        "mean": 0.49,
+        "std": 0.502418,
+        "n": 100
+      },
+      "contradictions": {
+        "mean": 1.9,
+        "std": 1.337116,
+        "n": 100
+      },
+      "reward": {
+        "mean": 3.7886,
+        "std": 2.547941,
+        "n": 100
+      },
+      "invalid_actions": {
+        "mean": 2.67,
+        "std": 1.557355,
+        "n": 100
+      },
+      "final_energy": {
+        "mean": 136.2626,
+        "std": 12.334365,
+        "n": 100
+      },
+      "prediction_error": {
+        "mean": 0.198016,
+        "std": 0.139823,
+        "n": 100
+      },
+      "transfer_uses": {
+        "mean": 51.23,
+        "std": 12.958251,
+        "n": 100
+      },
+      "transfer_strength": {
+        "mean": 68.386305,
+        "std": 43.814328,
+        "n": 100
+      },
+      "transfer_precision": {
+        "mean": 0.874067,
+        "std": 0.064007,
+        "n": 100
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 100
+      }
+    },
+    "rules_pretrain": {
+      "condition": "logic_large/rules_pretrain",
+      "n": 100,
+      "first_task_success_tick": {
+        "mean": 15.73,
+        "std": 10.00995,
+        "n": 100
+      },
+      "task_completion_rate": {
+        "mean": 0.8,
+        "std": 0.402015,
+        "n": 100
+      },
+      "contradictions": {
+        "mean": 1.87,
+        "std": 1.353298,
+        "n": 100
+      },
+      "reward": {
+        "mean": 5.1485,
+        "std": 2.261918,
+        "n": 100
+      },
+      "invalid_actions": {
+        "mean": 2.65,
+        "std": 1.559429,
+        "n": 100
+      },
+      "final_energy": {
+        "mean": 85.446,
+        "std": 5.448136,
+        "n": 100
+      },
+      "prediction_error": {
+        "mean": 0.278154,
+        "std": 0.117864,
+        "n": 100
+      },
+      "transfer_uses": {
+        "mean": 28.45,
+        "std": 11.521061,
+        "n": 100
+      },
+      "transfer_strength": {
+        "mean": 56.182915,
+        "std": 34.057974,
+        "n": 100
+      },
+      "transfer_precision": {
+        "mean": 0.81568,
+        "std": 0.234877,
+        "n": 100
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 100
+      }
+    },
+    "three_domain_pretrain": {
+      "condition": "logic_large/three_domain_pretrain",
+      "n": 100,
+      "first_task_success_tick": {
+        "mean": 16.14,
+        "std": 12.046224,
+        "n": 100
+      },
+      "task_completion_rate": {
+        "mean": 0.69,
+        "std": 0.464823,
+        "n": 100
+      },
+      "contradictions": {
+        "mean": 1.67,
+        "std": 1.310833,
+        "n": 100
+      },
+      "reward": {
+        "mean": 4.681,
+        "std": 2.389054,
+        "n": 100
+      },
+      "invalid_actions": {
+        "mean": 2.6,
+        "std": 1.752343,
+        "n": 100
+      },
+      "final_energy": {
+        "mean": 102.9035,
+        "std": 7.386464,
+        "n": 100
+      },
+      "prediction_error": {
+        "mean": 0.251043,
+        "std": 0.14047,
+        "n": 100
+      },
+      "transfer_uses": {
+        "mean": 77.81,
+        "std": 28.03342,
+        "n": 100
+      },
+      "transfer_strength": {
+        "mean": 96.942897,
+        "std": 50.320141,
+        "n": 100
+      },
+      "transfer_precision": {
+        "mean": 0.878245,
+        "std": 0.066401,
+        "n": 100
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 100
+      }
+    },
+    "same_domain_pretrain": {
+      "condition": "logic_large/same_domain_pretrain",
+      "n": 100,
+      "first_task_success_tick": {
+        "mean": 8.4,
+        "std": 8.611714,
+        "n": 100
+      },
+      "task_completion_rate": {
+        "mean": 0.92,
+        "std": 0.27266,
+        "n": 100
+      },
+      "contradictions": {
+        "mean": 1.91,
+        "std": 1.239868,
+        "n": 100
+      },
+      "reward": {
+        "mean": 5.9265,
+        "std": 1.356477,
+        "n": 100
+      },
+      "invalid_actions": {
+        "mean": 2.63,
+        "std": 1.501884,
+        "n": 100
+      },
+      "final_energy": {
+        "mean": 91.4822,
+        "std": 2.978868,
+        "n": 100
+      },
+      "prediction_error": {
+        "mean": 0.283435,
+        "std": 0.077078,
+        "n": 100
+      },
+      "transfer_uses": {
+        "mean": 19.06,
+        "std": 6.642106,
+        "n": 100
+      },
+      "transfer_strength": {
+        "mean": 76.24,
+        "std": 26.568425,
+        "n": 100
+      },
+      "transfer_precision": {
+        "mean": 0.832294,
+        "std": 0.203397,
+        "n": 100
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 100
+      }
+    }
+  },
+  "hazard_large": {
+    "fresh": {
+      "condition": "hazard_large/fresh",
+      "n": 100,
+      "first_task_success_tick": {
+        "mean": 31.0,
+        "std": 0.0,
+        "n": 100
+      },
+      "task_completion_rate": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 100
+      },
+      "contradictions": {
+        "mean": 7.7,
+        "std": 1.966898,
+        "n": 100
+      },
+      "reward": {
+        "mean": 0.446,
+        "std": 0.039338,
+        "n": 100
+      },
+      "invalid_actions": {
+        "mean": 7.7,
+        "std": 1.966898,
+        "n": 100
+      },
+      "final_energy": {
+        "mean": 86.746,
+        "std": 2.006236,
+        "n": 100
+      },
+      "prediction_error": {
+        "mean": 0.098667,
+        "std": 0.007956,
+        "n": 100
+      },
+      "transfer_uses": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 100
+      },
+      "transfer_strength": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 100
+      },
+      "transfer_precision": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 100
+      },
+      "hazard_steps": {
+        "mean": 7.7,
+        "std": 1.966898,
+        "n": 100
+      }
+    },
+    "grid_pretrain": {
+      "condition": "hazard_large/grid_pretrain",
+      "n": 100,
+      "first_task_success_tick": {
+        "mean": 31.0,
+        "std": 0.0,
+        "n": 100
+      },
+      "task_completion_rate": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 100
+      },
+      "contradictions": {
+        "mean": 7.29,
+        "std": 2.934624,
+        "n": 100
+      },
+      "reward": {
+        "mean": 0.4542,
+        "std": 0.058692,
+        "n": 100
+      },
+      "invalid_actions": {
+        "mean": 7.29,
+        "std": 2.934624,
+        "n": 100
+      },
+      "final_energy": {
+        "mean": 130.1752,
+        "std": 13.45549,
+        "n": 100
+      },
+      "prediction_error": {
+        "mean": 0.091,
+        "std": 0.015923,
+        "n": 100
+      },
+      "transfer_uses": {
+        "mean": 43.04,
+        "std": 7.033714,
+        "n": 100
+      },
+      "transfer_strength": {
+        "mean": 105.313591,
+        "std": 25.285204,
+        "n": 100
+      },
+      "transfer_precision": {
+        "mean": 0.762179,
+        "std": 0.096645,
+        "n": 100
+      },
+      "hazard_steps": {
+        "mean": 7.29,
+        "std": 2.934624,
+        "n": 100
+      }
+    },
+    "rules_pretrain": {
+      "condition": "hazard_large/rules_pretrain",
+      "n": 100,
+      "first_task_success_tick": {
+        "mean": 31.0,
+        "std": 0.0,
+        "n": 100
+      },
+      "task_completion_rate": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 100
+      },
+      "contradictions": {
+        "mean": 7.22,
+        "std": 2.236429,
+        "n": 100
+      },
+      "reward": {
+        "mean": 0.4556,
+        "std": 0.044729,
+        "n": 100
+      },
+      "invalid_actions": {
+        "mean": 7.22,
+        "std": 2.236429,
+        "n": 100
+      },
+      "final_energy": {
+        "mean": 78.3131,
+        "std": 5.542415,
+        "n": 100
+      },
+      "prediction_error": {
+        "mean": 0.094,
+        "std": 0.014213,
+        "n": 100
+      },
+      "transfer_uses": {
+        "mean": 17.49,
+        "std": 9.342523,
+        "n": 100
+      },
+      "transfer_strength": {
+        "mean": 8.656827,
+        "std": 14.012622,
+        "n": 100
+      },
+      "transfer_precision": {
+        "mean": 0.399167,
+        "std": 0.383325,
+        "n": 100
+      },
+      "hazard_steps": {
+        "mean": 7.22,
+        "std": 2.236429,
+        "n": 100
+      }
+    },
+    "three_domain_pretrain": {
+      "condition": "hazard_large/three_domain_pretrain",
+      "n": 100,
+      "first_task_success_tick": {
+        "mean": 31.0,
+        "std": 0.0,
+        "n": 100
+      },
+      "task_completion_rate": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 100
+      },
+      "contradictions": {
+        "mean": 8.9,
+        "std": 4.751395,
+        "n": 100
+      },
+      "reward": {
+        "mean": 0.422,
+        "std": 0.095028,
+        "n": 100
+      },
+      "invalid_actions": {
+        "mean": 8.9,
+        "std": 4.751395,
+        "n": 100
+      },
+      "final_energy": {
+        "mean": 94.3295,
+        "std": 6.657404,
+        "n": 100
+      },
+      "prediction_error": {
+        "mean": 0.093,
+        "std": 0.016313,
+        "n": 100
+      },
+      "transfer_uses": {
+        "mean": 61.67,
+        "std": 21.245584,
+        "n": 100
+      },
+      "transfer_strength": {
+        "mean": 119.405586,
+        "std": 67.279139,
+        "n": 100
+      },
+      "transfer_precision": {
+        "mean": 0.704169,
+        "std": 0.158962,
+        "n": 100
+      },
+      "hazard_steps": {
+        "mean": 8.9,
+        "std": 4.751395,
+        "n": 100
+      }
+    },
+    "same_domain_pretrain": {
+      "condition": "hazard_large/same_domain_pretrain",
+      "n": 100,
+      "first_task_success_tick": {
+        "mean": 31.0,
+        "std": 0.0,
+        "n": 100
+      },
+      "task_completion_rate": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 100
+      },
+      "contradictions": {
+        "mean": 5.61,
+        "std": 2.36513,
+        "n": 100
+      },
+      "reward": {
+        "mean": 0.4878,
+        "std": 0.047303,
+        "n": 100
+      },
+      "invalid_actions": {
+        "mean": 5.61,
+        "std": 2.36513,
+        "n": 100
+      },
+      "final_energy": {
+        "mean": 79.0558,
+        "std": 3.014308,
+        "n": 100
+      },
+      "prediction_error": {
+        "mean": 0.002333,
+        "std": 0.009773,
+        "n": 100
+      },
+      "transfer_uses": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 100
+      },
+      "transfer_strength": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 100
+      },
+      "transfer_precision": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 100
+      },
+      "hazard_steps": {
+        "mean": 5.61,
+        "std": 2.36513,
+        "n": 100
+      }
+    }
+  },
+  "rules_chain_long": {
+    "fresh": {
+      "condition": "rules_chain_long/fresh",
+      "n": 100,
+      "first_task_success_tick": {
+        "mean": 30.08,
+        "std": 3.826225,
+        "n": 100
+      },
+      "task_completion_rate": {
+        "mean": 0.12,
+        "std": 0.326599,
+        "n": 100
+      },
+      "contradictions": {
+        "mean": 2.49,
+        "std": 1.534091,
+        "n": 100
+      },
+      "reward": {
+        "mean": 1.4208,
+        "std": 1.452075,
+        "n": 100
+      },
+      "invalid_actions": {
+        "mean": 2.49,
+        "std": 1.534091,
+        "n": 100
+      },
+      "final_energy": {
+        "mean": 86.7198,
+        "std": 5.318544,
+        "n": 100
+      },
+      "prediction_error": {
+        "mean": 0.12389,
+        "std": 0.061637,
+        "n": 100
+      },
+      "transfer_uses": {
+        "mean": 13.63,
+        "std": 7.457157,
+        "n": 100
+      },
+      "transfer_strength": {
+        "mean": 39.520337,
+        "std": 23.057495,
+        "n": 100
+      },
+      "transfer_precision": {
+        "mean": 0.842904,
+        "std": 0.260084,
+        "n": 100
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 100
+      }
+    },
+    "grid_pretrain": {
+      "condition": "rules_chain_long/grid_pretrain",
+      "n": 100,
+      "first_task_success_tick": {
+        "mean": 24.98,
+        "std": 10.384507,
+        "n": 100
+      },
+      "task_completion_rate": {
+        "mean": 0.29,
+        "std": 0.456048,
+        "n": 100
+      },
+      "contradictions": {
+        "mean": 2.49,
+        "std": 1.494062,
+        "n": 100
+      },
+      "reward": {
+        "mean": 2.2369,
+        "std": 2.071734,
+        "n": 100
+      },
+      "invalid_actions": {
+        "mean": 2.49,
+        "std": 1.494062,
+        "n": 100
+      },
+      "final_energy": {
+        "mean": 130.0629,
+        "std": 13.671069,
+        "n": 100
+      },
+      "prediction_error": {
+        "mean": 0.170674,
+        "std": 0.11579,
+        "n": 100
+      },
+      "transfer_uses": {
+        "mean": 58.03,
+        "std": 10.817546,
+        "n": 100
+      },
+      "transfer_strength": {
+        "mean": 72.890853,
+        "std": 25.804967,
+        "n": 100
+      },
+      "transfer_precision": {
+        "mean": 0.917,
+        "std": 0.049802,
+        "n": 100
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 100
+      }
+    },
+    "rules_pretrain": {
+      "condition": "rules_chain_long/rules_pretrain",
+      "n": 100,
+      "first_task_success_tick": {
+        "mean": 28.55,
+        "std": 5.49081,
+        "n": 100
+      },
+      "task_completion_rate": {
+        "mean": 0.22,
+        "std": 0.416333,
+        "n": 100
+      },
+      "contradictions": {
+        "mean": 3.13,
+        "std": 1.685679,
+        "n": 100
+      },
+      "reward": {
+        "mean": 1.9071,
+        "std": 1.808118,
+        "n": 100
+      },
+      "invalid_actions": {
+        "mean": 3.13,
+        "std": 1.685679,
+        "n": 100
+      },
+      "final_energy": {
+        "mean": 76.0176,
+        "std": 7.833148,
+        "n": 100
+      },
+      "prediction_error": {
+        "mean": 0.148471,
+        "std": 0.077411,
+        "n": 100
+      },
+      "transfer_uses": {
+        "mean": 14.23,
+        "std": 9.008251,
+        "n": 100
+      },
+      "transfer_strength": {
+        "mean": 21.837927,
+        "std": 23.460453,
+        "n": 100
+      },
+      "transfer_precision": {
+        "mean": 0.500318,
+        "std": 0.449978,
+        "n": 100
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 100
+      }
+    },
+    "three_domain_pretrain": {
+      "condition": "rules_chain_long/three_domain_pretrain",
+      "n": 100,
+      "first_task_success_tick": {
+        "mean": 22.53,
+        "std": 9.813879,
+        "n": 100
+      },
+      "task_completion_rate": {
+        "mean": 0.54,
+        "std": 0.500908,
+        "n": 100
+      },
+      "contradictions": {
+        "mean": 3.7,
+        "std": 1.987334,
+        "n": 100
+      },
+      "reward": {
+        "mean": 3.3601,
+        "std": 2.172117,
+        "n": 100
+      },
+      "invalid_actions": {
+        "mean": 3.7,
+        "std": 1.987334,
+        "n": 100
+      },
+      "final_energy": {
+        "mean": 92.7036,
+        "std": 9.791267,
+        "n": 100
+      },
+      "prediction_error": {
+        "mean": 0.230221,
+        "std": 0.116867,
+        "n": 100
+      },
+      "transfer_uses": {
+        "mean": 54.88,
+        "std": 17.498791,
+        "n": 100
+      },
+      "transfer_strength": {
+        "mean": 58.054194,
+        "std": 30.356982,
+        "n": 100
+      },
+      "transfer_precision": {
+        "mean": 0.877579,
+        "std": 0.067617,
+        "n": 100
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 100
+      }
+    },
+    "same_domain_pretrain": {
+      "condition": "rules_chain_long/same_domain_pretrain",
+      "n": 100,
+      "first_task_success_tick": {
+        "mean": 29.56,
+        "std": 4.979392,
+        "n": 100
+      },
+      "task_completion_rate": {
+        "mean": 0.12,
+        "std": 0.326599,
+        "n": 100
+      },
+      "contradictions": {
+        "mean": 2.49,
+        "std": 1.514209,
+        "n": 100
+      },
+      "reward": {
+        "mean": 1.4607,
+        "std": 1.451168,
+        "n": 100
+      },
+      "invalid_actions": {
+        "mean": 2.49,
+        "std": 1.514209,
+        "n": 100
+      },
+      "final_energy": {
+        "mean": 77.1094,
+        "std": 7.083367,
+        "n": 100
+      },
+      "prediction_error": {
+        "mean": 0.040603,
+        "std": 0.080703,
+        "n": 100
+      },
+      "transfer_uses": {
+        "mean": 20.61,
+        "std": 5.629818,
+        "n": 100
+      },
+      "transfer_strength": {
+        "mean": 59.015072,
+        "std": 19.185773,
+        "n": 100
+      },
+      "transfer_precision": {
+        "mean": 0.872333,
+        "std": 0.207352,
+        "n": 100
+      },
+      "hazard_steps": {
+        "mean": 0.0,
+        "std": 0.0,
+        "n": 100
+      }
+    }
+  },
+  "_meta": {
+    "phase": "R4",
+    "description": "Large domain variants transfer experiment",
+    "conditions": [
+      "fresh",
+      "grid_pretrain",
+      "rules_pretrain",
+      "three_domain_pretrain",
+      "same_domain_pretrain"
+    ],
+    "targets": [
+      "logic_large",
+      "hazard_large",
+      "rules_chain_long"
+    ]
+  }
+}

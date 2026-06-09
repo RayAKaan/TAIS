@@ -1,7 +1,7 @@
 # Paper Result Audit
 
-- **Generated at:** 2026-06-09T13:39:01.437716+00:00
-- **Commit:** 3c41338a1d0d13bde79d0271d4e0986a28bb82fd
+- **Generated at:** 2026-06-09T14:34:44.049362+00:00
+- **Commit:** c9e51c538b058b05a22a4e9cce138962b5099f7f
 
 ## Summary Table
 
@@ -20,3 +20,5 @@
 | phase_f2_domain_count | Phase F2 | experiments/phase_f2/domain_count_scaling.py | results/phase_f2/domain_count_scaling.csv | Yes | include_main | Best current diversity evidence. | three_grid_rules_chem.first_task_success_tick: d=-0.811404; three_grid_rules_chem.task_completion_rate: d=0.487296; three_grid_rules_chem.transfer_uses: d=2.650656; three_grid_rules_chem.transfer_precision: d=0.898494; four_grid_rules_chem_hazard.first_task_success_tick: d=-1.063064 |
 | phase_f2_repair | Phase F2 | experiments/phase_f2/repair_convergence.py | results/phase_f2/repair_convergence.json | Yes | exclude_paper1 | Paper 2 material; modest divergence reduction. | - |
 | phase_f2_grid_logic_1000 | Phase F2 | experiments/phase_f2/grid_logic_1000_replication.py | results/phase_f2/grid_logic_1000_replication.csv | Yes | include_main | Canonical current Grid->Logic replication. | full.first_task_success_tick: d=-0.238491; full.task_completion_rate: d=0.037826; full.transfer_uses: d=3.318805; full.transfer_precision: d=0.842508; no_action_role.first_task_success_tick: d=0.028222 |
+| phase_r3_baseline_comparison | Phase R3 | experiments/phase_r/baseline_comparison.py | results/phase_r/baseline_comparison/baseline_comparison.csv | Yes | include_as_limitation | HeuristicAgent and TabularQAgent outperform TAIS on Grid->Logic evaluation. | - |
+| phase_r4_large_domain_transfer | Phase R4 | experiments/phase_r/large_domain_transfer.py | results/phase_r/large_domain_transfer/large_domain_transfer.json | Yes | appendix_or_future_work | Transfer survives to larger domains but Grid->Logic_large shows negative transfer. | - |

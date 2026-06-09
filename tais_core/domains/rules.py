@@ -282,6 +282,36 @@ class RuleWorld(WorldInterface):
         return ["GOOD", "BAD", "TRUST", "CONFIRM", "DENY"]
 
 
+class RuleWorldChainLong(RuleWorld):
+    """Long chain variant; use with ``make_rule_graph_chain_long``."""
+    domain_name = "rules_chain_long"
+
+
+def make_rule_graph_chain_long(length: int = 5) -> RealityGraph:
+    r"""Creates a linear implication chain of *length* steps.
+
+    Structure for length=3::
+
+        fact_0 SATISFIES rule_01, rule_01 IMPLIES fact_1
+        fact_1 SATISFIES rule_12, rule_12 IMPLIES fact_2
+        fact_2 SATISFIES rule_23, rule_23 IMPLIES fact_3
+
+    Target: ``fact_{length}_known``
+
+    Compatible with existing RuleWorld.act() — chain is sequential; each step
+    derives the next intermediate fact, and only the last step yields TASK_SUCCESS.
+    """
+    g = RealityGraph("rules", "modus_ponens_chain_long")
+    for i in range(length + 1):
+        g.add_entity(Entity(f"fact_{i}", "FACT", {"truth": True}))
+    for i in range(length):
+        rule_id = f"rule_{i}{i + 1}"
+        g.add_entity(Entity(rule_id, "RULE", {"kind": "implies"}))
+        g.add_relation(Relation(f"fact_{i}", "SATISFIES", rule_id))
+        g.add_relation(Relation(rule_id, "IMPLIES", f"fact_{i + 1}"))
+    return _add_target_marker(g, f"fact_{length}_known")
+
+
 class RuleWorldEasy(RuleWorld):
     """Alias; same semantics as ``RuleWorld`` but explicit naming for paper tables."""
     domain_name = "rules_easy"
@@ -303,11 +333,13 @@ __all__ = [
     "RuleWorld",
     "RuleWorldEasy",
     "RuleWorldChain",
+    "RuleWorldChainLong",
     "RuleWorldDistractor",
     "make_rule_graph",
     "make_rule_graph_easy",
     "make_rule_graph_chain",
     "make_rule_graph_distractor",
+    "make_rule_graph_chain_long",
     "APPLY_REWARD_FIRST",
     "APPLY_REWARD_REPEAT",
     "VERIFY_REWARD",
