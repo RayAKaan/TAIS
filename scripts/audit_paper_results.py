@@ -156,6 +156,14 @@ KNOWN_RESULTS = [
         "paper_status": "appendix_or_future_work",
         "notes": "Transfer survives to larger domains but Grid->Logic_large shows negative transfer.",
     },
+    {
+        "id": "phase_r5_prediction_gating",
+        "phase": "Phase R5",
+        "runner": "experiments/phase_r/prediction_gating_sweep.py",
+        "artifact": "results/phase_r/prediction_gating_sweep/prediction_gating_sweep.csv",
+        "paper_status": "include_appendix_or_limitations",
+        "notes": "Prediction is conditionally useful on logic (d=+0.427) but neutral on rules/hazard.",
+    },
 ]
 
 METRICS_TO_EXTRACT = [

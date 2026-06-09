@@ -526,6 +526,9 @@ class PredictionEngine:
         vals = self._per_domain.get(domain, [])
         return sum(vals) / len(vals) if vals else float("inf")
 
+    def domain_observation_count(self, domain: str) -> int:
+        return self._domain_obs_count.get(domain, 0)
+
     def is_understanding(self, threshold: float = 1.5) -> bool:
         return len(self._predictions) >= 8 and self.mean_error() < threshold
 

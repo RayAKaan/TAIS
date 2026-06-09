@@ -1,7 +1,7 @@
 # Paper Result Audit
 
-- **Generated at:** 2026-06-09T14:34:44.049362+00:00
-- **Commit:** c9e51c538b058b05a22a4e9cce138962b5099f7f
+- **Generated at:** 2026-06-09T14:47:29.035643+00:00
+- **Commit:** 389adc8658a20bc394da4cb2761b8abd74d50847
 
 ## Summary Table
 
@@ -22,3 +22,4 @@
 | phase_f2_grid_logic_1000 | Phase F2 | experiments/phase_f2/grid_logic_1000_replication.py | results/phase_f2/grid_logic_1000_replication.csv | Yes | include_main | Canonical current Grid->Logic replication. | full.first_task_success_tick: d=-0.238491; full.task_completion_rate: d=0.037826; full.transfer_uses: d=3.318805; full.transfer_precision: d=0.842508; no_action_role.first_task_success_tick: d=0.028222 |
 | phase_r3_baseline_comparison | Phase R3 | experiments/phase_r/baseline_comparison.py | results/phase_r/baseline_comparison/baseline_comparison.csv | Yes | include_as_limitation | HeuristicAgent and TabularQAgent outperform TAIS on Grid->Logic evaluation. | - |
 | phase_r4_large_domain_transfer | Phase R4 | experiments/phase_r/large_domain_transfer.py | results/phase_r/large_domain_transfer/large_domain_transfer.json | Yes | appendix_or_future_work | Transfer survives to larger domains but Grid->Logic_large shows negative transfer. | - |
+| phase_r5_prediction_gating | Phase R5 | experiments/phase_r/prediction_gating_sweep.py | results/phase_r/prediction_gating_sweep/prediction_gating_sweep.csv | Yes | include_appendix_or_limitations | Prediction is conditionally useful on logic (d=+0.427) but neutral on rules/hazard. | no_prediction.first_task_success_tick: d=0.007937; no_prediction.task_completion_rate: d=0.0; no_prediction.transfer_uses: d=0.113284; no_prediction.transfer_precision: d=0.111782; no_prediction.hazard_steps: d=0.0 |
