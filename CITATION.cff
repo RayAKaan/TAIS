@@ -8,7 +8,8 @@ authors:
 repository-code: "https://github.com/RayAKaan/TAIS"
 url: "https://github.com/RayAKaan/TAIS"
 license: "MIT"
-version: "6.0.0"
+version: "0.2.0-grtl-paper"
+date-released: "2026-06-09"
 abstract: "TAIS is a grounded AI research platform for studying domain-agnostic agents that learn and transfer functional action roles across typed graph domains without pretrained representations."
 keywords:
   - grounded-ai
