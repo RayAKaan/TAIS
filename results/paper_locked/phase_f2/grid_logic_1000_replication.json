@@ -1,0 +1,754 @@
+{
+  "full": {
+    "condition": "full",
+    "n": 1000,
+    "first_task_success_tick": {
+      "fresh": 11.5,
+      "pretrained": 9.718,
+      "delta": -1.782,
+      "ci_low": -2.245117,
+      "ci_high": -1.318883,
+      "p": 0.0,
+      "d": -0.238491
+    },
+    "task_completion_rate": {
+      "fresh": 0.519,
+      "pretrained": 0.544,
+      "delta": 0.025,
+      "ci_low": -0.015964,
+      "ci_high": 0.065964,
+      "p": 0.23163,
+      "d": 0.037826
+    },
+    "contradictions": {
+      "fresh": 0.997,
+      "pretrained": 1.02,
+      "delta": 0.023,
+      "ci_low": -0.061901,
+      "ci_high": 0.107901,
+      "p": 0.595438,
+      "d": 0.016791
+    },
+    "reward": {
+      "fresh": 2.6781,
+      "pretrained": 2.8959,
+      "delta": 0.2178,
+      "ci_low": 0.033309,
+      "ci_high": 0.402291,
+      "p": 0.020675,
+      "d": 0.073171
+    },
+    "invalid_actions": {
+      "fresh": 1.705,
+      "pretrained": 1.691,
+      "delta": -0.014,
+      "ci_low": -0.126133,
+      "ci_high": 0.098133,
+      "p": 0.806682,
+      "d": -0.007738
+    },
+    "final_energy": {
+      "fresh": 97.3011,
+      "pretrained": 140.6031,
+      "delta": 43.302,
+      "ci_low": 42.451422,
+      "ci_high": 44.152578,
+      "p": 0.0,
+      "d": 3.155368
+    },
+    "prediction_error": {
+      "fresh": 0.372588,
+      "pretrained": 0.397786,
+      "delta": 0.025198,
+      "ci_low": 0.001714,
+      "ci_high": 0.048681,
+      "p": 0.03546,
+      "d": 0.066505
+    },
+    "transfer_uses": {
+      "fresh": 2.791,
+      "pretrained": 24.213,
+      "delta": 21.422,
+      "ci_low": 21.021931,
+      "ci_high": 21.822069,
+      "p": 0.0,
+      "d": 3.318805
+    },
+    "transfer_strength": {
+      "fresh": 10.989,
+      "pretrained": 31.90811,
+      "delta": 20.91911,
+      "ci_low": 19.628062,
+      "ci_high": 22.210159,
+      "p": 0.0,
+      "d": 1.004285
+    },
+    "transfer_precision": {
+      "fresh": 0.46118,
+      "pretrained": 0.849162,
+      "delta": 0.387982,
+      "ci_low": 0.359439,
+      "ci_high": 0.416524,
+      "p": 0.0,
+      "d": 0.842508
+    }
+  },
+  "no_action_role": {
+    "condition": "no_action_role",
+    "n": 1000,
+    "first_task_success_tick": {
+      "fresh": 11.5,
+      "pretrained": 11.707,
+      "delta": 0.207,
+      "ci_low": -0.24761,
+      "ci_high": 0.66161,
+      "p": 0.372148,
+      "d": 0.028222
+    },
+    "task_completion_rate": {
+      "fresh": 0.519,
+      "pretrained": 0.502,
+      "delta": -0.017,
+      "ci_low": -0.061055,
+      "ci_high": 0.027055,
+      "p": 0.449452,
+      "d": -0.023917
+    },
+    "contradictions": {
+      "fresh": 0.997,
+      "pretrained": 1.025,
+      "delta": 0.028,
+      "ci_low": -0.057819,
+      "ci_high": 0.113819,
+      "p": 0.522506,
+      "d": 0.020222
+    },
+    "reward": {
+      "fresh": 2.66184,
+      "pretrained": 2.57219,
+      "delta": -0.08965,
+      "ci_low": -0.287979,
+      "ci_high": 0.108679,
+      "p": 0.375631,
+      "d": -0.028017
+    },
+    "invalid_actions": {
+      "fresh": 1.705,
+      "pretrained": 1.702,
+      "delta": -0.003,
+      "ci_low": -0.112482,
+      "ci_high": 0.106482,
+      "p": 0.957168,
+      "d": -0.001698
+    },
+    "final_energy": {
+      "fresh": 97.33904,
+      "pretrained": 139.93839,
+      "delta": 42.59935,
+      "ci_low": 41.771663,
+      "ci_high": 43.427037,
+      "p": 0.0,
+      "d": 3.190018
+    },
+    "prediction_error": {
+      "fresh": 0.369449,
+      "pretrained": 0.358498,
+      "delta": -0.010952,
+      "ci_low": -0.035868,
+      "ci_high": 0.013965,
+      "p": 0.388978,
+      "d": -0.027242
+    },
+    "transfer_uses": {
+      "fresh": 2.791,
+      "pretrained": 23.772,
+      "delta": 20.981,
+      "ci_low": 20.6017,
+      "ci_high": 21.3603,
+      "p": 0.0,
+      "d": 3.428465
+    },
+    "transfer_strength": {
+      "fresh": 5.757,
+      "pretrained": 8.710785,
+      "delta": 2.953785,
+      "ci_low": 2.35352,
+      "ci_high": 3.55405,
+      "p": 0.0,
+      "d": 0.304994
+    },
+    "transfer_precision": {
+      "fresh": 0.461345,
+      "pretrained": 0.812617,
+      "delta": 0.351273,
+      "ci_low": 0.319869,
+      "ci_high": 0.382677,
+      "p": 0.0,
+      "d": 0.693287
+    }
+  },
+  "no_prior_decay": {
+    "condition": "no_prior_decay",
+    "n": 1000,
+    "first_task_success_tick": {
+      "fresh": 11.5,
+      "pretrained": 9.88,
+      "delta": -1.62,
+      "ci_low": -2.084217,
+      "ci_high": -1.155783,
+      "p": 0.0,
+      "d": -0.216297
+    },
+    "task_completion_rate": {
+      "fresh": 0.519,
+      "pretrained": 0.514,
+      "delta": -0.005,
+      "ci_low": -0.046086,
+      "ci_high": 0.036086,
+      "p": 0.811474,
+      "d": -0.007543
+    },
+    "contradictions": {
+      "fresh": 0.997,
+      "pretrained": 1.018,
+      "delta": 0.021,
+      "ci_low": -0.063903,
+      "ci_high": 0.105903,
+      "p": 0.627826,
+      "d": 0.01533
+    },
+    "reward": {
+      "fresh": 2.67816,
+      "pretrained": 2.77276,
+      "delta": 0.0946,
+      "ci_low": -0.089811,
+      "ci_high": 0.279011,
+      "p": 0.31468,
+      "d": 0.031795
+    },
+    "invalid_actions": {
+      "fresh": 1.705,
+      "pretrained": 1.686,
+      "delta": -0.019,
+      "ci_low": -0.130976,
+      "ci_high": 0.092976,
+      "p": 0.739458,
+      "d": -0.010517
+    },
+    "final_energy": {
+      "fresh": 97.30096,
+      "pretrained": 140.51296,
+      "delta": 43.212,
+      "ci_low": 42.346775,
+      "ci_high": 44.077225,
+      "p": 0.0,
+      "d": 3.095506
+    },
+    "prediction_error": {
+      "fresh": 0.372589,
+      "pretrained": 0.385271,
+      "delta": 0.012682,
+      "ci_low": -0.011045,
+      "ci_high": 0.036409,
+      "p": 0.294823,
+      "d": 0.033128
+    },
+    "transfer_uses": {
+      "fresh": 2.791,
+      "pretrained": 24.154,
+      "delta": 21.363,
+      "ci_low": 20.962023,
+      "ci_high": 21.763977,
+      "p": 0.0,
+      "d": 3.302163
+    },
+    "transfer_strength": {
+      "fresh": 10.989,
+      "pretrained": 31.647989,
+      "delta": 20.658989,
+      "ci_low": 19.363679,
+      "ci_high": 21.954299,
+      "p": 0.0,
+      "d": 0.988533
+    },
+    "transfer_precision": {
+      "fresh": 0.46118,
+      "pretrained": 0.849529,
+      "delta": 0.388348,
+      "ci_low": 0.359832,
+      "ci_high": 0.416864,
+      "p": 0.0,
+      "d": 0.844095
+    }
+  },
+  "no_pattern_transfer": {
+    "condition": "no_pattern_transfer",
+    "n": 1000,
+    "first_task_success_tick": {
+      "fresh": 11.5,
+      "pretrained": 11.668,
+      "delta": 0.168,
+      "ci_low": -0.289114,
+      "ci_high": 0.625114,
+      "p": 0.471312,
+      "d": 0.022779
+    },
+    "task_completion_rate": {
+      "fresh": 0.519,
+      "pretrained": 0.502,
+      "delta": -0.017,
+      "ci_low": -0.061055,
+      "ci_high": 0.027055,
+      "p": 0.449452,
+      "d": -0.023917
+    },
+    "contradictions": {
+      "fresh": 0.994,
+      "pretrained": 1.029,
+      "delta": 0.035,
+      "ci_low": -0.050697,
+      "ci_high": 0.120697,
+      "p": 0.423423,
+      "d": 0.025314
+    },
+    "reward": {
+      "fresh": 2.63838,
+      "pretrained": 2.55232,
+      "delta": -0.08606,
+      "ci_low": -0.282573,
+      "ci_high": 0.110453,
+      "p": 0.390698,
+      "d": -0.027143
+    },
+    "invalid_actions": {
+      "fresh": 1.699,
+      "pretrained": 1.707,
+      "delta": 0.008,
+      "ci_low": -0.101428,
+      "ci_high": 0.117428,
+      "p": 0.886061,
+      "d": 0.004531
+    },
+    "final_energy": {
+      "fresh": 97.39978,
+      "pretrained": 139.92582,
+      "delta": 42.52604,
+      "ci_low": 41.701682,
+      "ci_high": 43.350398,
+      "p": 0.0,
+      "d": 3.197385
+    },
+    "prediction_error": {
+      "fresh": 0.355868,
+      "pretrained": 0.34756,
+      "delta": -0.008308,
+      "ci_low": -0.032046,
+      "ci_high": 0.01543,
+      "p": 0.492724,
+      "d": -0.021693
+    },
+    "transfer_uses": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_strength": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_precision": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    }
+  },
+  "no_prediction": {
+    "condition": "no_prediction",
+    "n": 1000,
+    "first_task_success_tick": {
+      "fresh": 11.467,
+      "pretrained": 9.36,
+      "delta": -2.107,
+      "ci_low": -2.570329,
+      "ci_high": -1.643671,
+      "p": 0.0,
+      "d": -0.281858
+    },
+    "task_completion_rate": {
+      "fresh": 0.521,
+      "pretrained": 0.57,
+      "delta": 0.049,
+      "ci_low": 0.008497,
+      "ci_high": 0.089503,
+      "p": 0.01773,
+      "d": 0.074984
+    },
+    "contradictions": {
+      "fresh": 0.978,
+      "pretrained": 1.001,
+      "delta": 0.023,
+      "ci_low": -0.063249,
+      "ci_high": 0.109249,
+      "p": 0.601202,
+      "d": 0.016528
+    },
+    "reward": {
+      "fresh": 2.69081,
+      "pretrained": 3.01581,
+      "delta": 0.325,
+      "ci_low": 0.142621,
+      "ci_high": 0.507379,
+      "p": 0.000478,
+      "d": 0.11045
+    },
+    "invalid_actions": {
+      "fresh": 1.678,
+      "pretrained": 1.636,
+      "delta": -0.042,
+      "ci_low": -0.155267,
+      "ci_high": 0.071267,
+      "p": 0.46736,
+      "d": -0.022983
+    },
+    "final_energy": {
+      "fresh": 97.34011,
+      "pretrained": 137.63811,
+      "delta": 40.298,
+      "ci_low": 39.537161,
+      "ci_high": 41.058839,
+      "p": 0.0,
+      "d": 3.282817
+    },
+    "prediction_error": {
+      "fresh": 0.293921,
+      "pretrained": 0.320221,
+      "delta": 0.0263,
+      "ci_low": 0.012926,
+      "ci_high": 0.039674,
+      "p": 0.000116,
+      "d": 0.121881
+    },
+    "transfer_uses": {
+      "fresh": 2.902,
+      "pretrained": 25.163,
+      "delta": 22.261,
+      "ci_low": 21.860696,
+      "ci_high": 22.661304,
+      "p": 0.0,
+      "d": 3.44676
+    },
+    "transfer_strength": {
+      "fresh": 11.44,
+      "pretrained": 33.288744,
+      "delta": 21.848744,
+      "ci_low": 20.482301,
+      "ci_high": 23.215187,
+      "p": 0.0,
+      "d": 0.99104
+    },
+    "transfer_precision": {
+      "fresh": 0.470978,
+      "pretrained": 0.855121,
+      "delta": 0.384143,
+      "ci_low": 0.355514,
+      "ci_high": 0.412772,
+      "p": 0.0,
+      "d": 0.831645
+    }
+  },
+  "empty_pretrain": {
+    "condition": "empty_pretrain",
+    "n": 1000,
+    "first_task_success_tick": {
+      "fresh": 11.5,
+      "pretrained": 11.697,
+      "delta": 0.197,
+      "ci_low": -0.24845,
+      "ci_high": 0.64245,
+      "p": 0.386047,
+      "d": 0.027411
+    },
+    "task_completion_rate": {
+      "fresh": 0.519,
+      "pretrained": 0.504,
+      "delta": -0.015,
+      "ci_low": -0.058442,
+      "ci_high": 0.028442,
+      "p": 0.49856,
+      "d": -0.021401
+    },
+    "contradictions": {
+      "fresh": 0.997,
+      "pretrained": 1.035,
+      "delta": 0.038,
+      "ci_low": -0.048385,
+      "ci_high": 0.124385,
+      "p": 0.388583,
+      "d": 0.027265
+    },
+    "reward": {
+      "fresh": 2.6781,
+      "pretrained": 2.60372,
+      "delta": -0.07438,
+      "ci_low": -0.271563,
+      "ci_high": 0.122803,
+      "p": 0.459703,
+      "d": -0.02338
+    },
+    "invalid_actions": {
+      "fresh": 1.705,
+      "pretrained": 1.697,
+      "delta": -0.008,
+      "ci_low": -0.115083,
+      "ci_high": 0.099083,
+      "p": 0.883584,
+      "d": -0.00463
+    },
+    "final_energy": {
+      "fresh": 97.3011,
+      "pretrained": 115.25132,
+      "delta": 17.95022,
+      "ci_low": 17.716753,
+      "ci_high": 18.183687,
+      "p": 0.0,
+      "d": 4.765416
+    },
+    "prediction_error": {
+      "fresh": 0.372588,
+      "pretrained": 0.362792,
+      "delta": -0.009796,
+      "ci_low": -0.034841,
+      "ci_high": 0.01525,
+      "p": 0.443342,
+      "d": -0.024241
+    },
+    "transfer_uses": {
+      "fresh": 2.791,
+      "pretrained": 2.677,
+      "delta": -0.114,
+      "ci_low": -0.387464,
+      "ci_high": 0.159464,
+      "p": 0.413886,
+      "d": -0.025838
+    },
+    "transfer_strength": {
+      "fresh": 10.989,
+      "pretrained": 10.535,
+      "delta": -0.454,
+      "ci_low": -1.544524,
+      "ci_high": 0.636524,
+      "p": 0.414514,
+      "d": -0.025803
+    },
+    "transfer_precision": {
+      "fresh": 0.46118,
+      "pretrained": 0.441843,
+      "delta": -0.019338,
+      "ci_low": -0.057579,
+      "ci_high": 0.018904,
+      "p": 0.321637,
+      "d": -0.031341
+    }
+  },
+  "random_pretrain": {
+    "condition": "random_pretrain",
+    "n": 1000,
+    "first_task_success_tick": {
+      "fresh": 11.5,
+      "pretrained": 12.345,
+      "delta": 0.845,
+      "ci_low": 0.393859,
+      "ci_high": 1.296141,
+      "p": 0.000242,
+      "d": 0.116092
+    },
+    "task_completion_rate": {
+      "fresh": 0.519,
+      "pretrained": 0.429,
+      "delta": -0.09,
+      "ci_low": -0.133492,
+      "ci_high": -0.046508,
+      "p": 5e-05,
+      "d": -0.128259
+    },
+    "contradictions": {
+      "fresh": 0.997,
+      "pretrained": 0.996,
+      "delta": -0.001,
+      "ci_low": -0.086049,
+      "ci_high": 0.084049,
+      "p": 0.981614,
+      "d": -0.000729
+    },
+    "reward": {
+      "fresh": 2.6781,
+      "pretrained": 2.28775,
+      "delta": -0.39035,
+      "ci_low": -0.586758,
+      "ci_high": -0.193942,
+      "p": 9.8e-05,
+      "d": -0.123183
+    },
+    "invalid_actions": {
+      "fresh": 1.705,
+      "pretrained": 1.692,
+      "delta": -0.013,
+      "ci_low": -0.122056,
+      "ci_high": 0.096056,
+      "p": 0.815264,
+      "d": -0.007388
+    },
+    "final_energy": {
+      "fresh": 97.3011,
+      "pretrained": 95.086098,
+      "delta": -2.215002,
+      "ci_low": -2.552773,
+      "ci_high": -1.877231,
+      "p": 0.0,
+      "d": -0.406451
+    },
+    "prediction_error": {
+      "fresh": 0.372588,
+      "pretrained": 0.32064,
+      "delta": -0.051948,
+      "ci_low": -0.07695,
+      "ci_high": -0.026946,
+      "p": 4.7e-05,
+      "d": -0.128782
+    },
+    "transfer_uses": {
+      "fresh": 2.791,
+      "pretrained": 12.311,
+      "delta": 9.52,
+      "ci_low": 9.190698,
+      "ci_high": 9.849302,
+      "p": 0.0,
+      "d": 1.791836
+    },
+    "transfer_strength": {
+      "fresh": 10.989,
+      "pretrained": 15.855655,
+      "delta": 4.866655,
+      "ci_low": 3.758331,
+      "ci_high": 5.974979,
+      "p": 0.0,
+      "d": 0.272157
+    },
+    "transfer_precision": {
+      "fresh": 0.46118,
+      "pretrained": 0.82803,
+      "delta": 0.36685,
+      "ci_low": 0.336806,
+      "ci_high": 0.396894,
+      "p": 0.0,
+      "d": 0.756805
+    }
+  },
+  "logic_pretrain": {
+    "condition": "logic_pretrain",
+    "n": 1000,
+    "first_task_success_tick": {
+      "fresh": 11.5,
+      "pretrained": 7.696,
+      "delta": -3.804,
+      "ci_low": -4.22341,
+      "ci_high": -3.38459,
+      "p": 0.0,
+      "d": -0.562158
+    },
+    "task_completion_rate": {
+      "fresh": 0.519,
+      "pretrained": 0.685,
+      "delta": 0.166,
+      "ci_low": 0.130787,
+      "ci_high": 0.201213,
+      "p": 0.0,
+      "d": 0.292189
+    },
+    "contradictions": {
+      "fresh": 0.997,
+      "pretrained": 1.148,
+      "delta": 0.151,
+      "ci_low": 0.055692,
+      "ci_high": 0.246308,
+      "p": 0.001901,
+      "d": 0.098198
+    },
+    "reward": {
+      "fresh": 2.6781,
+      "pretrained": 3.53776,
+      "delta": 0.85966,
+      "ci_low": 0.703386,
+      "ci_high": 1.015934,
+      "p": 0.0,
+      "d": 0.340954
+    },
+    "invalid_actions": {
+      "fresh": 1.705,
+      "pretrained": 1.825,
+      "delta": 0.12,
+      "ci_low": -0.001258,
+      "ci_high": 0.241258,
+      "p": 0.05242,
+      "d": 0.061338
+    },
+    "final_energy": {
+      "fresh": 97.3011,
+      "pretrained": 102.41898,
+      "delta": 5.11788,
+      "ci_low": 4.474664,
+      "ci_high": 5.761096,
+      "p": 0.0,
+      "d": 0.493162
+    },
+    "prediction_error": {
+      "fresh": 0.372588,
+      "pretrained": 0.493285,
+      "delta": 0.120697,
+      "ci_low": 0.101153,
+      "ci_high": 0.140241,
+      "p": 0.0,
+      "d": 0.382763
+    },
+    "transfer_uses": {
+      "fresh": 2.791,
+      "pretrained": 7.769,
+      "delta": 4.978,
+      "ci_low": 4.725166,
+      "ci_high": 5.230834,
+      "p": 0.0,
+      "d": 1.220327
+    },
+    "transfer_strength": {
+      "fresh": 10.989,
+      "pretrained": 27.549806,
+      "delta": 16.560806,
+      "ci_low": 15.477211,
+      "ci_high": 17.6444,
+      "p": 0.0,
+      "d": 0.947263
+    },
+    "transfer_precision": {
+      "fresh": 0.46118,
+      "pretrained": 0.65265,
+      "delta": 0.19147,
+      "ci_low": 0.160076,
+      "ci_high": 0.222864,
+      "p": 0.0,
+      "d": 0.378013
+    }
+  }
+}
