@@ -22,6 +22,7 @@ BUILTIN_SPEC_NAMES = {
     "rules_chain_long": _HERE / "rules_chain_long.yaml",
     "webnav": _HERE / "webnav.yaml",
     "codesynt": _HERE / "codesynt.yaml",
+    "sciex": _HERE / "sciex.yaml",
 }
 
 

@@ -1,0 +1,14 @@
+name: SciEx
+domain_name: sciex
+version: 1.0
+description: Scientific experiment design domain
+
+backend:
+  world_class: tais_core.domains.sciex.SciExWorld
+  graph_factory: tais_core.domains.sciex.make_sciex_graph
+  graph_factory_kwargs: {}
+
+world_defaults:
+  energy: 100
+  horizon: 40
+  step_cost: 0.15
