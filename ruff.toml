@@ -1,0 +1,19 @@
+target-version = "py310"
+line-length = 120
+
+# Enable a reasonable subset of ruff rules for a research codebase.
+# Avoid strict style rules that would churn the existing codebase.
+select = [
+    "F",   # pyflakes: unused imports/variables, undefined names
+    "I",   # isort: import sorting
+    "UP",  # pyupgrade: modern Python syntax
+]
+ignore = [
+    "F401",  # allow unused imports (common in __init__.py / lazy imports)
+    "F403",  # allow star imports
+    "UP007", # allow Union/Optional syntax (3.10+ but some code predates)
+]
+
+[per-file-ignores]
+"tests/*" = ["F811", "UP"]
+"experiments/*" = ["UP"]

@@ -1,4 +1,4 @@
-# Runtime dependencies for the swarm_v5 backend.
+# Runtime dependencies for TAIS (tais_core + experiments).
 # Pinned upper bounds chosen to be stable for reproducing 2026-Q2 results;
 # unpin (raise) when intentionally re-validating.
 Flask>=3.0.0,<4.0.0
