@@ -1,0 +1,15 @@
+name: WebNav
+domain_name: webnav
+version: 1.0
+description: Autonomous web navigation domain
+
+backend:
+  world_class: tais_core.domains.webnav.WebNavWorld
+  graph_factory: tais_core.domains.webnav.make_webnav_graph
+  graph_factory_kwargs:
+    goal_id: "btn1"
+
+world_defaults:
+  energy: 100
+  horizon: 50
+  step_cost: 0.1
