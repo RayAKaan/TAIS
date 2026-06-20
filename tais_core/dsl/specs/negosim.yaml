@@ -1,0 +1,15 @@
+name: NegoSim
+domain_name: negosim
+version: 1.0
+description: Multi-agent negotiation and coalition domain
+
+backend:
+  world_class: tais_core.domains.negosim.NegoSimWorld
+  graph_factory: tais_core.domains.negosim.make_negosim_graph
+  graph_factory_kwargs:
+    num_agents: 2
+
+world_defaults:
+  energy: 100
+  horizon: 40
+  step_cost: 0.15
