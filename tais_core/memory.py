@@ -389,7 +389,7 @@ class CulturalMemory:
         if len(self._global) > self.capacity:
             self._global = sorted(self._global, key=lambda e: -e["fitness"])[:self.capacity]
 
-    def query(self, domain: str, concept: Optional[str] = None, n: int = 5) -> List[Dict[str, Any]]:
+    def query(self, domain: str, concept: Optional[str] = None, n: int = 5, energy_cost: float = 0.0) -> List[Dict[str, Any]]:
         entries = list(self._store.get(domain, []))
         if concept:
             entries = [e for e in entries if e.get("concept") == concept or concept in e.get("concepts", [])]
@@ -567,7 +567,10 @@ class MoteMemory:
         self.episodic.record(ep)
         self.prediction.record_outcome(predicted, consequence, transformation, domain)
 
-        if abs(consequence.net) > 1.0:
+        # Global Improvement: More sensitive pattern extraction.
+        # Lower threshold for real-world domains where rewards are smaller.
+        threshold = 1.0 if domain in ["grid", "rules"] else 0.4
+        if abs(consequence.net) >= threshold:
             pattern = GraphPattern(
                 entities=list(state_before.entities())[:5],
                 relations=list(state_before.relations())[:5],
@@ -605,8 +608,8 @@ class MoteMemory:
             err = self.prediction.domain_error(domain)
         else:
             err = self.prediction.mean_error()
-        uncertainty = 0.0 if math.isinf(err) else min(0.4, err * 0.1)
-        return random.random() < curiosity + uncertainty
+        uncertainty = 0.0 if math.isinf(err) else min(0.2, err * 0.05)
+        return random.random() < min(0.5, curiosity + uncertainty)
 
     def transfer_patterns_to(self, target_graph: RealityGraph) -> List[Tuple[GraphPattern, AnalogyMapping]]:
         return self.patterns.transfer_to(target_graph)

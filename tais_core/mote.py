@@ -26,6 +26,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from .engine_policy import EnginePolicyDecision, decide_engine_usage
 from .memory import MoteMemory
+from .memory_attentiondb import AttentionDBEpisodicMemory
 from .reality import Consequence, RealityGraph, Transformation, WorldInterface
 from .role_learning import LearnedRoleCompatibility
 from .speech import SpeechOrgan
@@ -68,7 +69,7 @@ class UniversalMote:
         self.energy = energy
         self.age = 0
         self.alive = True
-        self.memory = MoteMemory()
+        self.memory = AttentionDBEpisodicMemory(episodic_capacity=128)
         self.speech = SpeechOrgan(self.id)
         self.meta = MetaGenes()
         self.domain_history: List[str] = []
@@ -172,14 +173,30 @@ class UniversalMote:
             return "MAINTAIN_STABLE"
         return "UNCLASSIFIED"
 
-    def choose_action(self, observation: RealityGraph, actions: List[Transformation]) -> Optional[Transformation]:
+    def choose_action(self, observation: RealityGraph, actions: List[Transformation], episode_tick: int = 0) -> Optional[Transformation]:
         if not actions:
             return None
+
+        # ── Phase 8: Active Planning ──
+        # If a plan exists and is valid, follow it. This makes planning load-bearing.
+        if self.planner is not None:
+            planned_action_name = self.planner.get_next_step()
+            if planned_action_name is not None:
+                for a in actions:
+                    if a.name == planned_action_name:
+                        return a
+
+        # ── Phase 6: exploration cooling ──
+        if episode_tick > 40:
+            cooling = max(0.0, 1.0 - (episode_tick - 40) / 60)
+            effective_curiosity = self.meta.curiosity * cooling
+        else:
+            effective_curiosity = self.meta.curiosity
 
         # ── Metacognitive exploration modulation ──
         # If metacog is active and confidence is low, boost exploration.
         # If confidence is high, suppress unnecessary exploration.
-        explore = self.memory.should_explore(actions, curiosity=self.meta.curiosity, domain=observation.domain)
+        explore = self.memory.should_explore(actions, curiosity=effective_curiosity, domain=observation.domain)
         if self.metacog is not None and (self._engine_policy is None or self._engine_policy.use_metacognition):
             confidence = self.metacog.get_confidence()
             explore_rate = self.metacog.get_exploration_rate()
@@ -189,6 +206,18 @@ class UniversalMote:
                 explore = False
         if explore:
             return random.choice(actions)
+
+        # ── Phase 7: Costly Cultural Memory ──
+        # When energy permits and confidence is low, pay energy to query the archive.
+        if self.energy > 20.0 and random.random() < 0.05:
+            cultural_hints = self.memory.cultural.query(observation.domain, n=1, energy_cost=1.0)
+            if cultural_hints:
+                self.energy -= 1.0
+                hinted_action = cultural_hints[0].get("action")
+                if hinted_action is not None:
+                    for a in actions:
+                        if a.name == hinted_action:
+                            return a
 
         transfer_boosts, transfer_used = self.memory.transfer_action_priors(observation, actions)
         if transfer_used:
@@ -200,6 +229,9 @@ class UniversalMote:
         local_exp = self.domain_action_counts.get(observation.domain, 0)
         transfer_decay_rate = 0.08
         effective_analogy_weight = self.meta.analogy_bias / (1.0 + transfer_decay_rate * local_exp)
+
+        # ── Phase 6: AttentionDB retrieval boosts ──
+        retrieval_boosts = self.memory.get_action_boosts(observation, actions, episode_tick)
 
         best_action = None
         best_score = float("-inf")
@@ -218,7 +250,7 @@ class UniversalMote:
             if historical < -0.1:
                 gating_factor = math.exp(historical)
             transfer = gating_factor * effective_analogy_weight * transfer_boosts.get(action.name, 0.0)
-            score = historical + transfer - cost - self.meta.skepticism * risk
+            score = historical + transfer + retrieval_boosts.get(action.name, 0.0) - cost - self.meta.skepticism * risk
             if self.use_prediction_in_score:
                 n = self.memory.prediction.domain_observation_count(observation.domain)
                 if n >= self.prediction_min_domain_observations:
@@ -245,7 +277,7 @@ class UniversalMote:
         mote_state = self.state(**(extra_state or {}))
         observation = world.observe(graph, mote_position)
         actions = world.valid_actions(observation, mote_state)
-        action = self.choose_action(observation, actions)
+        action = self.choose_action(observation, actions, episode_tick=tick)
         if action is None:
             cons = Consequence(penalty=0.2, valid=False, concept_signals={"VOID": 1.0}, explanation={"why": "no actions"})
             self.energy += cons.net
@@ -291,6 +323,10 @@ class UniversalMote:
 
         # Planner: advance on success, rollback on failure
         if self.planner is not None and (self._engine_policy is None or self._engine_policy.use_planning):
+            # ── Phase 8: Auto-generate plan if goal detected and no plan active ──
+            if self.planner.active_plan is None and self.causal is not None:
+                goal_concept = "SUCCESS"
+                self.planner.plan_for_goal({"type": goal_concept}, self.causal)
             if self.planner.active_plan is not None:
                 if cons.net > 0:
                     self.planner.advance_step()

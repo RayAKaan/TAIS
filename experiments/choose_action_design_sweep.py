@@ -80,7 +80,7 @@ def patched_choose_action(mote: UniversalMote, a_pred: float, b_hist: float):
     """Reversible monkeypatch of choose_action with a weighted blend."""
     orig = mote.choose_action
 
-    def new_choose(observation, actions, _m=mote, _a=a_pred, _b=b_hist):
+    def new_choose(observation, actions, _m=mote, _a=a_pred, _b=b_hist, **kwargs):
         if not actions:
             return None
         if _m.memory.should_explore(actions, curiosity=_m.meta.curiosity):

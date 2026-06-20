@@ -220,10 +220,10 @@ def apply_ablation(mote: UniversalMote, controls: AblationControls):
     else:
         orig_choose = mote._ab_orig["choose_action"]  # bound method
 
-        def no_decay_choose(observation, actions, _m=mote, _orig=orig_choose):
+        def no_decay_choose(observation, actions, _m=mote, _orig=orig_choose, **kwargs):
             saved = dict(_m.domain_action_counts)
             _m.domain_action_counts = {}
-            result = _orig(observation, actions)
+            result = _orig(observation, actions, **kwargs)
             _m.domain_action_counts = saved
             return result
 

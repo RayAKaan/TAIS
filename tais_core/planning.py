@@ -179,6 +179,11 @@ class HierarchicalPlanner:
     def active_plan(self, plan: Optional[Plan]):
         self._active_plan = plan
 
+    def get_next_step(self) -> Optional[str]:
+        """Convenience: return just the action name of the next planned step."""
+        step = self.next_step()
+        return step.action if step else None
+
     def plan_for_goal(self, goal: dict, causal_engine) -> Optional[Plan]:
         """Create a plan from a goal dict and a CausalReasoningEngine."""
         links = causal_engine.get_all_links() if hasattr(causal_engine, "get_all_links") else []
