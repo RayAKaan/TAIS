@@ -114,7 +114,7 @@ class EpisodicMemory:
     def record(self, episode: Episode):
         self.episodes.append(episode)
         name = episode.transformation.name
-        stat = self._action_stats.setdefault(name, {
+        stat = self._action_stats.setdefault((episode.domain, name), {
             "total": 0.0, "count": 0, "min": float("inf"), "max": float("-inf"), "domains": set()
         })
         net = episode.consequence.net
@@ -124,23 +124,23 @@ class EpisodicMemory:
         stat["max"] = max(stat["max"], net)
         stat["domains"].add(episode.domain)
 
-    def action_value(self, transform_name: str) -> float:
-        stat = self._action_stats.get(transform_name)
+    def action_value(self, transform_name: str, domain: str = "unknown") -> float:
+        stat = self._action_stats.get((domain, transform_name))
         return 0.0 if not stat or stat["count"] == 0 else stat["total"] / stat["count"]
 
-    def action_risk(self, transform_name: str) -> float:
-        stat = self._action_stats.get(transform_name)
+    def action_risk(self, transform_name: str, domain: str = "unknown") -> float:
+        stat = self._action_stats.get((domain, transform_name))
         if not stat or stat["count"] < 2:
             return 1.0
         mean = stat["total"] / stat["count"]
         return (stat["max"] - stat["min"]) / max(1.0, abs(mean))
 
     def best_actions(self, n: int = 3) -> List[Tuple[str, float]]:
-        vals = [(name, s["total"] / max(1, s["count"])) for name, s in self._action_stats.items()]
+        vals = [(name if isinstance(name, str) else name[1], s["total"] / max(1, s["count"])) for name, s in self._action_stats.items()]
         return sorted(vals, key=lambda kv: -kv[1])[:n]
 
     def worst_actions(self, n: int = 3) -> List[Tuple[str, float]]:
-        vals = [(name, s["total"] / max(1, s["count"])) for name, s in self._action_stats.items()]
+        vals = [(name if isinstance(name, str) else name[1], s["total"] / max(1, s["count"])) for name, s in self._action_stats.items()]
         return sorted(vals, key=lambda kv: kv[1])[:n]
 
     def prediction_error_trend(self) -> float:
@@ -592,7 +592,7 @@ class MoteMemory:
             return None
         best, best_score = None, float("-inf")
         for t in candidates:
-            score = self.episodic.action_value(t.name) - 0.3 * self.episodic.action_risk(t.name)
+            score = self.episodic.action_value(t.name, domain=t.domain) - 0.3 * self.episodic.action_risk(t.name, domain=t.domain)
             if score > best_score:
                 best, best_score = t, score
         return best

@@ -19,6 +19,7 @@ If this class must be edited to add a new domain, the base model has failed.
 
 from __future__ import annotations
 
+import math
 import random
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
@@ -210,10 +211,13 @@ class UniversalMote:
             # because early-domain predictions (cost-anchored valence fallback)
             # are systematically mismatched to the new reward scale and even
             # the EWM accumulates too slowly to help within a short eval horizon.
-            historical = self.memory.episodic.action_value(action.name)
-            risk = self.memory.episodic.action_risk(action.name)
+            historical = self.memory.episodic.action_value(action.name, domain=observation.domain)
+            risk = self.memory.episodic.action_risk(action.name, domain=observation.domain)
             cost = action.compute_cost(observation, self.state())
-            transfer = effective_analogy_weight * transfer_boosts.get(action.name, 0.0)
+            gating_factor = 1.0
+            if historical < -0.1:
+                gating_factor = math.exp(historical)
+            transfer = gating_factor * effective_analogy_weight * transfer_boosts.get(action.name, 0.0)
             score = historical + transfer - cost - self.meta.skepticism * risk
             if self.use_prediction_in_score:
                 n = self.memory.prediction.domain_observation_count(observation.domain)
