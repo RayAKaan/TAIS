@@ -1,0 +1,8 @@
+{
+  "grid:avoid_threat": 2,
+  "grid:verify_safety": 2,
+  "rules:verify_rule": 2,
+  "grid:approach_resource": 0,
+  "rules:random_assert": 0,
+  "rules:apply_implication": 1
+}

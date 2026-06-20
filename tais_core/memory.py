@@ -59,15 +59,33 @@ def infer_action_role(action: Transformation) -> str:
     return "UNCLASSIFIED"
 
 
-def role_compatibility(source_role: str, target_role: str) -> float:
+# Global Role Mapping for Discovery Phase
+_DISCOVERED_MAPPING = None
+try:
+    with open("discovered_role_mapping.json", "r") as f:
+        import json
+        _DISCOVERED_MAPPING = json.load(f)
+except Exception:
+    pass
+
+
+def role_compatibility(source_role: str, target_role: str,
+                       source_domain: str = "", target_domain: str = "",
+                       source_action: str = "", target_action: str = "") -> float:
     """How much a source role should boost a target role across domains."""
+
+    # ── Phase 1 Breakthrough: Use Discovered Clusters if available ──
+    if _DISCOVERED_MAPPING:
+        s_key = f"{source_domain}:{source_action}"
+        t_key = f"{target_domain}:{target_action}"
+        if s_key in _DISCOVERED_MAPPING and t_key in _DISCOVERED_MAPPING:
+            if _DISCOVERED_MAPPING[s_key] == _DISCOVERED_MAPPING[t_key]:
+                return 1.0
+
     if not source_role or not target_role:
         return 0.0
     if source_role == target_role:
         return 1.0
-    # Functional analogies: moving toward a resource, applying a rule toward a
-    # target fact, and adding a useful fragment are different ops but same role:
-    # change state toward a good/evaluated target.
     approach_family = {"APPROACH_GOOD", "TRANSFORM_TOWARD_GOAL"}
     if source_role in approach_family and target_role in approach_family:
         return 0.70
