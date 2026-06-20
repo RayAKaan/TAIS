@@ -62,6 +62,15 @@ class LLMGroundingEngine:
 
     def explain_consequence(self, consequence_dict: Dict[str, Any]) -> str:
         """Converts a TAIS Consequence object into human-readable Natural Language."""
+        if self.provider == "mock":
+            net = consequence_dict.get("net", 0)
+            why = consequence_dict.get("explanation", {}).get("why",
+                  consequence_dict.get("why", "Unknown"))
+            success = consequence_dict.get("success", False)
+            if success:
+                return f"I successfully completed the task: {why}"
+            return f"Action resulted in net reward of {net}. Reason: {why}"
+
         prompt = f"""
         TASK: You are a narrator for an AI agent. Explain the following outcome in one simple, natural sentence.
         OUTCOME DATA: {json.dumps(consequence_dict)}
@@ -82,8 +91,26 @@ class LLMGroundingEngine:
     def _mock_ground_goal(self, nl_goal: str, domain: str) -> RealityGraph:
         g = RealityGraph(domain, "grounded_goal")
         g.add_entity(Entity("nav", "NAVIGATION", {"depth": 0}))
-        if "deep" in nl_goal.lower():
+
+        nl_lower = nl_goal.lower()
+
+        if "deep" in nl_lower:
             g.add_entity(Entity("goal", "GOAL", {"target_id": "secret_btn", "satisfied": False}))
             g.add_entity(Entity("secret_btn", "ELEMENT", {"role": "submit"}))
             g.add_relation(Relation("goal", "TARGETS", "secret_btn"))
+
+        elif "fix" in nl_lower or "bug" in nl_lower:
+            g.add_entity(Entity("goal", "GOAL", {"target_id": "test_suite", "status": "failing"}))
+            g.add_entity(Entity("test_suite", "REQUIREMENT", {"target": "BinarySearch"}))
+            g.add_relation(Relation("goal", "TARGETS", "test_suite"))
+
+        elif "experiment" in nl_lower or "science" in nl_lower:
+            g.add_entity(Entity("goal", "GOAL", {"target_id": "hyp1", "satisfied": False}))
+            g.add_entity(Entity("hyp1", "HYPOTHESIS", {"confirmed": False}))
+            g.add_relation(Relation("goal", "TARGETS", "hyp1"))
+
+        elif "market" in nl_lower or "trade" in nl_lower:
+            g.add_entity(Entity("goal", "GOAL", {"target_id": "agent_0", "satisfied": False}))
+            g.add_relation(Relation("goal", "TARGETS", "agent_0"))
+
         return g
