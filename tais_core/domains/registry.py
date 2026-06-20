@@ -23,6 +23,7 @@ BUILTIN_SPEC_NAMES = {
     "webnav": _HERE / "webnav.yaml",
     "codesynt": _HERE / "codesynt.yaml",
     "sciex": _HERE / "sciex.yaml",
+    "negosim": _HERE / "negosim.yaml",
 }
 
 
