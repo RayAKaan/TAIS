@@ -1,0 +1,14 @@
+name: CodeSynt
+domain_name: codesynt
+version: 1.0
+description: AST-based code synthesis domain
+
+backend:
+  world_class: tais_core.domains.codesynt.CodeSyntWorld
+  graph_factory: tais_core.domains.codesynt.make_codesynt_graph
+  graph_factory_kwargs: {}
+
+world_defaults:
+  energy: 100
+  horizon: 40
+  step_cost: 0.15
