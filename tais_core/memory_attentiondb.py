@@ -112,6 +112,7 @@ class AttentionDBEpisodicMemory(MoteMemory):
     def record_episode(
         self,
         state_before: RealityGraph,
+        state_after: RealityGraph,
         transformation: Transformation,
         consequence: Consequence,
         predicted: float,
@@ -119,7 +120,7 @@ class AttentionDBEpisodicMemory(MoteMemory):
         tick: int,
         action_role: str = "UNCLASSIFIED",
     ):
-        super().record_episode(state_before, transformation, consequence, predicted, domain, tick, action_role)
+        super().record_episode(state_before, state_after, transformation, consequence, predicted, domain, tick, action_role)
 
         if self._ensure_connected():
             vectors = self._embed_episode(tick)

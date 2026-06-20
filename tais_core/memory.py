@@ -102,6 +102,7 @@ def role_compatibility(source_role: str, target_role: str,
 @dataclass
 class Episode:
     state_fingerprint: str
+    after_state_fingerprint: str
     transformation: Transformation
     consequence: Consequence
     predicted_outcome: float = 0.0
@@ -572,6 +573,7 @@ class MoteMemory:
     def record_episode(
         self,
         state_before: RealityGraph,
+        state_after: RealityGraph,
         transformation: Transformation,
         consequence: Consequence,
         predicted: float,
@@ -579,9 +581,10 @@ class MoteMemory:
         tick: int,
         action_role: str = "UNCLASSIFIED",
     ):
-        fp = self._graph_fingerprint(state_before)
+        fp_before = self._graph_fingerprint(state_before)
+        fp_after = self._graph_fingerprint(state_after)
         error = abs(predicted - consequence.net)
-        ep = Episode(fp, transformation, consequence, predicted, error, domain, tick)
+        ep = Episode(fp_before, fp_after, transformation, consequence, predicted, error, domain, tick)
         self.episodic.record(ep)
         self.prediction.record_outcome(predicted, consequence, transformation, domain)
 

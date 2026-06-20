@@ -250,7 +250,18 @@ class UniversalMote:
             if historical < -0.1:
                 gating_factor = math.exp(historical)
             transfer = gating_factor * effective_analogy_weight * transfer_boosts.get(action.name, 0.0)
-            score = historical + transfer + retrieval_boosts.get(action.name, 0.0) - cost - self.meta.skepticism * risk
+            continuity_boost = 0.0
+            if len(self.memory.episodic.episodes) > 0:
+                last_ep = self.memory.episodic.episodes[-1]
+                if last_ep.consequence.net > 0:
+                    current_fp = self.memory._graph_fingerprint(observation)
+                    if current_fp == last_ep.after_state_fingerprint:
+                        for ep in self.memory.episodic.episodes:
+                            if ep.state_fingerprint == current_fp and ep.consequence.net > 0:
+                                if action.name == ep.transformation.name:
+                                    continuity_boost = 10.0
+                                    break
+            score = historical + transfer + retrieval_boosts.get(action.name, 0.0) + continuity_boost - cost - self.meta.skepticism * risk
             if self.use_prediction_in_score:
                 n = self.memory.prediction.domain_observation_count(observation.domain)
                 if n >= self.prediction_min_domain_observations:
@@ -351,6 +362,7 @@ class UniversalMote:
 
         self.memory.record_episode(
             state_before=observation,
+            state_after=new_graph,
             transformation=action,
             consequence=cons,
             predicted=predicted,

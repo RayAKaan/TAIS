@@ -145,7 +145,7 @@ class MemoryTests(unittest.TestCase):
         tr = Transformation("avoid", "grid", "MOVE_AWAY", base_cost=1.0)
         cons = Consequence(reward=5.0, concept_signals={"DANGER": 1.0}, explanation={"why": "avoided threat"})
 
-        memory.record_episode(grid, tr, cons, predicted=0.0, domain="grid", tick=1)
+        memory.record_episode(grid, grid, tr, cons, predicted=0.0, domain="grid", tick=1)
         self.assertEqual(len(memory.episodic), 1)
         self.assertGreater(memory.episodic.action_value("avoid", domain="grid"), 0.0)
         self.assertEqual(len(memory.patterns), 1)
