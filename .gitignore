@@ -68,3 +68,11 @@ paper/*.toc
 paper/*.bbl
 paper/*.blg
 paper/build/
+
+# Debug / scratch scripts
+debug_*.py
+temp_sweep.py
+index.html
+breakthrough_validation.py
+hyperparameter_report.py
+hyperparameter_report.md

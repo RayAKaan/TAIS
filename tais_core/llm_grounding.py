@@ -21,19 +21,21 @@ class LLMGroundingEngine:
             return self._mock_ground_goal(nl_goal, domain)
 
         prompt = f"""
-        TASK: Convert the user's natural language goal into a structured TAIS RealityGraph.
-        DOMAIN: {domain}
-        USER GOAL: "{nl_goal}"
+        TASK: STRICT TRANSLATOR. Convert human intent into TAIS RealityGraph JSON.
+        RULES: 
+        1. DO NOT CONVERSE. 
+        2. DO NOT REPLY TO THE USER. 
+        3. If the input is a greeting or non-task, return an empty entities list.
+        4. OUTPUT VALID JSON ONLY.
 
-        FORMAT: Output valid JSON only.
+        DOMAIN: {domain}
+        USER INPUT: "{nl_goal}"
+
         JSON SCHEMA:
         {{
-          "entities": [{{"id": "string", "type": "string", "properties": {{}} }}],
-          "relations": [{{"source": "string", "type": "string", "target": "string"}}]
+          "entities": [{{ "id": "string", "type": "string", "properties": {{}} }}],
+          "relations": [{{ "source": "string", "type": "string", "target": "string" }}]
         }}
-
-        EXAMPLES:
-        "Find the submit button" -> {{"entities": [{{"id": "goal", "type": "GOAL", "properties": {{"target": "btn"}}}}], "relations": []}}
 
         JSON OUTPUT:
         """
@@ -61,18 +63,17 @@ class LLMGroundingEngine:
             return self._mock_ground_goal(nl_goal, domain)
 
     def explain_consequence(self, consequence_dict: Dict[str, Any]) -> str:
-        """Converts a TAIS Consequence object into human-readable Natural Language."""
+        """Converts a TAIS Consequence object into a descriptive summary including graph changes."""
         if self.provider == "mock":
-            net = consequence_dict.get("net", 0)
-            why = consequence_dict.get("explanation", {}).get("why",
-                  consequence_dict.get("why", "Unknown"))
-            success = consequence_dict.get("success", False)
-            if success:
-                return f"I successfully completed the task: {why}"
-            return f"Action resulted in net reward of {net}. Reason: {why}"
+            return self._mock_explain_consequence(consequence_dict)
 
         prompt = f"""
-        TASK: You are a narrator for an AI agent. Explain the following outcome in one simple, natural sentence.
+        TASK: SUBSTRATE NARRATOR. Summarize the agent's action and the physical change to the graph.
+        RULES:
+        1. If entities were modified, state what property changed.
+        2. If a goal was reached, announce the SUCCESS.
+        3. Be technical and precise.
+
         OUTCOME DATA: {json.dumps(consequence_dict)}
 
         EXPLANATION:
@@ -82,11 +83,62 @@ class LLMGroundingEngine:
             response = requests.post(self.url, json={
                 "model": self.model,
                 "prompt": prompt,
-                "stream": False,
+                "stream": False
             }, timeout=5)
             return response.json()["response"].strip()
-        except Exception:
-            return f"Action resulted in net reward of {consequence_dict.get('net', 0)}."
+        except:
+            return self._mock_explain_consequence(consequence_dict)
+
+    def _mock_explain_consequence(self, d: Dict[str, Any]) -> str:
+        action = d.get("action", "unknown")
+        net = d.get("net", 0)
+        success = d.get("success", False)
+        delta = d.get("delta", {})
+
+        if success:
+            modified = delta.get("modified", [])
+            added = delta.get("added", [])
+            parts = []
+            if modified:
+                for m in modified:
+                    c = m.get("changes", {})
+                    if c:
+                        k, v = list(c.items())[0]
+                        parts.append(f"modified '{m['id']}' {k} to {v}")
+                    else:
+                        parts.append(f"modified '{m['id']}'")
+            if added:
+                parts.append(f"added {', '.join(added)}")
+            delta_str = "; " + "; ".join(parts) if parts else ""
+            return f"The agent successfully completed the task via {action}, yielding a net reward of {net}.{delta_str}"
+
+        descriptions = {
+            "fix_operator": "modified the comparison operator from < to <=, correcting the off-by-one logic error",
+            "refactor": "reorganized the AST node structure to improve code clarity and maintainability",
+            "type_check": "type-checked the module structure to ensure referential integrity across the AST",
+            "run_tests": "executed the unit test suite against the current implementation",
+            "add_variable": "initialized a new variable declaration to satisfy the module requirements",
+            "define_function": "defined a new function signature within the active scope",
+        }
+        desc = descriptions.get(action, f"applied {action} to the substrate graph")
+        delta_str = ""
+        if delta:
+            modified = delta.get("modified", [])
+            added = delta.get("added", [])
+            parts = []
+            if modified:
+                for m in modified:
+                    c = m.get("changes", {})
+                    if c:
+                        k, v = list(c.items())[0]
+                        parts.append(f"modified '{m['id']}' {k} to {v}")
+                    else:
+                        parts.append(f"modified '{m['id']}'")
+            if added:
+                parts.append(f"added {', '.join(added)}")
+            if parts:
+                delta_str = " [delta: " + "; ".join(parts) + "]"
+        return f"The agent {desc}, resulting in a net reward of {net}.{delta_str}"
 
     def _mock_ground_goal(self, nl_goal: str, domain: str) -> RealityGraph:
         g = RealityGraph(domain, "grounded_goal")
