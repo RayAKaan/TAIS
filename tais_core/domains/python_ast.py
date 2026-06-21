@@ -61,7 +61,7 @@ class PythonASTWorld(WorldInterface):
 
         if transformation.name == "mutate_constant":
             after = graph.snapshot()
-            constants = [e for e in after.entities() if e.type == "Constant"]
+            constants = [e for e in after.entities() if e.etype == "Constant"]
             if constants:
                 after.update_entity(constants[0].id, value="MODIFIED")
                 return after, Consequence(reward=1.0, valid=True,
@@ -73,7 +73,7 @@ class PythonASTWorld(WorldInterface):
 
     def evaluate(self, graph: RealityGraph, mote_state: Dict) -> float:
         for e in graph.entities():
-            if e.type == "Constant" and e.get("value") == "MODIFIED":
+            if e.etype == "Constant" and e.get("value") == "MODIFIED":
                 return 10.0
         return 0.0
 

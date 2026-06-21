@@ -119,7 +119,7 @@ def make_learned_role_compatibility_fn(
         for tgt in _all_roles:
             _compat_table[(src, tgt)] = _rng.uniform(0.0, 1.0) if src != tgt else 1.0
 
-    def patched(source_role: str, target_role: str) -> float:
+    def patched(source_role: str, target_role: str, **kwargs) -> float:
         if not source_role or not target_role:
             return 0.0
         if source_role == target_role:
@@ -134,7 +134,7 @@ def make_learned_role_compatibility_fn(
             if hardcoded_fn is None:
                 return learned.role_score(target_role)
             learned_val = learned.role_score(target_role)
-            hardcoded_val = hardcoded_fn(source_role, target_role)
+            hardcoded_val = hardcoded_fn(source_role, target_role, **kwargs)
             return 0.5 * learned_val + 0.5 * hardcoded_val
         return 0.0
 

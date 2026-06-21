@@ -282,7 +282,7 @@ def _patch_random_compatibility(patches: Patches, seed: int):
         for tgt in ALL_ROLES:
             compat_table[(src, tgt)] = rng.uniform(0.0, 1.0) if src != tgt else 1.0
 
-    def random_compat(source_role: str, target_role: str) -> float:
+    def random_compat(source_role: str, target_role: str, **kwargs) -> float:
         if not source_role or not target_role:
             return 0.0
         if source_role == target_role:
@@ -296,7 +296,7 @@ def _patch_random_compatibility(patches: Patches, seed: int):
 
 def _patch_identity_compatibility(patches: Patches):
     """role_compatibility returns 1.0 only if source==target."""
-    def identity_compat(source_role: str, target_role: str) -> float:
+    def identity_compat(source_role: str, target_role: str, **kwargs) -> float:
         if not source_role or not target_role:
             return 0.0
         return 1.0 if source_role == target_role else 0.0

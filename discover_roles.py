@@ -17,7 +17,7 @@ def get_topology_feature(mean_sig):
     return [valence, valid, has_ent, has_rel]
 
 
-def discover_roles(json_path, k=3):
+def discover_roles(json_path, k=5):
     with open(json_path, "r") as f:
         data = json.load(f)
 
@@ -43,17 +43,13 @@ def discover_roles(json_path, k=3):
 
 
 if __name__ == "__main__":
-    discovered = discover_roles("structural_signatures.json", k=3)
-
+    discovered = discover_roles("structural_signatures.json", k=5)
     print("=== DISCOVERED CROSS-DOMAIN ROLES (TOPOLOGY) ===")
+    mapping = {}
     for cid, members in discovered.items():
         print(f"\nCluster {cid}:")
         for domain, action in sorted(members):
             print(f"  [{domain.upper()}] {action}")
-
-    mapping = {}
-    for cid, members in discovered.items():
-        for domain, action in members:
             mapping[f"{domain}:{action}"] = cid
 
     with open("discovered_role_mapping.json", "w") as f:

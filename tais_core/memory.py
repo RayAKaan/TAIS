@@ -17,6 +17,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import os
 import time
 from collections import deque
 from dataclasses import dataclass, field
@@ -60,24 +61,28 @@ def infer_action_role(action: Transformation) -> str:
 
 
 # Global Role Mapping for Discovery Phase
+_MAPPING_FILE = os.path.join(os.path.dirname(__file__), "..", "discovered_role_mapping.json")
 _DISCOVERED_MAPPING = None
 try:
-    with open("discovered_role_mapping.json", "r") as f:
-        import json
-        _DISCOVERED_MAPPING = json.load(f)
-except Exception:
-    pass
+    if os.path.exists(_MAPPING_FILE):
+        with open(_MAPPING_FILE, "r") as f:
+            _DISCOVERED_MAPPING = json.load(f)
+            print(f">> TAIS: Loaded discovered_role_mapping with {len(_DISCOVERED_MAPPING)} entries.")
+except Exception as e:
+    print(f">> TAIS ERROR: Failed to load discovered_role_mapping: {e}")
 
 
-def role_compatibility(source_role: str, target_role: str,
-                       source_domain: str = "", target_domain: str = "",
-                       source_action: str = "", target_action: str = "") -> float:
+def role_compatibility(source_role: str, target_role: str, **kwargs) -> float:
     """How much a source role should boost a target role across domains."""
-
+    
     # ── Phase 1 Breakthrough: Use Discovered Clusters if available ──
     if _DISCOVERED_MAPPING:
-        s_key = f"{source_domain}:{source_action}"
-        t_key = f"{target_domain}:{target_action}"
+        s_domain = kwargs.get("source_domain", "")
+        t_domain = kwargs.get("target_domain", "")
+        s_action = kwargs.get("source_action", "")
+        t_action = kwargs.get("target_action", "")
+        s_key = f"{s_domain}:{s_action}"
+        t_key = f"{t_domain}:{t_action}"
         if s_key in _DISCOVERED_MAPPING and t_key in _DISCOVERED_MAPPING:
             if _DISCOVERED_MAPPING[s_key] == _DISCOVERED_MAPPING[t_key]:
                 return 1.0
@@ -297,7 +302,14 @@ class PatternMemory:
                 target_role = infer_action_role(action)
                 # Positive transfer by action role first, universal_op second.
                 if pattern.consequence_signature == "GOOD":
-                    role_match = role_compatibility(pattern.successful_action_role or "", target_role)
+                    role_match = role_compatibility(
+                        pattern.successful_action_role or "",
+                        target_role,
+                        source_domain=pattern.source_domain or "",
+                        target_domain=target_graph.domain or "",
+                        source_action=pattern.successful_action_name or "",
+                        target_action=action.name,
+                    )
                     if role_match:
                         boosts[action.name] += base * role_match
                     elif pattern.successful_action_op and action.universal_op == pattern.successful_action_op:
