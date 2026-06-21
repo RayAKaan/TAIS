@@ -19,13 +19,10 @@ If this class must be edited to add a new domain, the base model has failed.
 
 from __future__ import annotations
 
-import hashlib
 import math
 import random
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
-
-import numpy as np
 
 from .engine_policy import EnginePolicyDecision, decide_engine_usage
 from .memory import MoteMemory
@@ -36,15 +33,6 @@ from .speech import SpeechOrgan
 from .metacognition import MetacognitiveEngine
 from .causal import CausalReasoningEngine
 from .planning import HierarchicalPlanner
-
-
-@dataclass
-class CognitiveConfig:
-    temperature: float = 2.0
-    top_p: float = 0.7
-    continuity_lock: float = 50.0
-    skepticism_weight: float = 0.6
-    transfer_weight: float = 1.0
 
 
 @dataclass
@@ -74,12 +62,11 @@ class UniversalMote:
 
     _id = 0
 
-    def __init__(self, energy: float = 100.0, parent_id: int = -1, config: Optional[CognitiveConfig] = None):
+    def __init__(self, energy: float = 100.0, parent_id: int = -1):
         UniversalMote._id += 1
         self.id = UniversalMote._id
         self.parent_id = parent_id
         self.energy = energy
-        self.config = config or CognitiveConfig()
         self.age = 0
         self.alive = True
         self.memory = AttentionDBEpisodicMemory(episodic_capacity=128)
@@ -97,10 +84,6 @@ class UniversalMote:
         self.transfer_prior_correct = 0
         self.transfer_prior_incorrect = 0
         self._last_chosen_transfer_boost = 0.0
-        self._continuity_hits = 0
-        self._continuity_attempts = 0
-        self._structural_recall_hits = 0
-        self._structural_recall_total = 0
         self.domain_action_counts: Dict[str, int] = {}
 
         # ── Phase R5: prediction gating (opt-in, default preserves legacy behavior) ──
@@ -194,34 +177,8 @@ class UniversalMote:
         if not actions:
             return None
 
-        # ── Sequential Continuity Gating ──
-        # Compute continuity boost BEFORE the planner can override trajectory.
-        # Only matches episodes whose state fingerprint differs from the last
-        # episode's start-state fingerprint.  In static domains where no action
-        # ever changes the graph (e.g. CodeSynt type_check loop) all episodes
-        # share the same fingerprint, so the check prevents self-reinforcement.
-        # In trajectory domains (e.g. SciEx) each step has a distinct fingerprint
-        # and the check correctly advances the chain.
-        _continuity_boost: float = 0.0
-        _continuity_action: Optional[str] = None
-        if len(self.memory.episodic.episodes) > 1:
-            current_fp = self.memory._graph_fingerprint(observation)
-            last_ep = self.memory.episodic.episodes[-1]
-            if last_ep.consequence.net > 0 and current_fp == last_ep.after_state_fingerprint:
-                for ep in self.memory.episodic.episodes:
-                    if (ep.state_fingerprint == current_fp
-                            and ep.consequence.net > 0
-                            and ep.state_fingerprint != last_ep.state_fingerprint):
-                        _continuity_action = ep.transformation.name
-                        _continuity_boost = self.config.continuity_lock
-                        self._continuity_attempts += 1
-                        for a in actions:
-                            if a.name == _continuity_action:
-                                self._continuity_hits += 1
-                                return a
-
         # ── Phase 8: Active Planning ──
-        # If a plan exists and is valid, follow it. Runs after continuity.
+        # If a plan exists and is valid, follow it. This makes planning load-bearing.
         if self.planner is not None:
             planned_action_name = self.planner.get_next_step()
             if planned_action_name is not None:
@@ -237,11 +194,9 @@ class UniversalMote:
             effective_curiosity = self.meta.curiosity
 
         # ── Metacognitive exploration modulation ──
-        # When continuity is active with a genuinely new action (not a no-op),
-        # suppress exploration so the trajectory locks in.
+        # If metacog is active and confidence is low, boost exploration.
+        # If confidence is high, suppress unnecessary exploration.
         explore = self.memory.should_explore(actions, curiosity=effective_curiosity, domain=observation.domain)
-        if _continuity_action is not None and _continuity_boost > 0:
-            explore = False
         if self.metacog is not None and (self._engine_policy is None or self._engine_policy.use_metacognition):
             confidence = self.metacog.get_confidence()
             explore_rate = self.metacog.get_exploration_rate()
@@ -252,30 +207,19 @@ class UniversalMote:
         if explore:
             return random.choice(actions)
 
-        # ── Entity Gating: filter out noise entities ──
-        action_pool = actions
-        filtered = []
-        for a in actions:
-            target_id = a.effects.get("target_id", "")
-            if target_id and "noise_" in str(target_id):
-                if self.age > 40 and random.random() < 0.9:
-                    continue
-            filtered.append(a)
-        if filtered:
-            action_pool = filtered
-
         # ── Phase 7: Costly Cultural Memory ──
+        # When energy permits and confidence is low, pay energy to query the archive.
         if self.energy > 20.0 and random.random() < 0.05:
-            cultural_hints = self.memory.cultural.query(observation.domain, n=1)
+            cultural_hints = self.memory.cultural.query(observation.domain, n=1, energy_cost=1.0)
             if cultural_hints:
                 self.energy -= 1.0
                 hinted_action = cultural_hints[0].get("action")
                 if hinted_action is not None:
-                    for a in action_pool:
+                    for a in actions:
                         if a.name == hinted_action:
                             return a
 
-        transfer_boosts, transfer_used = self.memory.transfer_action_priors(observation, action_pool)
+        transfer_boosts, transfer_used = self.memory.transfer_action_priors(observation, actions)
         if transfer_used:
             self.transfer_prior_uses += transfer_used
             self.transfer_prior_total_strength += sum(abs(v) for v in transfer_boosts.values())
@@ -287,62 +231,47 @@ class UniversalMote:
         effective_analogy_weight = self.meta.analogy_bias / (1.0 + transfer_decay_rate * local_exp)
 
         # ── Phase 6: AttentionDB retrieval boosts ──
-        retrieval_boosts = self.memory.get_action_boosts(observation, action_pool, episode_tick)
-        self._structural_recall_total += 1
-        if any(abs(v) > 1e-9 for v in retrieval_boosts.values()):
-            self._structural_recall_hits += 1
+        retrieval_boosts = self.memory.get_action_boosts(observation, actions, episode_tick)
 
-        scores = []
+        best_action = None
+        best_score = float("-inf")
         best_transfer = 0.0
-        for action in action_pool:
+        for action in actions:
+            # predictions are recorded for error metrics and should_explore(),
+            # but removed from the score formula.  See Phase 1.5 diagnostic:
+            # no_prediction consistently beats full on first_task_success_tick
+            # because early-domain predictions (cost-anchored valence fallback)
+            # are systematically mismatched to the new reward scale and even
+            # the EWM accumulates too slowly to help within a short eval horizon.
             historical = self.memory.episodic.action_value(action.name, domain=observation.domain)
             risk = self.memory.episodic.action_risk(action.name, domain=observation.domain)
             cost = action.compute_cost(observation, self.state())
             gating_factor = 1.0
             if historical < -0.1:
                 gating_factor = math.exp(historical)
-            transfer = gating_factor * effective_analogy_weight * transfer_boosts.get(action.name, 0.0) * self.config.transfer_weight
-            cb = _continuity_boost if action.name == _continuity_action else 0.0
-            score = historical + transfer + retrieval_boosts.get(action.name, 0.0) + cb - cost - self.config.skepticism_weight * risk
+            transfer = gating_factor * effective_analogy_weight * transfer_boosts.get(action.name, 0.0)
+            continuity_boost = 0.0
+            if len(self.memory.episodic.episodes) > 0:
+                last_ep = self.memory.episodic.episodes[-1]
+                if last_ep.consequence.net > 0:
+                    current_fp = self.memory._graph_fingerprint(observation)
+                    if current_fp == last_ep.after_state_fingerprint:
+                        for ep in self.memory.episodic.episodes:
+                            if ep.state_fingerprint == current_fp and ep.consequence.net > 0:
+                                if action.name == ep.transformation.name:
+                                    continuity_boost = 10.0
+                                    break
+            score = historical + transfer + retrieval_boosts.get(action.name, 0.0) + continuity_boost - cost - self.meta.skepticism * risk
             if self.use_prediction_in_score:
                 n = self.memory.prediction.domain_observation_count(observation.domain)
                 if n >= self.prediction_min_domain_observations:
                     score += self.prediction_score_weight * self.memory.predict_action(action, observation)
-            scores.append(score)
-            if transfer != 0.0:
+            if score > best_score:
+                best_score = score
+                best_action = action
                 best_transfer = transfer
-
-        # ── Softmax + top-p nucleus sampling ──
-        temp = self.config.temperature
-        if temp <= 0.0:
-            temp = 1e-8
-        scaled = np.array(scores, dtype=np.float64) / temp
-        shifted = scaled - np.max(scaled)
-        probs = np.exp(shifted) / np.sum(np.exp(shifted))
-
-        # Use a local RNG seeded from (mote_id, episode_tick, domain) so that
-        # the global RNG stream is not consumed by softmax sampling — this
-        # preserves compatibility with runners that reseed on each trial.
-        seed_str = f"{self.id}_{episode_tick}_{observation.domain}"
-        local_seed = int(hashlib.md5(seed_str.encode()).hexdigest()[:12], 16)
-        local_rng = random.Random(local_seed)
-
-        if np.max(probs) > 0.99:
-            chosen_idx = int(np.argmax(probs))
-        else:
-            indices = np.argsort(probs)[::-1]
-            sorted_probs = probs[indices]
-            cumulative = np.cumsum(sorted_probs)
-            cutoff_idx = int(np.searchsorted(cumulative, self.config.top_p)) + 1
-            nucleus_indices = indices[:cutoff_idx]
-            nucleus_probs = probs[nucleus_indices]
-            nucleus_probs /= nucleus_probs.sum()
-
-            nucleus_probs_list = [float(p) for p in nucleus_probs]
-            chosen_idx = int(local_rng.choices(list(nucleus_indices), weights=nucleus_probs_list, k=1)[0])
-
         self._last_chosen_transfer_boost = best_transfer
-        return action_pool[chosen_idx]
+        return best_action or random.choice(actions)
 
     def step(
         self,
@@ -431,10 +360,9 @@ class UniversalMote:
         self.last_consequence = cons
         self.domain_history.append(world.domain_name)
 
-        after_obs = world.observe(new_graph, mote_position)
         self.memory.record_episode(
             state_before=observation,
-            state_after=after_obs,
+            state_after=new_graph,
             transformation=action,
             consequence=cons,
             predicted=predicted,
@@ -467,16 +395,6 @@ class UniversalMote:
 
     def metrics(self) -> Dict[str, Any]:
         mean_pred = self.memory.prediction.mean_error()
-
-        successful = [e for e in self.memory.episodic.episodes if e.consequence.net > 0]
-        integrity = 0.0
-        if len(successful) > 1:
-            matches = sum(
-                1 for i in range(len(successful) - 1)
-                if successful[i].after_state_fingerprint == successful[i + 1].state_fingerprint
-            )
-            integrity = matches / (len(successful) - 1)
-
         result = {
             "id": self.id,
             "energy": round(self.energy, 3),
@@ -493,14 +411,12 @@ class UniversalMote:
             "transfer_prior_correct": self.transfer_prior_correct,
             "transfer_prior_incorrect": self.transfer_prior_incorrect,
             "transfer_prior_precision": round(self.transfer_prior_correct / max(1, self.transfer_prior_correct + self.transfer_prior_incorrect), 3),
-            "sequence_integrity": round(integrity, 3),
-            "structural_recall": round(self._structural_recall_hits / max(1, self._structural_recall_total), 3),
-            "config": {"temp": self.config.temperature, "top_p": self.config.top_p},
             "memory": self.memory.summary(),
             "speech": self.speech.stats(),
             "domains": sorted(set(self.domain_history)),
         }
 
+        # ── Cognitive engine metrics ──
         if self.metacog is not None:
             result["metacog_confidence"] = round(self.metacog.get_confidence(), 3)
             result["metacog_exploration_rate"] = round(self.metacog.get_exploration_rate(), 3)
@@ -511,6 +427,3 @@ class UniversalMote:
             result["planner_active"] = self.planner.active_plan is not None
             result["planner_library_size"] = sum(len(plans) for plans in self.planner._plan_library.values())
         return result
-
-    def __repr__(self) -> str:
-        return f"UniversalMote(id={self.id}, energy={self.energy:.1f}, age={self.age})"
