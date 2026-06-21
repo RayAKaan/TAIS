@@ -1,4 +1,5 @@
 import json
+import os
 import asyncio
 from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse, StreamingResponse
@@ -13,7 +14,8 @@ from tais_core.event_bus import EventBus, Event, EventType
 
 app = FastAPI(title="TAIS Command Center")
 
-app.mount("/v6", StaticFiles(directory="frontend/dist", html=True), name="v6_frontend")
+if os.path.isdir("frontend/dist"):
+    app.mount("/v6", StaticFiles(directory="frontend/dist", html=True), name="v6_frontend")
 
 grounding = LLMGroundingEngine(provider="ollama")
 

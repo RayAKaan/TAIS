@@ -178,13 +178,18 @@ This prevents cognitive overhead in purely reactive domains while enabling full 
 | Core | RuleWorld | `tais_core/domains/rules.py` | Modus ponens inference with TARGET-fact variants (Easy, Chain, Distractor, ChainLong) |
 | Core | HazardWorld | `tais_core/domains/hazard.py` | Threat avoidance with distractor exits (easy, large variants) |
 | Core | LogicWorld | `tais_core/domains/logic.py` | Propositional constraint satisfaction (easy, chain, large, unsat variants) |
-| Real-World | WebNav | `tais_core/domains/webnav.py` | Autonomous web navigation, form filling, modal dismissal |
-| Real-World | CodeSynt | `tais_core/domains/codesynt.py` | AST-based code synthesis, operator repair, dependency ordering |
-| Real-World | SciEx | `tais_core/domains/sciex.py` | Scientific hypothesis testing, experiment design, data analysis |
-| Real-World | NegoSim | `tais_core/domains/negosim.py` | Multi-agent negotiation with complementary goals and resource trading |
+| Hand-Authored* | WebNav | `tais_core/domains/webnav.py` | Autonomous web navigation, form filling, modal dismissal |
+| Hand-Authored* | CodeSynt | `tais_core/domains/codesynt.py` | AST-based code synthesis, operator repair, dependency ordering |
+| Hand-Authored* | SciEx | `tais_core/domains/sciex.py` | Scientific hypothesis testing, experiment design, data analysis |
+| Hand-Authored* | NegoSim | `tais_core/domains/negosim.py` | Multi-agent negotiation with complementary goals and resource trading |
+| Grounded† | PythonAST | `tais_core/domains/python_ast.py` | Real Python AST analysis (parse real source into RealityGraph) |
+| Grounded† | CodeRepair | `tais_core/domains/code_repair.py` | Relational code repair (AST diff over real Python source) |
 | Research | MathWorld | `tais_core/domains/math_world.py` | Arithmetic expression evaluation and manipulation |
 | Research | AST Diff | `tais_core/domains/ast_diff.py` | Abstract syntax tree structural differencing |
 | Research | BugInference | `tais_core/domains/bug_inference.py` | Code defect localization and repair planning |
+
+\* *Hand-authored synthetic graph environments designed to mimic real-world tasks.*
+† *Genuinely grounded: parses real Python source code into RealityGraphs.*
 
 Domains can be loaded by name or by YAML spec path:
 
@@ -497,6 +502,8 @@ tais/                         # Repository root
 │   │   ├── codesynt.py       # CodeSynt (AST-based code synthesis)
 │   │   ├── sciex.py          # SciEx (scientific experimentation)
 │   │   ├── negosim.py        # NegoSim (multi-agent negotiation)
+│   │   ├── python_ast.py     # PythonAST (real AST parsing)
+│   │   ├── code_repair.py    # CodeRepair (AST-diff repair)
 │   │   ├── math_world.py     # MathWorld (arithmetic expressions)
 │   │   ├── ast_diff.py       # AST structural differencing
 │   │   ├── bug_inference.py  # Code defect localization
@@ -561,6 +568,7 @@ tais/                         # Repository root
 | Phase | Report | Content |
 |-------|--------|---------|
 | 0–2 | [`PHASE0_PHASE2_PHASE1_CHANGELOG.md`](docs/PHASE0_PHASE2_PHASE1_CHANGELOG.md) | Early development, prediction, speech |
+| 1 | [`PHASE1_VALIDATION_REPORT.md`](docs/PHASE1_VALIDATION_REPORT.md) | Role-compatibility ablation analysis (harness limitation finding) |
 | A | [`docs/PHASE_A_*`](docs/PHASE_A_PAPER_READINESS_REPORT.md) | Prediction calibration, engine policy, speech portability |
 | B | [`PHASE_B_DOMAIN_DSL_REPORT.md`](docs/PHASE_B_DOMAIN_DSL_REPORT.md) | Domain DSL implementation |
 | C | [`PHASE_C_EXPERIMENT_FRAMEWORK_REPORT.md`](docs/PHASE_C_EXPERIMENT_FRAMEWORK_REPORT.md) | Experiment framework design |

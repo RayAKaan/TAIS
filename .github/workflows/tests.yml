@@ -18,21 +18,25 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install runtime dependencies
+      - name: Install runtime and dev dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          python -m pip install -e .[dev]
       - name: Lint with ruff
         run: |
           python -m pip install ruff
           ruff check --output-format=github --exit-zero .
-      - name: Run unit tests
+      - name: Run unit tests (pytest)
         run: |
-          PYTHONPATH=. python -m unittest discover -s tests -v
+          python -m pytest tests/ -v --tb=short
       - name: Import-check experiments
         run: |
-          PYTHONPATH=. python -c "import experiments.statistical_replication, experiments.cross_domain_transfer, experiments.ablation_runner"
+          python -c "
+import tais_core.experiments.runners.statistical_replication
+import tais_core.experiments.runners.cross_domain_transfer
+import tais_core.experiments.runners.ablation_runner
+"
       - name: Smoke-run ablation (5 seeds, 3+3 ticks)
         run: |
           mkdir -p results
-          PYTHONPATH=. python experiments/ablation_runner.py --seeds 5 --pretrain 3 --eval 3 --output results/ci_smoke.txt
+          python -m tais_core.experiments.runners.ablation_runner --seeds 5 --pretrain 3 --eval 3 --output results/ci_smoke.txt

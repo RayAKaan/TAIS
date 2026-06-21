@@ -15,6 +15,11 @@ def make_custom_code_graph(**kwargs):
     return CustomCodeWorld(**kwargs).initial_graph()
 
 
+def make_codesynt_graph(**kwargs):
+    """Alias for make_custom_code_graph — used by experiment runners."""
+    return make_custom_code_graph(**kwargs)
+
+
 class CustomCodeWorld(WorldInterface):
     domain_name = "codesynt"
 
