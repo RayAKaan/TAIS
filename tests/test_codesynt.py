@@ -9,7 +9,7 @@ from tais_core.reality import Transformation
 
 class CodeSyntWorldTests(unittest.TestCase):
     def setUp(self):
-        self.world = CustomCodeWorld("def solve(): return False")
+        self.world = CustomCodeWorld("def solve(x, y): return x <= y")
         self.graph = self.world.initial_graph()
 
     def test_initial_graph_has_requirement_and_goal(self):

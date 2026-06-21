@@ -92,10 +92,10 @@ class NegoSimWorld(WorldInterface):
             return graph, Consequence(penalty=0.5, explanation={"why": "no offers to accept"})
 
         if transformation.name == "reject_offer":
-            proposals = [e for e in graph.entities("PROPOSAL") if e.get("from") != agent_id]
+            proposals = list(graph.entities("PROPOSAL"))
             if proposals:
-                prop = proposals[0]
-                after.remove_entity(prop.id)
+                for prop in proposals:
+                    after.remove_entity(prop.id)
                 return after, Consequence(
                     reward=2.0,
                     concept_signals={"SAFE": 0.5},
