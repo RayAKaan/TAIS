@@ -79,3 +79,7 @@ class PythonASTWorld(WorldInterface):
 
     def concepts(self) -> List[str]:
         return ["CODE", "STRUCTURE", "VALUE"]
+
+
+def make_python_ast_graph(source_code="x = 1 + 2"):
+    return PythonASTWorld(source_code=source_code).initial_graph()

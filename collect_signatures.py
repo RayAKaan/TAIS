@@ -78,7 +78,7 @@ def collect_signatures(domain_name, seeds=10, ticks=20):
 
 
 if __name__ == "__main__":
-    domains = ["grid", "rules", "webnav", "codesynt", "sciex"]
+    domains = ["grid", "rules", "webnav", "codesynt", "sciex", "python_ast", "code_repair"]
     all_sigs = []
     for d in domains:
         all_sigs.extend(collect_signatures(d))

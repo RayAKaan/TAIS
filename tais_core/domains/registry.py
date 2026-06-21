@@ -24,6 +24,8 @@ BUILTIN_SPEC_NAMES = {
     "codesynt": _HERE / "codesynt.yaml",
     "sciex": _HERE / "sciex.yaml",
     "negosim": _HERE / "negosim.yaml",
+    "python_ast": _HERE / "python_ast.yaml",
+    "code_repair": _HERE / "code_repair.yaml",
 }
 
 

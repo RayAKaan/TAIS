@@ -1,0 +1,14 @@
+name: CodeRepair
+domain_name: code_repair
+version: 1.0
+description: Relational code repair domain
+
+backend:
+  world_class: tais_core.domains.code_repair.CodeRepairWorld
+  graph_factory: tais_core.domains.code_repair.make_code_repair_graph
+  graph_factory_kwargs: {}
+
+world_defaults:
+  energy: 100
+  horizon: 50
+  step_cost: 0.1

@@ -1,0 +1,15 @@
+name: PythonAST
+domain_name: python_ast
+version: 1.0
+description: Real Python AST grounding domain
+
+backend:
+  world_class: tais_core.domains.python_ast.PythonASTWorld
+  graph_factory: tais_core.domains.python_ast.make_python_ast_graph
+  graph_factory_kwargs:
+    source_code: "x = 1 + 2"
+
+world_defaults:
+  energy: 100
+  horizon: 50
+  step_cost: 0.1
