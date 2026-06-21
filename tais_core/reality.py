@@ -392,7 +392,7 @@ class RealityGraph:
 
     def neighbors_out(self, entity_id: str, rtype: Optional[str] = None) -> List[Tuple[Relation, Entity]]:
         out: List[Tuple[Relation, Entity]] = []
-        for key in self._adj_out.get(entity_id, set()):
+        for key in sorted(self._adj_out.get(entity_id, set()), key=lambda k: (k[0], k[1], k[2])):
             rel = self._relations.get(key)
             if rel and (rtype is None or rel.rtype == rtype):
                 tgt = self._entities.get(rel.target)
@@ -402,7 +402,7 @@ class RealityGraph:
 
     def neighbors_in(self, entity_id: str, rtype: Optional[str] = None) -> List[Tuple[Relation, Entity]]:
         out: List[Tuple[Relation, Entity]] = []
-        for key in self._adj_in.get(entity_id, set()):
+        for key in sorted(self._adj_in.get(entity_id, set()), key=lambda k: (k[0], k[1], k[2])):
             rel = self._relations.get(key)
             if rel and (rtype is None or rel.rtype == rtype):
                 src = self._entities.get(rel.source)
@@ -413,7 +413,7 @@ class RealityGraph:
     # Subgraphs / attention
     def subgraph(self, entity_ids: Set[str]) -> "RealityGraph":
         g = RealityGraph(self.domain, f"{self.label}[sub]")
-        for eid in entity_ids:
+        for eid in sorted(entity_ids, key=lambda x: x):
             e = self._entities.get(eid)
             if e:
                 g.add_entity(copy.deepcopy(e))
@@ -424,7 +424,7 @@ class RealityGraph:
 
     def neighborhood(self, entity_id: str, hops: int = 1) -> "RealityGraph":
         visited = {entity_id}
-        frontier = {entity_id}
+        frontier: List[str] = [entity_id]
         for _ in range(hops):
             nxt: Set[str] = set()
             for eid in frontier:
@@ -436,28 +436,28 @@ class RealityGraph:
                     if ent.id not in visited:
                         visited.add(ent.id)
                         nxt.add(ent.id)
-            frontier = nxt
+            frontier = sorted(nxt, key=lambda x: x)
         return self.subgraph(visited)
 
     # Core operations
     def diff(self, other: "RealityGraph") -> GraphDelta:
         delta = GraphDelta()
         self_ids, other_ids = set(self._entities), set(other._entities)
-        for eid in other_ids - self_ids:
+        for eid in sorted(other_ids - self_ids, key=lambda x: x):
             delta.entities_added.append(copy.deepcopy(other._entities[eid]))
-        for eid in self_ids - other_ids:
+        for eid in sorted(self_ids - other_ids, key=lambda x: x):
             delta.entities_removed.append(eid)
-        for eid in self_ids & other_ids:
+        for eid in sorted(self_ids & other_ids, key=lambda x: x):
             before, after = self._entities[eid], other._entities[eid]
             if before.etype != after.etype or before.properties != after.properties:
                 delta.entities_modified.append((copy.deepcopy(before), copy.deepcopy(after)))
 
         self_keys, other_keys = set(self._relations), set(other._relations)
-        for key in other_keys - self_keys:
+        for key in sorted(other_keys - self_keys, key=lambda k: (k[0], k[1], k[2])):
             delta.relations_added.append(copy.deepcopy(other._relations[key]))
-        for key in self_keys - other_keys:
+        for key in sorted(self_keys - other_keys, key=lambda k: (k[0], k[1], k[2])):
             delta.relations_removed.append(copy.deepcopy(self._relations[key]))
-        for key in self_keys & other_keys:
+        for key in sorted(self_keys & other_keys, key=lambda k: (k[0], k[1], k[2])):
             before, after = self._relations[key], other._relations[key]
             if before.properties != after.properties or before.directed != after.directed:
                 delta.relations_modified.append((copy.deepcopy(before), copy.deepcopy(after)))
@@ -474,7 +474,7 @@ class RealityGraph:
             return d
 
         def jaccard(a: Dict[str, int], b: Dict[str, int]) -> float:
-            keys = set(a) | set(b)
+            keys = sorted(set(a) | set(b))
             if not keys:
                 return 1.0
             inter = sum(min(a.get(k, 0), b.get(k, 0)) for k in keys)

@@ -8,7 +8,7 @@
 
 No LLM (for reasoning). No pretrained model. No shared embedding space. No gradient descent. No backpropagation.
 
-TAIS is a **domain-agnostic agent framework** where a single `UniversalMote` learns functional action roles across typed graph domains and transfers them without any pretrained representations, large language models, or gradient-based learning. The core mechanism — **Grounded Role-Transfer Learning (GRTL)** — enables agents to learn abstract roles like `APPROACH_GOOD`, `AVOID_BAD`, and `TRANSFORM_TOWARD_GOAL` in toy environments and re-apply them with high precision to complex, real-world-aligned tasks.
+TAIS is a **domain-agnostic agent framework** where a single `UniversalMote` learns functional action roles across typed graph domains and transfers them without any pretrained representations, large language models, or gradient-based learning. The core mechanism — **Grounded Role-Transfer Learning (GRTL)** — enables agents to learn abstract roles like `APPROACH_GOOD`, `AVOID_BAD`, and `TRANSFORM_TOWARD_GOAL` in toy environments and re-apply them to hand-authored benchmark tasks and genuinely grounded domains.
 
 ---
 
@@ -46,7 +46,7 @@ Grounded Role-Transfer Learning (GRTL) addresses a fundamental challenge in arti
 TAIS models every domain — from 2D grid navigation to code synthesis to multi-agent negotiation — as a **typed, labeled graph** (`RealityGraph`). A single architecture (`UniversalMote`) performs the same observe–analogize–predict–act–learn cycle in every domain. Action roles (e.g., `APPROACH_GOOD`, `AVOID_BAD`) are discovered through structural analogy and transferred via a hand-coded compatibility matrix or a learned compatibility function.
 
 We demonstrate that:
-- A single mote pretrained on GridWorld, RuleWorld, CodeSynt, and SciEx achieves a **+160% reward gain** and **90.1% transfer precision** in multi-agent negotiation (NegoSim) — surpassing all baselines including Tabular Q-Learning.
+- A single mote pretrained on GridWorld, RuleWorld, CodeSynt, and SciEx achieves a **+97% reward gain** and **73.4% transfer precision** in multi-agent negotiation (NegoSim) — surpassing all baselines including Tabular Q-Learning (measured via the fused-transfer runner at 30 seeds).
 - Navigation survival patterns transfer from 2D grids to autonomous web navigation (WebNav) with **84.2% precision**.
 - Role semantics learned in one domain (e.g., `APPROACH_GOOD` in GridWorld) are robustly reusable in domains with completely different entity types, relation structures, and action vocabularies.
 - All cognitive engines (metacognition, causal reasoning, planning) operate domain-agnostically on the same substrate.
@@ -63,7 +63,7 @@ We demonstrate that:
 
 4. **Domain-Agnostic Cognitive Engines.** Metacognition (prediction-error-driven exploration), causal reasoning (Delta-P with counterfactuals), and hierarchical planning (backward chaining on causal links) all operate on the same universal substrate.
 
-5. **Real-World Grounding.** Transfer from toy domains to real-world-aligned tasks (web navigation, code synthesis, scientific experimentation, negotiation) without any domain-specific tuning.
+5. **Multiple Domain Tiers.** Transfer from toy domains (GridWorld, RuleWorld) to hand-authored benchmark tasks (WebNav, CodeSynt, SciEx, NegoSim) and genuinely grounded domains (PythonAST, CodeRepair) without any domain-specific tuning.
 
 6. **AttentionDB Memory.** Multi-head attention (semantic, temporal, structural) for retrieval-augmented episodic recall, backed by a Rust vector engine with gRPC and REST interfaces.
 
