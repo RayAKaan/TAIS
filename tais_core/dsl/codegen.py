@@ -1,6 +1,7 @@
 import importlib
+import threading
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from tais_core.reality import (
     Consequence,
@@ -14,13 +15,86 @@ from .parser import load_spec
 from .validator import validate_spec
 
 
+_HERE = Path(__file__).resolve().parent / "specs"
+
+BUILTIN_SPEC_NAMES = {
+    "gridworld": _HERE / "gridworld.yaml",
+    "grid": _HERE / "gridworld.yaml",
+    "rules": _HERE / "rules.yaml",
+    "ruleworld": _HERE / "rules.yaml",
+    "logic": _HERE / "logic.yaml",
+    "logicworld": _HERE / "logic.yaml",
+    "chemistry_lite": _HERE / "chemistry_lite.yaml",
+    "hazard": _HERE / "hazard.yaml",
+    "hazardworld": _HERE / "hazard.yaml",
+    "sequences": _HERE / "sequences.yaml",
+    "sequenceworld": _HERE / "sequences.yaml",
+    "logic_large": _HERE / "logic_large.yaml",
+    "hazard_large": _HERE / "hazard_large.yaml",
+    "rules_chain_long": _HERE / "rules_chain_long.yaml",
+    "webnav": _HERE / "webnav.yaml",
+    "codesynt": _HERE / "codesynt.yaml",
+    "sciex": _HERE / "sciex.yaml",
+    "negosim": _HERE / "negosim.yaml",
+    "python_ast": _HERE / "python_ast.yaml",
+    "code_repair": _HERE / "code_repair.yaml",
+    "math": _HERE / "math.yaml",
+}
+
+_CACHE: Dict[str, Any] = {}
+_CACHE_LOCK = threading.Lock()
+
+
 def import_dotted(path: str):
     module_name, attr_name = path.rsplit(".", 1)
     module = importlib.import_module(module_name)
     return getattr(module, attr_name)
 
 
+def load_domain(name_or_path: Union[str, Path], use_cache: bool = True) -> "BuiltinDSLWorld | DeclarativeDSLWorld":
+    """Load a domain by builtin name or spec-file path, with caching.
+
+    Parameters
+    ----------
+    name_or_path : str | Path
+        A builtin name (e.g. "gridworld", "rules") or a path to a YAML spec file.
+    use_cache : bool
+        If True (default), cache the loaded domain and return the same instance
+        for subsequent calls with the same key.
+    """
+    cache_key = str(name_or_path)
+    if use_cache:
+        with _CACHE_LOCK:
+            if cache_key in _CACHE:
+                return _CACHE[cache_key]
+
+    p = Path(name_or_path)
+    if p.exists():
+        spec = load_spec(p)
+    else:
+        name = str(name_or_path).lower()
+        if name in BUILTIN_SPEC_NAMES:
+            spec = load_spec(BUILTIN_SPEC_NAMES[name])
+        else:
+            raise ValueError(
+                f"Unknown domain {name_or_path!r}. "
+                f"Use a file path or one of: {sorted(BUILTIN_SPEC_NAMES)}"
+            )
+
+    spec = validate_spec(spec)
+    if "backend" in spec:
+        domain: Any = BuiltinDSLWorld(spec)
+    else:
+        domain = DeclarativeDSLWorld(spec)
+
+    if use_cache:
+        with _CACHE_LOCK:
+            _CACHE[cache_key] = domain
+    return domain
+
+
 def load_domain_from_spec(path: str | Path) -> "BuiltinDSLWorld | DeclarativeDSLWorld":
+    """Load from a spec file path directly (no name resolution, no caching)."""
     spec = load_spec(path)
     spec = validate_spec(spec)
     if "backend" in spec:

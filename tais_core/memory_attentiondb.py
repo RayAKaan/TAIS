@@ -1,22 +1,18 @@
 """AttentionDB-backed episodic memory for TAIS.
 
-This module provides a drop-in replacement for ``MoteMemory`` that
-transparently pushes episodes to a live AttentionDB server and retrieves
-action boosts via multi-head attention queries.
+Provides a drop-in replacement for ``MoteMemory`` that transparently
+pushes episodes to a live AttentionDB server and retrieves action boosts
+via multi-head attention queries.
 
-Architectural boundary
-----------------------
-- ``AttentionDBClient`` (in ``attentiondb_client.py``) knows nothing about
-  TAIS — it speaks generic REST to a Rust vector engine.
-- ``AttentionDBEpisodicMemory`` knows nothing about AttentionDB internals —
-  it calls three methods (``insert_episode``, ``attend``, ``health``).
-- If the server is unreachable the memory falls back to local-only
-  behaviour so TAIS never crashes when AttentionDB is absent.
+Connection is attempted when ``ATTENTIONDB_ENABLED=1`` env var is set
+(or when ``mode="live"`` is explicitly passed).  Falls back to local-only
+memory if the server is unreachable.
 """
 
 from __future__ import annotations
 
 import logging
+import os
 from typing import Any, Dict, List, Optional, Tuple
 
 from .attentiondb_client import AttentionDBClient
@@ -25,6 +21,8 @@ from .reality import Consequence, RealityGraph, Transformation
 
 logger = logging.getLogger(__name__)
 
+_DEFAULT_MODE = "live" if os.environ.get("ATTENTIONDB_ENABLED", "").strip() in ("1", "true", "yes") else "auto"
+
 
 class AttentionDBEpisodicMemory(MoteMemory):
     """MoteMemory subclass that optionally mirrors episodes to AttentionDB.
@@ -32,20 +30,16 @@ class AttentionDBEpisodicMemory(MoteMemory):
     Parameters
     ----------
     mode : str
-        One of ``"auto"`` (try live, fall back to local), ``"live"``
-        (require connection, raise on failure), ``"local"`` (never
-        connect).
-
-    Connection to AttentionDB is deferred from ``__init__`` to first
-    actual use (``record_episode`` or ``get_action_boosts``) so that
-    ``__init__`` never blocks on a missing server.
+        ``"auto"`` — try to connect at startup, fall back to local.
+        ``"live"`` — require connection, raise on failure.
+        ``"local"`` — never connect (default when ``ATTENTIONDB_ENABLED`` is unset).
     """
 
     def __init__(
         self,
         episodic_capacity: int = 128,
         pattern_capacity: int = 32,
-        mode: str = "auto",
+        mode: str = _DEFAULT_MODE,
     ):
         super().__init__(episodic_capacity=episodic_capacity, pattern_capacity=pattern_capacity)
         self._client: Optional[AttentionDBClient] = None
@@ -55,57 +49,79 @@ class AttentionDBEpisodicMemory(MoteMemory):
         self.head_names = ["semantic", "temporal", "structural"]
         self.cultural = CulturalMemory()
 
+        if mode == "live":
+            self._ensure_connected()
+
     # ── lazy connection ──────────────────────────────────────────────────
 
     def _ensure_connected(self) -> bool:
-        """Attempt to connect to AttentionDB once.
-
-        Returns ``True`` if already connected, ``False`` otherwise.
-        Connection is only attempted when ``mode="live"`` is explicitly set.
-        In ``"auto"`` mode we stay local without attempting a connection,
-        avoiding hangs on machines without the AttentionDB server.
-        """
         if self._client is not None:
             return True
         if self._connect_attempted:
             return False
         self._connect_attempted = True
 
-        if self._mode != "live":
-            self._mode = "local"
+        if self._mode == "local":
             return False
 
         try:
             client = AttentionDBClient()
-            if client.health():
-                resp = client.create_collection("tais_episodes", 32)
-                if resp.ok:
-                    self._client = client
-                    logger.info("TAIS ↔ AttentionDB: live connection established")
-                    return True
-                logger.warning("TAIS ↔ AttentionDB: create_collection returned %s", resp.status_code)
-            else:
-                logger.info("TAIS ↔ AttentionDB: server unreachable")
+            if client.ensure_connected():
+                client.create_collection("tais_episodes", 32)
+                client.create_collection("tais_patterns", 64)
+                client.create_collection("tais_action_values", 16)
+                self._client = client
+                logger.info("TAIS ↔ AttentionDB: live connection established (%s)",
+                            "gRPC" if client._available == "grpc" else "REST")
+                return True
         except Exception as exc:
             logger.warning("TAIS ↔ AttentionDB: connection failed — %s", exc)
 
-        raise RuntimeError("AttentionDB required but server is unavailable")
+        if self._mode == "live":
+            logger.error("TAIS ↔ AttentionDB: required but unavailable")
+        else:
+            logger.info("TAIS ↔ AttentionDB: not available, using local memory")
+        return False
 
     # ── helpers ──────────────────────────────────────────────────────────
 
     @staticmethod
-    def _embed_episode(tick: int) -> Dict[str, List[float]]:
-        """Project an episode into multi-head embedding vectors.
+    def _embed_graph(
+        graph: RealityGraph,
+        domain: str,
+        tick: int,
+    ) -> Dict[str, List[float]]:
+        """Project a graph fragment into multi-head embedding vectors."""
+        entities = list(graph.entities())
+        relations = list(graph.relations())
 
-        This is a lightweight projection suitable for the bridge.
-        A production deployment would replace these stubs with a
-        learned encoder shared between TAIS and AttentionDB.
-        """
-        return {
-            "semantic": [0.1] * 8,
-            "temporal": [float(tick) / 100.0] * 8,
-            "structural": [0.5] * 16,
-        }
+        type_counts: Dict[str, int] = {}
+        for e in entities:
+            type_counts[e.etype] = type_counts.get(e.etype, 0) + 1
+
+        rel_counts: Dict[str, int] = {}
+        for r in relations:
+            rel_counts[r.rtype] = rel_counts.get(r.rtype, 0) + 1
+
+        # Structural: entity type distribution (padded to 16)
+        struct = [0.0] * 16
+        for i, (_, cnt) in enumerate(sorted(type_counts.items())[:16]):
+            struct[i] = min(1.0, cnt / max(1, len(entities)))
+
+        # Semantic: domain one-hot + action info (padded to 8)
+        sem = [0.0] * 8
+        domain_hash = hash(domain) % 7
+        sem[domain_hash] = 1.0
+
+        # Temporal: recency signal
+        temp = [min(1.0, tick / 100.0)] * 8
+
+        return {"semantic": sem, "temporal": temp, "structural": struct}
+
+    def _episode_to_text(self, transformation, consequence, domain, action_role) -> str:
+        return (f"domain={domain} action={transformation.name} "
+                f"op={transformation.universal_op} role={action_role} "
+                f"reward={consequence.net:.2f} signal={consequence.task_signal or 'none'}")
 
     # ── overrides ────────────────────────────────────────────────────────
 
@@ -120,16 +136,19 @@ class AttentionDBEpisodicMemory(MoteMemory):
         tick: int,
         action_role: str = "UNCLASSIFIED",
     ):
-        super().record_episode(state_before, state_after, transformation, consequence, predicted, domain, tick, action_role)
+        super().record_episode(state_before, state_after, transformation,
+                               consequence, predicted, domain, tick, action_role)
 
-        if self._ensure_connected():
-            vectors = self._embed_episode(tick)
+        if self._client is not None:
+            text = self._episode_to_text(transformation, consequence, domain, action_role)
+            vectors = self._embed_graph(state_before, domain, tick)
             self._client.insert_episode(
                 "tais_episodes",
                 fields={
                     "action": transformation.name,
                     "domain": domain,
-                    "reward": str(consequence.net),
+                    "reward": str(round(consequence.net, 4)),
+                    "text": text,
                 },
                 vectors=vectors,
             )
@@ -140,16 +159,12 @@ class AttentionDBEpisodicMemory(MoteMemory):
         actions: List[Transformation],
         tick: int,
     ) -> Dict[str, float]:
-        """Return per-action boost scores.
-
-        In ``live`` mode the scores come from an AttentionDB multi-head
-        query; in ``local`` mode they come from pattern-memory transfer.
-        """
-        if not self._ensure_connected():
+        if self._client is None:
             return self._get_local_boosts(current_graph, actions)
 
-        query_vec = [0.5] * 32
-        results = self._client.attend("tais_episodes", query_vec, heads=self.head_names)
+        query_text = f"domain={current_graph.domain or 'unknown'}"
+        results = self._client.attend(
+            "tais_episodes", query_text, heads=self.head_names)
 
         boosts: Dict[str, float] = {a.name: 0.0 for a in actions}
         for res in results:

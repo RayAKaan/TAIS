@@ -70,7 +70,9 @@ class Entity:
         payload = f"{self.etype}|{json.dumps(self.properties, sort_keys=True, default=str)}"
         return hashlib.md5(payload.encode()).hexdigest()[:10]
 
-    def __hash__(self) -> int:  # frozen dataclass cannot hash dict by default
+    def __hash__(self) -> int:
+        """Hash by entity id only — ids are unique within a graph.
+        Frozen dataclass can't hash mutable dict fields automatically."""
         return hash(self.id)
 
 

@@ -22,33 +22,30 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
-  "Flask>=3.0.0,<4.0.0",
-  "flask-cors>=4.0.0,<5.0.0",
   "numpy>=1.24,<3.0",
   "scipy>=1.10,<2.0",
   "matplotlib>=3.7,<5.0",
   "tqdm>=4.65,<5.0",
   "PyYAML>=6.0,<7.0",
-]
-
-[project.optional-dependencies]
-dev = [
-  "pytest>=7.4",
-]
-server = [
+  "requests>=2.28,<3.0",
+  "grpcio>=1.48,<2.0",
   "fastapi>=0.104,<1.0",
   "uvicorn[standard]>=0.24,<1.0",
   "websockets>=12.0,<14.0",
   "pydantic>=2.0,<3.0",
 ]
 
-[project.scripts]
-tais-v6 = "cli:main"
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.4",
+]
+
+
 
 [project.urls]
 Homepage = "https://github.com/RayAKaan/TAIS"
 Issues = "https://github.com/RayAKaan/TAIS/issues"
 
 [tool.setuptools.packages.find]
-include = ["tais_core*", "tais_swarm_v6*", "experiments*"]
+include = ["tais_core*"]
 exclude = ["tests*", "archive*", "colonies*", "results*", "runs*", "src*"]

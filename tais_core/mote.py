@@ -293,6 +293,8 @@ class UniversalMote:
             cons = Consequence(penalty=0.2, valid=False, concept_signals={"VOID": 1.0}, explanation={"why": "no actions"})
             self.energy += cons.net
             self.last_consequence = cons
+            if self.causal is not None:
+                self.causal.record_no_action(tick, "VOID", False)
             return graph, cons, None
 
         predicted = self.memory.predict_action(action, observation)
@@ -315,11 +317,12 @@ class UniversalMote:
             self._engine_policy = None
 
         # ── Cognitive engine updates (None-safe, policy-gated) ────────
-        # Causal: record action→outcome
+        # Causal: record action→outcome + no_action counterfactual
         if self.causal is not None and (self._engine_policy is None or self._engine_policy.use_causal_reasoning):
             positive = cons.net > 0
             outcome_concept = list(cons.concept_signals.keys())[0] if cons.concept_signals else "unknown"
             self.causal.record_action(tick, action.name, outcome_concept, positive)
+            self.causal.record_no_action(tick, outcome_concept, not positive)
 
         # Metacognitive: record prediction accuracy
         if self.metacog is not None and (self._engine_policy is None or self._engine_policy.use_metacognition):
@@ -422,7 +425,7 @@ class UniversalMote:
             result["metacog_exploration_rate"] = round(self.metacog.get_exploration_rate(), 3)
         if self.causal is not None:
             result["causal_links_count"] = len(self.causal.links)
-            result["causal_is_causal_count"] = sum(1 for l in self.causal.links.values() if l.is_causal)
+            result["causal_is_causal_count"] = sum(1 for l in self.causal.links if l.is_causal)
         if self.planner is not None:
             result["planner_active"] = self.planner.active_plan is not None
             result["planner_library_size"] = sum(len(plans) for plans in self.planner._plan_library.values())

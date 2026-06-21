@@ -69,29 +69,38 @@ class Counterfactual:
 
 
 class CausalReasoningEngine:
-    """Domain-agnostic causal reasoning via Delta-P."""
+    """Domain-agnostic causal reasoning via Delta-P.
+
+    Tracks each (action, outcome) pair independently so the planner
+    can distinguish which action best drives a desired outcome.
+    """
 
     def __init__(self, window_size: int = 5, min_confidence: float = 0.15):
         self.window_size = window_size
         self.min_confidence = min_confidence
-        self._action_outcomes: Dict[str, List[bool]] = defaultdict(list)
+        self._action_outcomes: Dict[Tuple[str, str], List[bool]] = defaultdict(list)
         self._no_action_outcomes: Dict[str, List[bool]] = defaultdict(list)
-        self._links: Dict[str, CausalLink] = {}
+        self._links: Dict[Tuple[str, str], CausalLink] = {}
         self._counterfactuals: List[Counterfactual] = []
         self._event_log: List[Tuple[int, str, str, bool]] = []
 
     def record_action(self, tick: int, action: str, outcome_concept: str, positive_outcome: bool):
         """Record that performing action led to outcome_concept (positive or not)."""
-        self._action_outcomes[outcome_concept].append(positive_outcome)
+        key = (action, outcome_concept)
+        self._action_outcomes[key].append(positive_outcome)
         self._event_log.append((tick, action, outcome_concept, positive_outcome))
-        self._recompute(outcome_concept)
+        self._recompute(action, outcome_concept)
         self._prune_log()
 
     def record_no_action(self, tick: int, outcome_concept: str, positive_outcome: bool):
         """Record that NOT performing any relevant action still led to outcome_concept."""
         self._no_action_outcomes[outcome_concept].append(positive_outcome)
         self._event_log.append((tick, "NO_ACTION", outcome_concept, positive_outcome))
-        self._recompute(outcome_concept)
+        affected = {(a, o) for (a, o) in list(self._links) if o == outcome_concept}
+        for act, outc in affected:
+            self._recompute(act, outcome_concept)
+        if not affected:
+            self._recompute("NO_ACTION", outcome_concept)
         self._prune_log()
 
     def record_outcome(self, tick: int, outcome: str, delta: float, context: dict):
@@ -99,16 +108,17 @@ class CausalReasoningEngine:
         positive = delta > 0
         self.record_action(tick, "unknown", outcome, positive)
 
-    def _recompute(self, outcome_concept: str):
-        p_action = self._probability(self._action_outcomes.get(outcome_concept, []))
+    def _recompute(self, action: str, outcome_concept: str):
+        key = (action, outcome_concept)
+        p_action = self._probability(self._action_outcomes.get(key, []))
         p_no_action = self._probability(self._no_action_outcomes.get(outcome_concept, []))
         delta = p_action - p_no_action
-        n_action = len(self._action_outcomes.get(outcome_concept, []))
+        n_action = len(self._action_outcomes.get(key, []))
         n_no_action = len(self._no_action_outcomes.get(outcome_concept, []))
         total = n_action + n_no_action
         confidence = min(1.0, total / (total + 10))
-        self._links[outcome_concept] = CausalLink(
-            action="ANY",
+        self._links[key] = CausalLink(
+            action=action,
             outcome=outcome_concept,
             delta_p=delta,
             confidence=confidence,
@@ -126,8 +136,8 @@ class CausalReasoningEngine:
         if len(self._event_log) > 1000:
             self._event_log = self._event_log[-500:]
 
-    def get_causal_link(self, outcome_concept: str) -> Optional[CausalLink]:
-        return self._links.get(outcome_concept)
+    def get_causal_link(self, action: str, outcome_concept: str) -> Optional[CausalLink]:
+        return self._links.get((action, outcome_concept))
 
     def get_all_links(self, min_confidence: Optional[float] = None) -> List[CausalLink]:
         threshold = min_confidence if min_confidence is not None else self.min_confidence
@@ -136,8 +146,8 @@ class CausalReasoningEngine:
     def query_best_action(self, desired_outcome: str) -> Optional[str]:
         """What action should I take to achieve desired_outcome?"""
         candidates = []
-        for out, link in self._links.items():
-            if link.is_causal and link.delta_p > 0 and out == desired_outcome:
+        for link in self._links.values():
+            if link.is_causal and link.delta_p > 0 and link.outcome == desired_outcome:
                 candidates.append((link, link.delta_p))
         if not candidates:
             return None
@@ -145,12 +155,20 @@ class CausalReasoningEngine:
         return candidates[0][0].action
 
     def get_causal_strength(self, action: str, outcome_concept: str) -> float:
-        link = self._links.get(outcome_concept)
+        link = self._links.get((action, outcome_concept))
         return link.delta_p if link else 0.0
+
+    def get_max_causal_strength(self, outcome_concept: str) -> float:
+        """Return the strongest delta_p across all actions for a given outcome."""
+        best = 0.0
+        for link in self._links.values():
+            if link.outcome == outcome_concept and abs(link.delta_p) > abs(best):
+                best = link.delta_p
+        return best
 
     def compute_counterfactual(self, action: str, outcome_concept: str, tick: int) -> Optional[Counterfactual]:
         """What would happen if I did NOT take this action?"""
-        link = self._links.get(outcome_concept)
+        link = self._links.get((action, outcome_concept))
         if link is None:
             return None
         expected = link.p_given_action
@@ -178,8 +196,8 @@ class CausalReasoningEngine:
         }
 
     @property
-    def links(self) -> Dict[str, CausalLink]:
-        return self._links
+    def links(self) -> List[CausalLink]:
+        return list(self._links.values())
 
     def to_dict(self) -> dict:
         return {

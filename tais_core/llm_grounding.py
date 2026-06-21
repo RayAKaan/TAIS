@@ -142,27 +142,44 @@ class LLMGroundingEngine:
 
     def _mock_ground_goal(self, nl_goal: str, domain: str) -> RealityGraph:
         g = RealityGraph(domain, "grounded_goal")
-        g.add_entity(Entity("nav", "NAVIGATION", {"depth": 0}))
+
+        coding_domains = {"codesynt", "code_repair", "python_ast"}
+        math_domains = {"math"}
+        navigation_domains = {"webnav", "grid", "gridworld", "hazard", "hazardworld"}
 
         nl_lower = nl_goal.lower()
 
+        if domain in math_domains:
+            g.add_entity(Entity("goal", "GOAL", {"target": "computed", "status": "unresolved"}))
+            return g
+
         if "deep" in nl_lower:
+            if domain in navigation_domains or domain not in coding_domains:
+                g.add_entity(Entity("nav", "NAVIGATION", {"depth": 0}))
             g.add_entity(Entity("goal", "GOAL", {"target_id": "secret_btn", "satisfied": False}))
             g.add_entity(Entity("secret_btn", "ELEMENT", {"role": "submit"}))
             g.add_relation(Relation("goal", "TARGETS", "secret_btn"))
 
         elif "fix" in nl_lower or "bug" in nl_lower:
+            if domain not in coding_domains:
+                g.add_entity(Entity("nav", "NAVIGATION", {"depth": 0}))
             g.add_entity(Entity("goal", "GOAL", {"target_id": "test_suite", "status": "failing"}))
-            g.add_entity(Entity("test_suite", "REQUIREMENT", {"target": "BinarySearch"}))
+            g.add_entity(Entity("test_suite", "REQUIREMENT", {"target": "CodeRepair"}))
             g.add_relation(Relation("goal", "TARGETS", "test_suite"))
 
         elif "experiment" in nl_lower or "science" in nl_lower:
+            g.add_entity(Entity("nav", "NAVIGATION", {"depth": 0}))
             g.add_entity(Entity("goal", "GOAL", {"target_id": "hyp1", "satisfied": False}))
             g.add_entity(Entity("hyp1", "HYPOTHESIS", {"confirmed": False}))
             g.add_relation(Relation("goal", "TARGETS", "hyp1"))
 
         elif "market" in nl_lower or "trade" in nl_lower:
+            g.add_entity(Entity("nav", "NAVIGATION", {"depth": 0}))
             g.add_entity(Entity("goal", "GOAL", {"target_id": "agent_0", "satisfied": False}))
             g.add_relation(Relation("goal", "TARGETS", "agent_0"))
+
+        else:
+            if domain in navigation_domains:
+                g.add_entity(Entity("nav", "NAVIGATION", {"depth": 0}))
 
         return g

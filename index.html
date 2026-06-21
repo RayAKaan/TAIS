@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TAIS Command Center</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', monospace;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #58a6ff;
+      letter-spacing: 0.5px;
+    }
+    header h1 span { color: #f78166; }
+    #telemetry {
+      display: flex;
+      gap: 24px;
+      font-size: 13px;
+    }
+    #telemetry .label { color: #8b949e; }
+    #telemetry .value { color: #7ee787; font-weight: 600; }
+    #input-area {
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      padding: 12px 24px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    #input-area input {
+      flex: 1;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 10px 14px;
+      color: #c9d1d9;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    #input-area input:focus { border-color: #58a6ff; }
+    #input-area input::placeholder { color: #484f58; }
+    #input-area button {
+      background: #238636;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 20px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    #input-area button:hover { background: #2ea043; }
+    #input-area button:disabled { background: #21262d; color: #484f58; cursor: not-allowed; }
+    #input-area .domain-badge {
+      background: #1f2937;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-size: 12px;
+      color: #8b949e;
+    }
+    #main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+    #left-panel {
+      width: 320px;
+      min-width: 280px;
+      background: #0d1117;
+      border-right: 1px solid #30363d;
+      display: flex;
+      flex-direction: column;
+    }
+    #event-log {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+    #event-log .entry {
+      margin-bottom: 16px;
+      padding: 12px;
+      background: #161b22;
+      border-radius: 8px;
+      border: 1px solid #21262d;
+    }
+    #event-log .entry .prompt {
+      color: #58a6ff;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+    #event-log .entry .response {
+      color: #c9d1d9;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    #event-log .entry .signal {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    #event-log .entry .signal.success { background: #1b3a2d; color: #7ee787; }
+    #event-log .entry .signal.fail { background: #3a1b1b; color: #f85149; }
+    #event-log .entry .signal.running { background: #1b283a; color: #58a6ff; }
+    #center-panel {
+      flex: 1;
+      position: relative;
+      background: #0d1117;
+      overflow: hidden;
+    }
+    #graph-container {
+      width: 100%;
+      height: 100%;
+    }
+    #graph-container svg {
+      width: 100%;
+      height: 100%;
+    }
+    #graph-label {
+      position: absolute;
+      top: 12px;
+      left: 16px;
+      font-size: 12px;
+      color: #484f58;
+      pointer-events: none;
+    }
+    #right-panel {
+      width: 340px;
+      min-width: 280px;
+      background: #0d1117;
+      border-left: 1px solid #30363d;
+      display: flex;
+      flex-direction: column;
+    }
+    .panel-header {
+      padding: 10px 16px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #8b949e;
+      border-bottom: 1px solid #21262d;
+      background: #161b22;
+    }
+    #trace-panel { flex: 1; overflow-y: auto; }
+    #trace-panel .trace-entry {
+      padding: 8px 16px;
+      border-bottom: 1px solid #21262d;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+    #trace-panel .trace-entry .tick { color: #484f58; }
+    #trace-panel .trace-entry .action { color: #d2a8ff; }
+    #trace-panel .trace-entry .reward { color: #7ee787; }
+    #trace-panel .trace-entry .reward.neg { color: #f85149; }
+    #summary-panel { 
+      max-height: 240px;
+      overflow-y: auto;
+      border-top: 1px solid #30363d;
+    }
+    #summary-panel pre {
+      padding: 12px 16px;
+      font-size: 11px;
+      color: #8b949e;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    #status-message {
+      padding: 8px 16px;
+      font-size: 12px;
+      color: #d29922;
+      border-top: 1px solid #30363d;
+      background: #161b22;
+    }
+    .node-tooltip {
+      position: absolute;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 12px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    @media (max-width: 900px) {
+      #left-panel, #right-panel { width: 240px; min-width: 200px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>TAIS <span>Command Center</span></h1>
+    <div id="telemetry">
+      <div><span class="label">Energy</span> <span class="value" id="energy-val">—</span></div>
+      <div><span class="label">Tick</span> <span class="value" id="tick-val">—</span></div>
+      <div><span class="label">Mote</span> <span class="value" id="mote-val">—</span></div>
+      <div><span class="label">Status</span> <span class="value" id="status-val">SUBSTRATE_ACTIVE</span></div>
+    </div>
+  </header>
+
+  <div id="input-area">
+    <span class="domain-badge" id="domain-badge">webnav</span>
+    <input type="text" id="command-input" placeholder="Enter a structural instruction..." autofocus />
+    <button id="send-btn">Execute</button>
+    <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+      <span style="font-size:11px;color:#8b949e;">Ticks</span>
+      <input type="number" id="max-ticks" value="10" min="1" max="100" style="width:52px;background:#0d1117;border:1px solid #30363d;border-radius:4px;padding:4px 6px;color:#c9d1d9;font-family:inherit;font-size:12px;text-align:center;outline:none;" />
+    </div>
+  </div>
+
+  <div id="code-input-area" style="display:none;padding:8px 24px;background:#161b22;border-bottom:1px solid #30363d;">
+    <div style="display:flex;gap:12px;">
+      <div style="flex:1;">
+        <label id="source-code-label" style="font-size:11px;color:#8b949e;display:block;margin-bottom:4px;">Source Code (buggy)</label>
+        <textarea id="source-code" rows="4" style="width:100%;background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:8px;color:#c9d1d9;font-family:inherit;font-size:13px;resize:vertical;outline:none;transition:border-color 0.2s;" placeholder="def max(a, b):&#10;    return a < b"></textarea>
+      </div>
+      <div id="target-code-area" style="flex:1;">
+        <label style="font-size:11px;color:#8b949e;display:block;margin-bottom:4px;">Target Code (correct — optional)</label>
+        <textarea id="target-code" rows="4" style="width:100%;background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:8px;color:#c9d1d9;font-family:inherit;font-size:13px;resize:vertical;outline:none;transition:border-color 0.2s;" placeholder="def max(a, b):&#10;    return a <= b"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div id="main">
+    <div id="left-panel">
+      <div class="panel-header">Event Log</div>
+      <div id="event-log"></div>
+    </div>
+    <div id="center-panel">
+      <div id="graph-label">RealityGraph — Force Layout</div>
+      <div id="graph-container"></div>
+    </div>
+    <div id="right-panel">
+      <div class="panel-header">Cognitive Trace</div>
+      <div id="trace-panel"></div>
+      <div class="panel-header">Graph Summary</div>
+      <div id="summary-panel"><pre>Waiting for command...</pre></div>
+    </div>
+  </div>
+  <div id="status-message">SYSTEM_READY: SUBSTRATE_ACTIVE</div>
+
+  <div class="node-tooltip" id="tooltip"></div>
+
+  <script>
+    let sim = null;
+
+    function detectDomain(text) {
+      if (/^\s*(def |class |import |from |@|if |for |while |with |print|return )/.test(text)) return "codesynt";
+      const t = text.toLowerCase();
+      if (/[\d][\s]*[+\-*\/\(\)\^]/.test(text) && /[+\-*\/\(\)\^]/.test(text)) return "math";
+      if (/\b(what is|whats|solve|calculate|compute|how much|evaluate|simplify)\b/.test(t)) return "math";
+      if (/^[\(\)\d\s+*\/\-\^.]+\s*=/.test(text)) return "math";
+      if (/synthesize|code|bug|fix|implement|function|test|binary|sort|algorithm/.test(t)) return "codesynt";
+      if (/experiment|hypothesis|lab|science|chemical|reaction|beaker/.test(t)) return "sciex";
+      return "webnav";
+    }
+
+    function toggleCodeArea(domain) {
+      const area = document.getElementById('code-input-area');
+      const isCoding = (domain === 'codesynt' || domain === 'code_repair');
+      const isMath = (domain === 'math');
+      area.style.display = (isCoding || isMath) ? 'block' : 'none';
+      document.getElementById('source-code').placeholder = isMath ? '2 + 1' : "def max(a, b):\n    return a < b";
+      document.getElementById('source-code-label').textContent = isMath ? 'Expression' : 'Source Code (buggy)';
+      document.getElementById('target-code').placeholder = isMath ? '' : "def max(a, b):\n    return a <= b";
+      document.getElementById('target-code-area').style.display = isMath ? 'none' : 'block';
+    }
+
+    function initGraph(data) {
+      const container = document.getElementById('graph-container');
+      container.innerHTML = '';
+
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      if (width === 0 || height === 0) return;
+
+      const svg = d3.select(container)
+        .append('svg')
+        .attr('viewBox', [0, 0, width, height]);
+
+      svg.append('defs').append('marker')
+        .attr('id', 'arrow')
+        .attr('viewBox', '0 -5 10 10')
+        .attr('refX', 20)
+        .attr('refY', 0)
+        .attr('markerWidth', 6)
+        .attr('markerHeight', 6)
+        .attr('orient', 'auto')
+        .append('path')
+        .attr('d', 'M0,-5L10,0L0,5')
+        .attr('fill', '#30363d');
+
+      const colorMap = {
+        'GOAL': '#f78166',
+        'ELEMENT': '#58a6ff',
+        'VARIABLE': '#d2a8ff',
+        'EXPERIMENT': '#7ee787',
+        'NODE': '#e3b341',
+        'FUNCTION': '#79c0ff',
+        'OUTPUT': '#ffa657',
+        'INPUT': '#a5d6ff',
+        'BEHAVIOR': '#56d364',
+        'CONSTRAINT': '#f85149',
+        'TOOL': '#bc8cff',
+        'PROPERTY': '#79c0ff',
+        'STATE': '#ffd700',
+        'PARAM': '#ffa657',
+        'LOGIC_FIX': '#f78166',
+        'NAVIGATION': '#8b949e',
+        'HYPOTHESIS': '#7ee787',
+        'REQUIREMENT': '#79c0ff',
+      };
+      const defaultColor = '#8b949e';
+
+      const zoomGroup = svg.append('g');
+
+      const linkGroup = zoomGroup.append('g')
+        .selectAll('line')
+        .data(data.links)
+        .join('line')
+        .attr('stroke', '#30363d')
+        .attr('stroke-width', 1.5)
+        .attr('stroke-opacity', 0.6)
+        .attr('marker-end', 'url(#arrow)');
+
+      linkGroup.append('title').text(d => d.type);
+
+      const nodeGroup = zoomGroup.append('g')
+        .selectAll('circle')
+        .data(data.nodes)
+        .join('circle')
+        .attr('r', d => d.type === 'GOAL' ? 10 : 7)
+        .attr('fill', d => colorMap[d.type] || defaultColor)
+        .attr('stroke', '#0d1117')
+        .attr('stroke-width', 2)
+        .attr('cursor', 'grab');
+
+      nodeGroup.append('title').text(d => `${d.id} (${d.type})`);
+
+      const labelGroup = zoomGroup.append('g')
+        .selectAll('text')
+        .data(data.nodes)
+        .join('text')
+        .text(d => d.id.length > 18 ? d.id.slice(0, 16) + '\u2026' : d.id)
+        .attr('font-size', d => d.type === 'GOAL' ? 12 : 10)
+        .attr('font-family', "'JetBrains Mono', monospace")
+        .attr('fill', '#8b949e')
+        .attr('dx', 14)
+        .attr('dy', 4);
+
+      sim = d3.forceSimulation(data.nodes)
+        .force('link', d3.forceLink(data.links).id(d => d.id).distance(120))
+        .force('charge', d3.forceManyBody().strength(-300))
+        .force('center', d3.forceCenter(width / 2, height / 2))
+        .force('collision', d3.forceCollide(20))
+        .on('tick', () => {
+          linkGroup
+            .attr('x1', d => d.source.x)
+            .attr('y1', d => d.source.y)
+            .attr('x2', d => d.target.x)
+            .attr('y2', d => d.target.y);
+          nodeGroup
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y);
+          labelGroup
+            .attr('x', d => d.x)
+            .attr('y', d => d.y);
+        });
+
+      nodeGroup.call(d3.drag()
+        .on('start', (event, d) => {
+          event.sourceEvent.stopPropagation();
+          if (!event.active) sim.alphaTarget(0.3).restart();
+          d.fx = d.x;
+          d.fy = d.y;
+        })
+        .on('drag', (event, d) => {
+          d.fx = event.x;
+          d.fy = event.y;
+        })
+        .on('end', (event, d) => {
+          if (!event.active) sim.alphaTarget(0);
+          d.fx = null;
+          d.fy = null;
+        }));
+
+      // Zoom behavior — pan on background, scroll to zoom
+      const zoom = d3.zoom()
+        .scaleExtent([0.2, 5])
+        .on('zoom', (event) => {
+          zoomGroup.attr('transform', event.transform);
+        });
+
+      svg.call(zoom);
+    }
+
+    function updateGraph(data) {
+      if (!sim) { initGraph(data); return; }
+      const container = document.getElementById('graph-container');
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+
+      sim.nodes(data.nodes);
+      sim.force('link').links(data.links);
+      sim.force('center', d3.forceCenter(width / 2, height / 2));
+      sim.alpha(1).restart();
+    }
+
+    function updateTelemetry(m) {
+      document.getElementById('energy-val').textContent = m.energy?.toFixed(1) ?? '\u2014';
+      document.getElementById('tick-val').textContent = m.age ?? '\u2014';
+      document.getElementById('mote-val').textContent = m.id ?? '\u2014';
+    }
+
+    function updateTrace(trace) {
+      const panel = document.getElementById('trace-panel');
+      panel.innerHTML = '';
+      if (!trace || trace.length === 0) {
+        panel.innerHTML = '<div style="padding:16px;color:#484f58;font-size:12px;">No actions yet.</div>';
+        return;
+      }
+      trace.forEach(t => {
+        const div = document.createElement('div');
+        div.className = 'trace-entry';
+        div.innerHTML = `
+          <span><span class="tick">t${t.tick}</span> <span class="action">${t.action}</span></span>
+          <span class="reward ${t.reward < 0 ? 'neg' : ''}">${t.reward >= 0 ? '+' : ''}${t.reward}</span>
+        `;
+        panel.appendChild(div);
+      });
+    }
+
+    function updateSummary(summary) {
+      const panel = document.getElementById('summary-panel');
+      panel.innerHTML = '<pre>' + JSON.stringify(summary, null, 2) + '</pre>';
+    }
+
+    function addLogEntry(prompt, response, signal, patches, fixedCode, answer) {
+      const log = document.getElementById('event-log');
+      const entry = document.createElement('div');
+      entry.className = 'entry';
+      const signalClass = signal === 'TASK_SUCCESS' ? 'success' : signal === 'TASK_FAILURE' ? 'fail' : 'running';
+      entry.innerHTML = `
+        <div class="prompt">$ ${prompt}</div>
+        <div class="response">${response}</div>
+        <span class="signal ${signalClass}">${signal || 'RUNNING'}</span>
+      `;
+
+      if (answer !== undefined && answer !== null) {
+        const a = document.createElement('div');
+        a.style.marginTop = '8px';
+        a.style.background = '#0d1117';
+        a.style.border = '1px solid #1b3a2d';
+        a.style.borderRadius = '6px';
+        a.style.padding = '10px 14px';
+        a.style.fontSize = '20px';
+        a.style.fontWeight = '700';
+        a.style.color = '#7ee787';
+        a.style.textAlign = 'center';
+        a.style.fontFamily = "'JetBrains Mono', monospace";
+        a.textContent = '= ' + (typeof answer === 'number' ? answer : String(answer));
+        entry.appendChild(a);
+      }
+
+      if (patches && patches.length > 0) {
+        const p = document.createElement('div');
+        p.style.marginTop = '8px';
+        p.style.fontSize = '12px';
+        p.innerHTML = '<strong style="color:#d2a8ff;">Patches:</strong><ul style="margin:4px 0 0 16px;color:#8b949e;list-style:none;padding:0;">' +
+          patches.map((patch, i) => `<li style="margin-bottom:2px;">${i+1}. ${patch.description}</li>`).join('') + '</ul>';
+        entry.appendChild(p);
+      }
+
+      if (fixedCode) {
+        const c = document.createElement('div');
+        c.style.marginTop = '8px';
+        c.style.background = '#0d1117';
+        c.style.border = '1px solid #21262d';
+        c.style.borderRadius = '6px';
+        c.style.padding = '10px 12px';
+        c.style.fontSize = '12px';
+        c.style.fontFamily = "'JetBrains Mono', monospace";
+        c.style.whiteSpace = 'pre-wrap';
+        c.style.color = '#7ee787';
+        c.style.overflowX = 'auto';
+        c.textContent = fixedCode;
+        const label = document.createElement('div');
+        label.style.fontSize = '11px';
+        label.style.color = '#8b949e';
+        label.style.marginTop = '8px';
+        label.style.marginBottom = '4px';
+        label.style.fontWeight = '600';
+        label.textContent = 'Fixed Code:';
+        entry.appendChild(label);
+        entry.appendChild(c);
+      }
+
+      log.prepend(entry);
+    }
+
+    function graphDataFromStream(data) {
+      return data.graph_data || { nodes: [], links: [] };
+    }
+
+    async function executeCommand() {
+      const input = document.getElementById('command-input');
+      const btn = document.getElementById('send-btn');
+      const status = document.getElementById('status-message');
+      const cmd = input.value.trim();
+      if (!cmd) return;
+
+      const domain = detectDomain(cmd);
+      document.getElementById('domain-badge').textContent = domain;
+      toggleCodeArea(domain);
+
+      btn.disabled = true;
+      status.textContent = 'STATUS: GROUNDING';
+      status.style.color = '#d29922';
+
+      const sourceCode = document.getElementById('source-code')?.value || '';
+      const targetCode = document.getElementById('target-code')?.value || '';
+      const maxTicks = parseInt(document.getElementById('max-ticks').value, 10) || 10;
+      const body = { command: cmd, domain, max_ticks: maxTicks };
+      if (sourceCode) body.source_code = sourceCode;
+      if (targetCode) body.target_code = targetCode;
+      if (domain === 'math') body.expression = sourceCode || cmd;
+
+      document.getElementById('source-code').value = '';
+      document.getElementById('target-code').value = '';
+      document.getElementById('max-ticks').value = '10';
+
+      // Create a temporary log entry that we'll update with each tick
+      const log = document.getElementById('event-log');
+      const entry = document.createElement('div');
+      entry.className = 'entry';
+      entry.innerHTML = `<div class="prompt">$ ${cmd}</div><div class="response">Running...</div><span class="signal running">RUNNING</span>`;
+      log.prepend(entry);
+
+      let lastTaskSignal = null;
+
+      try {
+        const res = await fetch('/chat/stream', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (!line.trim()) continue;
+            const data = JSON.parse(line);
+
+            if (data.type === 'tick') {
+              if (data.telemetry) updateTelemetry(data.telemetry);
+              if (data.action_trace) updateTrace(data.action_trace);
+              if (data.graph_data) {
+                if (!sim) { initGraph(data.graph_data); }
+                else { updateGraph(data.graph_data); }
+              }
+              if (data.task_signal) {
+                lastTaskSignal = data.task_signal;
+                document.getElementById('status-val').textContent = data.task_signal;
+                const signalEl = entry.querySelector('.signal');
+                if (signalEl) {
+                  signalEl.textContent = data.task_signal;
+                  signalEl.className = 'signal ' + (data.task_signal === 'TASK_SUCCESS' ? 'success' : data.task_signal === 'TASK_FAILURE' ? 'fail' : 'running');
+                }
+              }
+              status.textContent = `tick ${data.tick}: ${data.action ? data.action.name : 'observe'}`;
+              status.style.color = '#d29922';
+            } else if (data.type === 'complete') {
+              updateTelemetry(data);
+              document.getElementById('status-val').textContent = data.task_signal || 'PROCESSING';
+              updateTrace(data.action_trace);
+              updateSummary(data.graph_summary);
+              if (data.graph_data) {
+                if (!sim) { initGraph(data.graph_data); }
+                else { updateGraph(data.graph_data); }
+              }
+
+              // Update the log entry with final info
+              const signalClass = data.task_signal === 'TASK_SUCCESS' ? 'success' : data.task_signal === 'TASK_FAILURE' ? 'fail' : 'running';
+              entry.innerHTML = `
+                <div class="prompt">$ ${cmd}</div>
+                <div class="response">${data.explanation}</div>
+                <span class="signal ${signalClass}">${data.task_signal || 'RUNNING'}</span>
+              `;
+
+              if (data.answer !== undefined && data.answer !== null) {
+                const a = document.createElement('div');
+                a.style.marginTop = '8px';
+                a.style.background = '#0d1117';
+                a.style.border = '1px solid #1b3a2d';
+                a.style.borderRadius = '6px';
+                a.style.padding = '10px 14px';
+                a.style.fontSize = '20px';
+                a.style.fontWeight = '700';
+                a.style.color = '#7ee787';
+                a.style.textAlign = 'center';
+                a.style.fontFamily = "'JetBrains Mono', monospace";
+                a.textContent = '= ' + (typeof data.answer === 'number' ? data.answer : String(data.answer));
+                entry.appendChild(a);
+              }
+
+              if (data.patches && data.patches.length > 0) {
+                const p = document.createElement('div');
+                p.style.marginTop = '8px';
+                p.style.fontSize = '12px';
+                p.innerHTML = '<strong style="color:#d2a8ff;">Patches:</strong><ul style="margin:4px 0 0 16px;color:#8b949e;list-style:none;padding:0;">' +
+                  data.patches.map((patch, i) => `<li style="margin-bottom:2px;">${i+1}. ${patch.description}</li>`).join('') + '</ul>';
+                entry.appendChild(p);
+              }
+
+              if (data.fixed_code) {
+                const c = document.createElement('div');
+                c.style.marginTop = '8px';
+                c.style.background = '#0d1117';
+                c.style.border = '1px solid #21262d';
+                c.style.borderRadius = '6px';
+                c.style.padding = '10px 12px';
+                c.style.fontSize = '12px';
+                c.style.fontFamily = "'JetBrains Mono', monospace";
+                c.style.whiteSpace = 'pre-wrap';
+                c.style.color = '#7ee787';
+                c.style.overflowX = 'auto';
+                c.textContent = data.fixed_code;
+                const label = document.createElement('div');
+                label.style.fontSize = '11px';
+                label.style.color = '#8b949e';
+                label.style.marginTop = '8px';
+                label.style.marginBottom = '4px';
+                label.style.fontWeight = '600';
+                label.textContent = 'Fixed Code:';
+                entry.appendChild(label);
+                entry.appendChild(c);
+              }
+
+              status.textContent = data.explanation;
+              status.style.color = data.task_signal === 'TASK_SUCCESS' ? '#7ee787' : '#d29922';
+            }
+          }
+        }
+      } catch (err) {
+        status.textContent = 'ERROR: ' + err.message;
+        status.style.color = '#f85149';
+        entry.innerHTML = `<div class="prompt">$ ${cmd}</div><div class="response">ERROR: ${err.message}</div><span class="signal fail">ERROR</span>`;
+      } finally {
+        btn.disabled = false;
+        input.value = '';
+        input.focus();
+      }
+    }
+
+    document.getElementById('send-btn').addEventListener('click', executeCommand);
+    document.getElementById('command-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') executeCommand();
+    });
+    document.getElementById('command-input').addEventListener('input', (e) => {
+      const val = e.target.value;
+      const domain = detectDomain(val);
+      document.getElementById('domain-badge').textContent = domain;
+      toggleCodeArea(domain);
+
+      if (/^\s*(def |class |import |from |@|if |for |while |with )/.test(val)) {
+        document.getElementById('source-code').value = val;
+        document.getElementById('target-code').value = '';
+      } else if (domain === 'math' && /[\d]/.test(val)) {
+        document.getElementById('source-code').value = val;
+        document.getElementById('target-code').value = '';
+      }
+    });
+
+    addLogEntry('SYSTEM', 'SYSTEM_READY: SUBSTRATE_ACTIVE', 'RUNNING');
+
+    fetch('/status')
+      .then(r => r.json())
+      .then(m => { updateTelemetry(m); })
+      .catch(() => {});
+
+    window.addEventListener('resize', () => {
+      if (sim) {
+        const container = document.getElementById('graph-container');
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        sim.force('center', d3.forceCenter(width / 2, height / 2));
+        sim.alpha(0.3).restart();
+      }
+    });
+  </script>
+</body>
+</html>

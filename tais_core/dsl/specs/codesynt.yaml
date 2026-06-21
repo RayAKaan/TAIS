@@ -4,8 +4,8 @@ version: 1.0
 description: AST-based code synthesis domain
 
 backend:
-  world_class: tais_core.domains.codesynt.CodeSyntWorld
-  graph_factory: tais_core.domains.codesynt.make_codesynt_graph
+  world_class: tais_core.domains.codesynt.CustomCodeWorld
+  graph_factory: tais_core.domains.codesynt.make_custom_code_graph
   graph_factory_kwargs: {}
 
 world_defaults:

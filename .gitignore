@@ -69,10 +69,12 @@ paper/*.bbl
 paper/*.blg
 paper/build/
 
+# Built frontend (requires npm run build in frontend/)
+frontend/dist/
+
 # Debug / scratch scripts
 debug_*.py
-temp_sweep.py
-index.html
-breakthrough_validation.py
-hyperparameter_report.py
-hyperparameter_report.md
+hyperparameter_report*.py
+
+# Archived swarm model dumps
+tais_v6_data.db

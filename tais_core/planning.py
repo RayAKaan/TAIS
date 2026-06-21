@@ -70,15 +70,14 @@ class Plan:
 class HierarchicalPlanner:
     """Goal-directed planning via backward chaining through causal links."""
 
-    def __init__(self, max_depth: int = 3, planning_cost: float = 2.0):
-        self.max_depth = max_depth
+    def __init__(self, planning_cost: float = 2.0):
         self.planning_cost = planning_cost
         self._plan_library: Dict[str, List[Plan]] = defaultdict(list)
         self._active_plan: Optional[Plan] = None
         self._plan_history: List[Tuple[int, str, bool]] = []
 
     def create_plan(self, goal: str, causal_links: List[Tuple[str, str, float]], tick: int) -> Optional[Plan]:
-        steps = self._backward_chain(goal, causal_links, depth=0)
+        steps = self._backward_chain(goal, causal_links)
         if not steps:
             return None
         utility = self._estimate_utility(steps, causal_links)
@@ -86,24 +85,21 @@ class HierarchicalPlanner:
         self._plan_library[goal].append(plan)
         return plan
 
-    def _backward_chain(self, goal: str, causal_links: List[Tuple[str, str, float]], depth: int) -> List[PlanStep]:
-        if depth >= self.max_depth:
-            return []
-        candidates = []
+    def _backward_chain(self, goal: str, causal_links: List[Tuple[str, str, float]]) -> List[PlanStep]:
+        """Single-step backward chaining.
+
+        Finds the action that most directly increases the probability of
+        *goal*. Multi-step plans require precondition tracking (future work).
+        """
+        best: Optional[Tuple[List[PlanStep], float]] = None
         for action, outcome, delta_p in causal_links:
             if outcome == goal and delta_p > 0.15:
-                steps = [PlanStep(action=action, target_concept=goal, expected_outcome=outcome)]
-                candidates.append((steps, delta_p, 1))
-        for action, outcome, delta_p in causal_links:
-            if delta_p > 0.15:
-                sub_steps = self._backward_chain(outcome, causal_links, depth + 1)
-                if sub_steps:
-                    sub_steps.append(PlanStep(action=action, target_concept=outcome, expected_outcome=goal))
-                    candidates.append((sub_steps, delta_p, len(sub_steps)))
-        if not candidates:
+                step = PlanStep(action=action, target_concept=goal, expected_outcome=outcome)
+                if best is None or delta_p > best[1]:
+                    best = ([step], delta_p)
+        if best is None:
             return []
-        candidates.sort(key=lambda x: x[1] / max(x[2], 1), reverse=True)
-        return candidates[0][0]
+        return best[0]
 
     def _estimate_utility(self, steps: List[PlanStep], causal_links: List[Tuple[str, str, float]]) -> float:
         if not steps:
