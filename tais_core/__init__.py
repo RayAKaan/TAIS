@@ -31,6 +31,13 @@ from .policy_transfer import (
 )
 from .domains.procedural import ProceduralDomainFactory, ProceduralWorld
 
+# --- AGI Roadmap: hierarchical chunking, causal intervention, schemas, language grounding, open-ended learning ---
+from .graph_chunking import CommunityDetection, HierarchicalCompressor, ChunkedWLSimilarity, CompressedGraph
+from .causal_intervention import CausalInterventionEngine, CounterfactualEstimator, InterventionValidator, CausalEffect
+from .schema_learning import SchemaExtractor, SchemaLearner, AbstractSchema, VariableSlot, AnonymousRelation, CompositionLearner, SchemaComposition
+from .language_grounding import GraphDescriber, NLGraphParser, SchemaDescriber, ParsedPattern
+from .open_ended_learning import CuriosityDrive, SchemaGapDetector, GoalGenerator, ExplorationController, SelfEvaluator, LearningGoal
+
 __all__ = [
     "Entity",
     "Relation",
@@ -84,4 +91,30 @@ __all__ = [
     "HierarchicalPlannerV2",
     "ProceduralDomainFactory",
     "ProceduralWorld",
+    # AGI Roadmap Steps 1-5
+    "CommunityDetection",
+    "HierarchicalCompressor",
+    "ChunkedWLSimilarity",
+    "CompressedGraph",
+    "CausalInterventionEngine",
+    "CounterfactualEstimator",
+    "InterventionValidator",
+    "CausalEffect",
+    "SchemaExtractor",
+    "SchemaLearner",
+    "AbstractSchema",
+    "VariableSlot",
+    "AnonymousRelation",
+    "CompositionLearner",
+    "SchemaComposition",
+    "GraphDescriber",
+    "NLGraphParser",
+    "SchemaDescriber",
+    "ParsedPattern",
+    "CuriosityDrive",
+    "SchemaGapDetector",
+    "GoalGenerator",
+    "ExplorationController",
+    "SelfEvaluator",
+    "LearningGoal",
 ]
