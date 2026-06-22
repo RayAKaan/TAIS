@@ -151,6 +151,11 @@ class AbstractSchema:
         }
 
 
+# Convenience aliases for backward compatibility
+Schema = AbstractSchema
+SchemaSlot = VariableSlot
+
+
 # ─── SCHEMA EXTRACTION ──────────────────────────────────────────────────────
 
 
@@ -562,6 +567,24 @@ class SchemaLearner:
             base -= 0.1
 
         return max(0.0, min(1.0, base))
+
+    def learn_from_episode(
+        self,
+        graph: RealityGraph,
+        action: Any,
+        consequence: Consequence,
+        domain: str,
+        tick: int = 0,
+    ) -> Optional[AbstractSchema]:
+        """Learn a schema from an episode (graph + action + outcome)."""
+        schema_name = self.observe(graph, consequence)
+        if schema_name is None:
+            return None
+
+        schema = self.get_schema(schema_name)
+        if schema is not None:
+            schema.source_domains.add(domain)
+        return schema
 
     def get_promoted_schemas(self) -> List[AbstractSchema]:
         """Get schemas confident enough for cross-domain transfer."""

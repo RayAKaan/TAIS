@@ -604,3 +604,71 @@ class ChunkedWLSimilarity:
         profile_sim = self.community_profile_similarity(compressed_s, compressed_t)
 
         return 0.6 * chunk_sim + 0.4 * profile_sim
+
+
+# --- GRAPH CHUNKER WRAPPER ------------------------------------------------------
+
+@dataclass
+class GraphChunk:
+    """A single chunk produced by GraphChunker."""
+    community_id: str
+    entity_ids: Set[str]
+    internal_relations: List[Relation]
+    bridge_relations: List[Relation]
+    density: float = 0.0
+
+
+class GraphChunker:
+    """High-level wrapper that chunks a RealityGraph into structural communities.
+
+    Provides a simple API: chunk(graph) -> List[GraphChunk], hiding the
+    CommunityDetection internals.
+    """
+
+    def __init__(
+        self,
+        resolution: float = 1.0,
+        min_community_size: int = 3,
+    ):
+        self.detector = CommunityDetection(
+            resolution=resolution,
+            min_community_size=min_community_size,
+        )
+
+    def chunk(self, graph: RealityGraph) -> List[GraphChunk]:
+        """Partition graph into structural chunks (communities).
+
+        Returns chunks ordered by structural significance (largest first).
+        """
+        communities = self.detector.detect(graph)
+        chunks: List[GraphChunk] = []
+        for c in communities:
+            chunks.append(GraphChunk(
+                community_id=c.id,
+                entity_ids=c.entity_ids,
+                internal_relations=c.internal_relations,
+                bridge_relations=c.bridge_relations,
+                density=c.density,
+            ))
+        chunks.sort(key=lambda x: len(x.entity_ids), reverse=True)
+        return chunks
+
+
+def chunked_wl_similarity(
+    graph_a: RealityGraph,
+    graph_b: RealityGraph,
+    wl_iterations: int = 3,
+) -> float:
+    """Compute chunk-level WL similarity between two graphs.
+
+    Compresses each graph using HierarchicalCompressor, then computes
+    WL similarity at the compressed level. Returns a score in [0, 1].
+    """
+    compressor = HierarchicalCompressor()
+    cwl = ChunkedWLSimilarity(wl_iterations=wl_iterations)
+    try:
+        compressed_a = compressor.compress(graph_a)
+        compressed_b = compressor.compress(graph_b)
+        return cwl.chunk_similarity(compressed_a, compressed_b)
+    except Exception:
+        return 0.0

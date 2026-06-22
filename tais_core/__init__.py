@@ -32,10 +32,10 @@ from .policy_transfer import (
 from .domains.procedural import ProceduralDomainFactory, ProceduralWorld
 
 # --- AGI Roadmap: hierarchical chunking, causal intervention, schemas, language grounding, open-ended learning ---
-from .graph_chunking import CommunityDetection, HierarchicalCompressor, ChunkedWLSimilarity, CompressedGraph
+from .graph_chunking import CommunityDetection, HierarchicalCompressor, ChunkedWLSimilarity, CompressedGraph, GraphChunker, GraphChunk, chunked_wl_similarity
 from .causal_intervention import CausalInterventionEngine, CounterfactualEstimator, InterventionValidator, CausalEffect
 from .schema_learning import SchemaExtractor, SchemaLearner, AbstractSchema, VariableSlot, AnonymousRelation, CompositionLearner, SchemaComposition
-from .language_grounding import GraphDescriber, NLGraphParser, SchemaDescriber, ParsedPattern
+from .language_grounding import GraphDescriber, NLGraphParser, SchemaDescriber
 from .open_ended_learning import CuriosityDrive, SchemaGapDetector, GoalGenerator, ExplorationController, SelfEvaluator, LearningGoal
 
 __all__ = [
@@ -96,6 +96,9 @@ __all__ = [
     "HierarchicalCompressor",
     "ChunkedWLSimilarity",
     "CompressedGraph",
+    "GraphChunker",
+    "GraphChunk",
+    "chunked_wl_similarity",
     "CausalInterventionEngine",
     "CounterfactualEstimator",
     "InterventionValidator",
@@ -110,7 +113,7 @@ __all__ = [
     "GraphDescriber",
     "NLGraphParser",
     "SchemaDescriber",
-    "ParsedPattern",
+    "SchemaDescriber",
     "CuriosityDrive",
     "SchemaGapDetector",
     "GoalGenerator",

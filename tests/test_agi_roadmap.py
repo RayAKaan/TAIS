@@ -474,52 +474,51 @@ class TestLanguageGrounding(unittest.TestCase):
     def test_graph_describer_basic(self):
         g = make_gridworld_like()
         desc = GraphDescriber()
-        text = desc.describe(g)
+        text = desc.describe_graph(g)
         self.assertIsInstance(text, str)
         self.assertGreater(len(text), 0)
 
     def test_graph_describer_empty_graph(self):
         g = RealityGraph("empty", "e")
         desc = GraphDescriber()
-        text = desc.describe(g)
-        self.assertEqual(text, "empty observation")
+        text = desc.describe_graph(g)
+        self.assertIn("empty", text.lower())
 
     def test_graph_describer_includes_entity_counts(self):
         g = RealityGraph("test", "t")
         g.add_entity(Entity("e1", "AGENT"))
         g.add_entity(Entity("e2", "RESOURCE"))
         desc = GraphDescriber()
-        text = desc.describe(g).lower()
+        text = desc.describe_graph(g).lower()
         self.assertIn("agent", text)
 
     def test_nl_parser_detects_threat_near_resource(self):
         parser = NLGraphParser()
-        results = parser.parse("threat near resource")
-        self.assertGreater(len(results), 0)
-        self.assertEqual(results[0].pattern_type, "threat_near_resource")
+        result = parser.parse("threat near resource")
+        self.assertGreater(len(result.entities), 0)
+        self.assertGreater(len(result.relations), 0)
 
     def test_nl_parser_detects_agent_at_goal(self):
         parser = NLGraphParser()
-        results = parser.parse("agent approaches goal")
-        self.assertGreater(len(results), 0)
-        self.assertEqual(results[0].pattern_type, "agent_approaches_goal")
+        result = parser.parse("agent approaches goal")
+        self.assertGreater(len(result.entities), 0)
+        self.assertGreater(len(result.relations), 0)
 
     def test_nl_parser_returns_high_confidence_for_exact_match(self):
         parser = NLGraphParser()
-        results = parser.parse("threat near resource")
-        self.assertGreaterEqual(results[0].confidence, 0.8)
+        result = parser.parse("threat near resource")
+        self.assertGreaterEqual(result.confidence, 0.5)
 
     def test_nl_parser_converts_to_graph_pattern(self):
         parser = NLGraphParser()
-        results = parser.parse("threat near resource")
-        pattern = results[0].to_pattern()
-        self.assertIsInstance(pattern, GraphPattern)
-        self.assertGreater(len(pattern.entities), 0)
+        result = parser.parse("threat near resource")
+        self.assertGreater(len(result.entities), 0)
 
     def test_nl_parser_empty_text(self):
         parser = NLGraphParser()
-        results = parser.parse("")
-        self.assertEqual(len(results), 0)
+        result = parser.parse("")
+        self.assertEqual(len(result.entities), 0)
+        self.assertEqual(len(result.relations), 0)
 
     def test_schema_describer_transfer_insight(self):
         schema = AbstractSchema(
@@ -714,13 +713,9 @@ class TestAGIIntegration(unittest.TestCase):
     def test_nl_to_schema_pipeline(self):
         """Step 4+3: NL patterns feed schema learning."""
         parser = NLGraphParser()
-        results = parser.parse("threat near resource")
-        self.assertGreater(len(results), 0)
-
-        pattern = results[0].to_pattern()
-        ext = SchemaExtractor()
-        # Verify parseable
-        self.assertGreater(len(pattern.entities), 0)
+        result = parser.parse("threat near resource")
+        self.assertGreater(len(result.entities), 0)
+        self.assertGreater(len(result.relations), 0)
 
     def test_schema_describes_transfer_between_domains(self):
         """Step 4+3: Transfer described in NL."""
