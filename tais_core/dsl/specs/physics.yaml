@@ -1,0 +1,14 @@
+name: Physics
+domain_name: physics
+version: 1.0
+description: Elementary Newtonian Mechanics (F=ma)
+
+backend:
+  world_class: tais_core.domains.elementary_science.PhysicsWorld
+  graph_factory: tais_core.domains.elementary_science.make_physics_graph
+  graph_factory_kwargs: {}
+
+world_defaults:
+  energy: 100
+  horizon: 40
+  step_cost: 0.1

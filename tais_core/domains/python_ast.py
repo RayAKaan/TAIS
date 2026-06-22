@@ -45,12 +45,9 @@ class PythonASTWorld(WorldInterface):
 
     def valid_actions(self, graph: RealityGraph, mote_state: Dict) -> List[Transformation]:
         return [
-            Transformation("analyze_node", self.domain_name, "VERIFY", base_cost=0.1,
-                           role_hint="VERIFY_UNCERTAIN"),
-            Transformation("mutate_constant", self.domain_name, "TRANSFORM", base_cost=0.5,
-                           role_hint="TRANSFORM_TOWARD_GOAL"),
-            Transformation("add_comment", self.domain_name, "MUTATE", base_cost=0.2,
-                           role_hint="MAINTAIN_STABLE"),
+            Transformation("analyze_node", self.domain_name, "VERIFY", base_cost=0.1),
+            Transformation("mutate_constant", self.domain_name, "TRANSFORM", base_cost=0.5),
+            Transformation("add_comment", self.domain_name, "MUTATE", base_cost=0.2),
         ]
 
     def act(self, graph: RealityGraph, transformation: Transformation,

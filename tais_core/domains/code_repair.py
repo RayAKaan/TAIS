@@ -43,10 +43,10 @@ class CodeRepairWorld(WorldInterface):
 
     def valid_actions(self, graph: RealityGraph, mote_state: Dict) -> List[Transformation]:
         return [
-            Transformation("analyze_logic", self.domain_name, "VERIFY", base_cost=0.1, role_hint="VERIFY_UNCERTAIN"),
-            Transformation("fix_operator", self.domain_name, "TRANSFORM", base_cost=0.5, role_hint="TRANSFORM_TOWARD_GOAL"),
-            Transformation("run_unit_tests", self.domain_name, "TEST", base_cost=0.3, role_hint="VERIFY_UNCERTAIN"),
-            Transformation("ignore_node", self.domain_name, "SILENCE", base_cost=0.05, role_hint="MAINTAIN_STABLE"),
+            Transformation("analyze_logic", self.domain_name, "VERIFY", base_cost=0.1),
+            Transformation("fix_operator", self.domain_name, "TRANSFORM", base_cost=0.5),
+            Transformation("run_unit_tests", self.domain_name, "TEST", base_cost=0.3),
+            Transformation("ignore_node", self.domain_name, "SILENCE", base_cost=0.05),
         ]
 
     def act(self, graph: RealityGraph, transformation: Transformation, mote_state: Dict) -> Tuple[RealityGraph, Consequence]:

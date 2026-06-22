@@ -17,26 +17,12 @@ from __future__ import annotations
 import hashlib
 import json
 import math
-import os
 import time
 from collections import deque
 from dataclasses import dataclass, field
 from typing import Any, Deque, Dict, List, Optional, Tuple
 
 from .reality import AnalogyMapping, Consequence, GraphPattern, RealityGraph, Transformation
-
-
-ACTION_ROLES = [
-    "APPROACH_GOOD",
-    "AVOID_BAD",
-    "VERIFY_UNCERTAIN",
-    "TRANSFORM_TOWARD_GOAL",
-    "EXPLORE_UNCERTAIN",
-    "REPAIR_MISMATCH",
-    "MAINTAIN_STABLE",
-    "FAILED",
-    "UNCLASSIFIED",
-]
 
 
 def infer_action_role(action: Transformation) -> str:
@@ -60,33 +46,13 @@ def infer_action_role(action: Transformation) -> str:
     return "UNCLASSIFIED"
 
 
-# Global Role Mapping for Discovery Phase
-_MAPPING_FILE = os.path.join(os.path.dirname(__file__), "..", "discovered_role_mapping.json")
-_DISCOVERED_MAPPING = None
-try:
-    if os.path.exists(_MAPPING_FILE):
-        with open(_MAPPING_FILE, "r") as f:
-            _DISCOVERED_MAPPING = json.load(f)
-            print(f">> TAIS: Loaded discovered_role_mapping with {len(_DISCOVERED_MAPPING)} entries.")
-except Exception as e:
-    print(f">> TAIS ERROR: Failed to load discovered_role_mapping: {e}")
-
-
 def role_compatibility(source_role: str, target_role: str, **kwargs) -> float:
-    """How much a source role should boost a target role across domains."""
-    
-    # ── Phase 1 Breakthrough: Use Discovered Clusters if available ──
-    if _DISCOVERED_MAPPING:
-        s_domain = kwargs.get("source_domain", "")
-        t_domain = kwargs.get("target_domain", "")
-        s_action = kwargs.get("source_action", "")
-        t_action = kwargs.get("target_action", "")
-        s_key = f"{s_domain}:{s_action}"
-        t_key = f"{t_domain}:{t_action}"
-        if s_key in _DISCOVERED_MAPPING and t_key in _DISCOVERED_MAPPING:
-            if _DISCOVERED_MAPPING[s_key] == _DISCOVERED_MAPPING[t_key]:
-                return 1.0
+    """How much a source role should boost a target role across domains.
 
+    NOTE: This hand-coded function is DEPRECATED when structural transfer v2
+    is enabled. The v2 system uses WL kernel similarity instead.
+    Kept for backward compatibility with legacy mode only.
+    """
     if not source_role or not target_role:
         return 0.0
     if source_role == target_role:

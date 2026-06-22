@@ -298,12 +298,9 @@ class HazardGraphWorld(WorldInterface):
         # making any single move strictly profitable in expectation.
         return [
             Transformation("move_to_neighbor",  self.domain_name, "MOVE_TOWARD", base_cost=0.2),
-            Transformation("approach_resource", self.domain_name, "MOVE_TOWARD", base_cost=0.2,
-                           role_hint="APPROACH_GOOD"),
-            Transformation("avoid_hazard",      self.domain_name, "MOVE_AWAY",   base_cost=0.2,
-                           role_hint="AVOID_BAD"),
-            Transformation("verify_node",       self.domain_name, "VERIFY",      base_cost=0.2,
-                           role_hint="VERIFY_UNCERTAIN"),
+            Transformation("approach_resource", self.domain_name, "MOVE_TOWARD", base_cost=0.2),
+            Transformation("avoid_hazard",      self.domain_name, "MOVE_AWAY",   base_cost=0.2),
+            Transformation("verify_node",       self.domain_name, "VERIFY",      base_cost=0.2),
         ]
 
     def act(self, graph: RealityGraph, transformation: Transformation, mote_state: Dict) -> Tuple[RealityGraph, Consequence]:

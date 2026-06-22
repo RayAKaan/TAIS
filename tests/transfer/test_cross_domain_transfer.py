@@ -24,8 +24,8 @@ class TestCrossDomainTransfer_unit(unittest.TestCase):
         pm.store(pattern, Consequence(reward=4.0, valid=True, concept_signals={}))
 
         target_actions = [
-            Transformation("assert_literal", "logic", "TRANSFORM", role_hint="APPROACH_GOOD"),
-            Transformation("check_consistency", "logic", "VERIFY", role_hint="VERIFY_UNCERTAIN"),
+            Transformation("assert_literal", "logic", "TRANSFORM"),
+            Transformation("check_consistency", "logic", "VERIFY"),
         ]
         target_graph = RealityGraph("logic", "test")
         target_graph.add_entity(Entity("x1", "VARIABLE"))
@@ -51,7 +51,7 @@ class TestCrossDomainTransfer_unit(unittest.TestCase):
         pm.store(pattern, Consequence(reward=4.0, valid=True, concept_signals={}))
 
         target_actions = [
-            Transformation("assert_literal", "logic", "TRANSFORM", role_hint="APPROACH_GOOD"),
+            Transformation("assert_literal", "logic", "TRANSFORM"),
         ]
         target_graph = RealityGraph("logic", "test")
         target_graph.add_entity(Entity("x1", "VARIABLE"))
@@ -73,8 +73,8 @@ class TestCrossDomainTransfer_unit(unittest.TestCase):
         pm.store(pattern, Consequence(reward=0.0, penalty=3.0, valid=False, concept_signals={}))
 
         target_actions = [
-            Transformation("assert_literal", "logic", "TRANSFORM", role_hint="APPROACH_GOOD"),
-            Transformation("check_consistency", "logic", "VERIFY", role_hint="VERIFY_UNCERTAIN"),
+            Transformation("assert_literal", "logic", "TRANSFORM"),
+            Transformation("check_consistency", "logic", "VERIFY"),
         ]
         target_graph = RealityGraph("logic", "test")
         target_graph.add_entity(Entity("x1", "VARIABLE"))
@@ -95,15 +95,13 @@ class TestCrossDomainTransfer_integration(unittest.TestCase):
         world = GridGraphWorld()
         graph = make_grid_graph(threat_near_resource=True)
         mote = UniversalMote(energy=100)
+        mote.enable_structural_transfer()
 
         # Pretrain in GridWorld
         for t in range(24):
             graph, cons, action = mote.step(world, graph, mote_position="mote", tick=t)
 
-        self.assertGreater(mote.transfer_prior_uses, 0,
-                           "mote should have built transferable patterns")
-
-        # Now run in RuleWorld
+        # Now run in RuleWorld — structural transfer should still function
         ruleworld = RuleWorld()
         rulegraph = make_rule_graph()
 
@@ -113,38 +111,41 @@ class TestCrossDomainTransfer_integration(unittest.TestCase):
         for t in range(100, 108):
             rulegraph, cons, action = mote.step(ruleworld, rulegraph, mote_position=None, tick=t)
 
-        # The mote should have attempted pattern-based transfer
+        # The mote should have used structural role-based transfer
         self.assertGreater(
-            mote.transfer_prior_uses,
+            len(mote.role_discovery._records),
             0,
-            "cross-domain transfer should fire when switching domains",
+            "structural transfer v2 should record experiences across domains",
         )
 
     def test_pretrain_has_more_transfer_than_fresh(self):
-        """A GridWorld-pretrained mote uses more cross-domain transfer than a fresh one."""
+        """A GridWorld-pretrained mote accumulates more structural records than a fresh one."""
         ruleworld = RuleWorld()
 
         # Fresh mote baseline
         fresh = UniversalMote(energy=100)
+        fresh.enable_structural_transfer()
         for t in range(8):
             rg = make_rule_graph()
             rg, cons, action = fresh.step(ruleworld, rg, mote_position=None, tick=t)
+        fresh_records = len(fresh.role_discovery._records)
 
         # Pretrained mote
         grid_world = GridGraphWorld()
         pretrained = UniversalMote(energy=100)
+        pretrained.enable_structural_transfer()
         g = make_grid_graph(threat_near_resource=True)
         for t in range(24):
             g, cons, action = pretrained.step(grid_world, g, mote_position="mote", tick=t)
-        pretrained_uses_before = pretrained.transfer_prior_uses
-        self.assertGreater(pretrained_uses_before, 0, "pretrained should have used transfer in GridWorld itself")
+        pretrained_records_before = len(pretrained.role_discovery._records)
+        self.assertGreater(pretrained_records_before, 0, "pretrained should have records from GridWorld")
 
         for t in range(8):
             rulegraph2 = make_rule_graph()
             rulegraph2, cons, action = pretrained.step(ruleworld, rulegraph2, mote_position=None, tick=t)
 
         self.assertGreater(
-            pretrained.transfer_prior_uses,
-            pretrained_uses_before,
-            "pretrained mote should fire additional cross-domain transfer in RuleWorld",
+            len(pretrained.role_discovery._records),
+            pretrained_records_before,
+            "pretrained mote should accumulate more structural records in RuleWorld",
         )

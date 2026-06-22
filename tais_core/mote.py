@@ -33,6 +33,18 @@ from .speech import SpeechOrgan
 from .metacognition import MetacognitiveEngine
 from .causal import CausalReasoningEngine
 from .planning import HierarchicalPlanner
+from .role_discovery import RoleDiscoveryEngine
+from .structural_similarity import StructuralCompatibility
+from .analogy_engine import StructuralAnalogyEngine
+from .policy_transfer import CompositionalPolicy, HierarchicalPlannerV2
+
+
+@dataclass
+class CognitiveConfig:
+    temperature: float = 0.7
+    top_p: float = 0.9
+    skepticism_weight: float = 0.25
+    continuity_lock: float = 0.0
 
 
 @dataclass
@@ -103,6 +115,15 @@ class UniversalMote:
         # ── Phase A: engine selection policy ──
         self.use_engine_policy: bool = True
         self._engine_policy: Optional["EnginePolicyDecision"] = None
+        self.config = CognitiveConfig()
+
+        # ── Structural Transfer v2: genuine structural analogy without role labels ──
+        self.role_discovery: Optional[RoleDiscoveryEngine] = None
+        self.structural_compat: Optional[StructuralCompatibility] = None
+        self.analogy_engine: Optional[StructuralAnalogyEngine] = None
+        self.compositional_policy: Optional[CompositionalPolicy] = None
+        self.planner_v2: Optional[HierarchicalPlannerV2] = None
+        self._use_structural_transfer: bool = False
 
     def enable_cognitive_engines(
         self,
@@ -121,6 +142,28 @@ class UniversalMote:
     def enable_learned_role_compatibility(self, alpha: float = 0.3):
         self.learned_role_compatibility = LearnedRoleCompatibility(alpha=alpha)
         self.use_learned_role_compatibility = True
+
+    def enable_structural_transfer(
+        self,
+        wl_iterations: int = 3,
+        min_cluster_size: int = 2,
+    ):
+        """Activate structural transfer v2 engines.
+
+        This replaces hand-coded role_hint, role_compatibility(), and
+        single-step planning with:
+        - RoleDiscoveryEngine: discovers roles from structural clustering
+        - StructuralCompatibility: WL-kernel-based compatibility
+        - StructuralAnalogyEngine: genuine subgraph matching
+        - CompositionalPolicy: transfer of action sequences
+        - HierarchicalPlannerV2: multi-step planning over transferred policies
+        """
+        self.role_discovery = RoleDiscoveryEngine(min_cluster_size=min_cluster_size)
+        self.structural_compat = StructuralCompatibility(wl_iterations=wl_iterations)
+        self.analogy_engine = StructuralAnalogyEngine(wl_iterations=wl_iterations)
+        self.compositional_policy = CompositionalPolicy()
+        self.planner_v2 = HierarchicalPlannerV2(compositional_policy=self.compositional_policy)
+        self._use_structural_transfer = True
 
     def state(self, **extra) -> Dict[str, Any]:
         base = {
@@ -144,7 +187,26 @@ class UniversalMote:
         mote_state: Dict[str, Any],
         predicted: float,
     ) -> str:
-        """Classify functional action role from consequence and evaluate() delta."""
+        """Classify functional action role from consequence and evaluate() delta.
+
+        When structural transfer v2 is enabled, this uses the
+        RoleDiscoveryEngine to find a discovered role that matches
+        the current (observation, action, consequence) triple.
+        Falls back to the legacy classification when no discovered role matches.
+        """
+        # Structural Transfer v2: use discovered roles
+        if self._use_structural_transfer and self.role_discovery is not None:
+            discovered_role_id = self.role_discovery.record_experience(
+                observation=graph_before,
+                action=action,
+                consequence=consequence,
+                domain=world.domain_name,
+                tick=mote_state.get("age", 0),
+            )
+            if discovered_role_id is not None:
+                return discovered_role_id
+
+        # Legacy role classification (fallback)
         try:
             score_before = world.evaluate(graph_before, mote_state)
             score_after = world.evaluate(graph_after, mote_state)
@@ -155,8 +217,6 @@ class UniversalMote:
 
         if not consequence.valid or consequence.net < -0.5:
             return "FAILED"
-        if action.role_hint:
-            return action.role_hint
         if delta_score > 0.25 and consequence.net > 0:
             if action.universal_op in {"TRANSFORM", "COMPOSE"}:
                 return "TRANSFORM_TOWARD_GOAL"
@@ -219,10 +279,39 @@ class UniversalMote:
                         if a.name == hinted_action:
                             return a
 
-        transfer_boosts, transfer_used = self.memory.transfer_action_priors(observation, actions)
-        if transfer_used:
-            self.transfer_prior_uses += transfer_used
-            self.transfer_prior_total_strength += sum(abs(v) for v in transfer_boosts.values())
+        # Structural Transfer v2: discovered-role and analogy-based boosts
+        # When v2 is enabled, legacy action_priors (which depend on hand-coded
+        # role_compatibility() and infer_action_role() via role_hint) are skipped.
+        structural_boosts: Dict[str, float] = {}
+        transfer_boosts: Dict[str, float] = {}
+        transfer_used = 0
+        if self._use_structural_transfer:
+            # Discovered role boosts (replaces role_compatibility)
+            if self.role_discovery is not None:
+                role_boosts, _role_used = self.role_discovery.transfer_action_boosts(observation, actions)
+                structural_boosts.update(role_boosts)
+            # Structural analogy boosts (replaces analogize + role matching)
+            if self.analogy_engine is not None and self.memory.patterns.patterns:
+                analogy_boosts = self.analogy_engine.compute_structural_boosts(
+                    self.memory.patterns.patterns,
+                    observation,
+                    actions,
+                )
+                for k, v in analogy_boosts.items():
+                    structural_boosts[k] = structural_boosts.get(k, 0.0) + v
+            # Compositional policy check (replaces single-step planner)
+            if self.planner_v2 is not None and self.planner_v2.active_plan is None:
+                plan_action = self.planner_v2.plan(observation, actions)
+                if plan_action is not None:
+                    for a in actions:
+                        if a.universal_op == plan_action:
+                            structural_boosts[a.name] = structural_boosts.get(a.name, 0.0) + 5.0
+        else:
+            # Legacy: use hand-coded action_priors (only when v2 is disabled)
+            transfer_boosts, transfer_used = self.memory.transfer_action_priors(observation, actions)
+            if transfer_used:
+                self.transfer_prior_uses += transfer_used
+                self.transfer_prior_total_strength += sum(abs(v) for v in transfer_boosts.values())
 
         # Transfer priors should help early in a new domain, then yield to local
         # evidence. Otherwise old-domain confidence becomes negative transfer.
@@ -237,31 +326,21 @@ class UniversalMote:
         best_score = float("-inf")
         best_transfer = 0.0
         for action in actions:
-            # predictions are recorded for error metrics and should_explore(),
-            # but removed from the score formula.  See Phase 1.5 diagnostic:
-            # no_prediction consistently beats full on first_task_success_tick
-            # because early-domain predictions (cost-anchored valence fallback)
-            # are systematically mismatched to the new reward scale and even
-            # the EWM accumulates too slowly to help within a short eval horizon.
             historical = self.memory.episodic.action_value(action.name, domain=observation.domain)
             risk = self.memory.episodic.action_risk(action.name, domain=observation.domain)
             cost = action.compute_cost(observation, self.state())
             gating_factor = 1.0
             if historical < -0.1:
                 gating_factor = math.exp(historical)
-            transfer = gating_factor * effective_analogy_weight * transfer_boosts.get(action.name, 0.0)
-            continuity_boost = 0.0
-            if len(self.memory.episodic.episodes) > 0:
-                last_ep = self.memory.episodic.episodes[-1]
-                if last_ep.consequence.net > 0:
-                    current_fp = self.memory._graph_fingerprint(observation)
-                    if current_fp == last_ep.after_state_fingerprint:
-                        for ep in self.memory.episodic.episodes:
-                            if ep.state_fingerprint == current_fp and ep.consequence.net > 0:
-                                if action.name == ep.transformation.name:
-                                    continuity_boost = 10.0
-                                    break
-            score = historical + transfer + retrieval_boosts.get(action.name, 0.0) + continuity_boost - cost - self.meta.skepticism * risk
+            if self._use_structural_transfer:
+                transfer = structural_boosts.get(action.name, 0.0)
+            else:
+                transfer = gating_factor * effective_analogy_weight * transfer_boosts.get(action.name, 0.0)
+            score = historical + transfer + retrieval_boosts.get(action.name, 0.0) - cost - self.meta.skepticism * risk
+            # Structural Transfer v2: boost at full strength (no analogy_bias damping)
+            if self._use_structural_transfer:
+                sb = structural_boosts.get(action.name, 0.0)
+                score += sb
             if self.use_prediction_in_score:
                 n = self.memory.prediction.domain_observation_count(observation.domain)
                 if n >= self.prediction_min_domain_observations:
@@ -301,6 +380,27 @@ class UniversalMote:
         self.last_prediction = predicted
         new_graph, cons = world.act(graph, action, mote_state)
         action_role = self.classify_action_role(action, world, graph, new_graph, cons, mote_state, predicted)
+
+        # Structural Transfer v2: feed experience to compositional policy
+        if self._use_structural_transfer and self.compositional_policy is not None:
+            skey = ""
+            etypes = frozenset()
+            rtypes = frozenset()
+            if self.role_discovery is not None:
+                skey, etypes, rtypes = self.role_discovery.compute_structural_key_rich(observation)
+            self.compositional_policy.learn_from_episodes([{
+                "observation": observation,
+                "action": action,
+                "consequence": cons,
+                "domain": world.domain_name,
+                "tick": tick,
+                "structural_key": skey,
+                "outcome_net": cons.net,
+                "valid": cons.valid,
+                "universal_op": action.universal_op,
+                "entity_types": etypes,
+                "relation_types": rtypes,
+            }])
 
         # ── Phase R6: learned role compatibility update (opt-in) ──
         if self.learned_role_compatibility is not None:
@@ -346,6 +446,13 @@ class UniversalMote:
                     self.planner.advance_step()
                 elif cons.net < -0.5:
                     self.planner.rollback()
+
+        # Planner v2: advance/rollback compositional policy plan
+        if self._use_structural_transfer and self.planner_v2 is not None:
+            if cons.net > 0:
+                self.planner_v2.advance_on_success()
+            elif cons.net < -0.5:
+                self.planner_v2.rollback_on_failure()
 
         action_cost = action.compute_cost(observation, mote_state)
         self.energy += cons.net - action_cost
@@ -419,6 +526,24 @@ class UniversalMote:
             "domains": sorted(set(self.domain_history)),
         }
 
+        # ── Research telemetry ──
+        transfer_precision = round(
+            self.transfer_prior_correct / max(1, self.transfer_prior_correct + self.transfer_prior_incorrect), 3
+        )
+        result["transfer_precision"] = transfer_precision
+        n_ep = len(self.memory.episodic.episodes)
+        result["structural_recall"] = round(
+            min(1.0, n_ep / max(1, self.memory.episodic.capacity)), 3
+        )
+        pred_err = self.memory.prediction.mean_error()
+        result["sequence_integrity"] = round(
+            max(0.0, 1.0 - pred_err / 10.0) if pred_err != float("inf") else 0.0, 3
+        )
+        result["temperature"] = self.config.temperature
+        result["top_p"] = self.config.top_p
+        result["skepticism_weight"] = self.config.skepticism_weight
+        result["continuity_lock"] = self.config.continuity_lock
+
         # ── Cognitive engine metrics ──
         if self.metacog is not None:
             result["metacog_confidence"] = round(self.metacog.get_confidence(), 3)
@@ -429,4 +554,14 @@ class UniversalMote:
         if self.planner is not None:
             result["planner_active"] = self.planner.active_plan is not None
             result["planner_library_size"] = sum(len(plans) for plans in self.planner._plan_library.values())
+
+        # ── Structural Transfer v2 metrics ──
+        if self._use_structural_transfer:
+            if self.role_discovery is not None:
+                result["discovered_roles"] = len(self.role_discovery._roles)
+                result["role_discovery_records"] = len(self.role_discovery._records)
+            if self.compositional_policy is not None:
+                result["policy_sequences"] = len(self.compositional_policy._sequences)
+            if self.planner_v2 is not None:
+                result["planner_v2_active"] = self.planner_v2.active_plan is not None
         return result

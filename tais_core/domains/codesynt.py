@@ -105,21 +105,21 @@ class CustomCodeWorld(WorldInterface):
                 if i not in self.applied_patches:
                     actions.append(Transformation(
                         f"apply_patch_{i}", self.domain_name, "TRANSFORM",
-                        base_cost=0.3, role_hint="TRANSFORM_TOWARD_GOAL",
+                        base_cost=0.3,
                     ))
             if self.applied_patches:
                 actions.append(Transformation(
                     "verify", self.domain_name, "VERIFY",
-                    base_cost=0.2, role_hint="VERIFY_UNCERTAIN",
+                    base_cost=0.2,
                 ))
         else:
             actions.extend([
                 Transformation("fix_operator", self.domain_name, "TRANSFORM",
-                               base_cost=0.5, role_hint="TRANSFORM_TOWARD_GOAL"),
+                               base_cost=0.5),
                 Transformation("run_validation", self.domain_name, "VERIFY",
-                               base_cost=0.3, role_hint="VERIFY_UNCERTAIN"),
+                               base_cost=0.3),
                 Transformation("refactor", self.domain_name, "MUTATE",
-                               base_cost=0.4, role_hint="MAINTAIN_STABLE"),
+                               base_cost=0.4),
             ])
 
         return actions

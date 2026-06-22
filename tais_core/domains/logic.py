@@ -354,12 +354,9 @@ class LogicWorld(WorldInterface):
 
     def valid_actions(self, graph: RealityGraph, mote_state: Dict) -> List[Transformation]:
         return [
-            Transformation("assert_literal",    self.domain_name, "TRANSFORM", base_cost=0.3,
-                           role_hint="APPROACH_GOOD"),
-            Transformation("retract_literal",   self.domain_name, "MUTATE",    base_cost=0.3,
-                           role_hint="REPAIR_MISMATCH"),
-            Transformation("check_consistency", self.domain_name, "VERIFY",    base_cost=0.2,
-                           role_hint="VERIFY_UNCERTAIN"),
+            Transformation("assert_literal",    self.domain_name, "TRANSFORM", base_cost=0.3),
+            Transformation("retract_literal",   self.domain_name, "MUTATE",    base_cost=0.3),
+            Transformation("check_consistency", self.domain_name, "VERIFY",    base_cost=0.2),
             Transformation("random_assert",     self.domain_name, "MUTATE",    base_cost=0.3),
         ]
 

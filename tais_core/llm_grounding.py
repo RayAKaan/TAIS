@@ -1,3 +1,4 @@
+import re
 import requests
 import json
 from typing import Any, Dict, List, Optional
@@ -10,10 +11,35 @@ class LLMGroundingEngine:
     using a local SLM (e.g., Llama-3.2-1B via Ollama).
     """
 
-    def __init__(self, provider: str = "ollama", model: str = "llama3.2:1b"):
+    def __init__(self, provider: str = "ollama", model: str = "qwen2.5-coder:3b-instruct-q5_K_M"):
         self.provider = provider
         self.model = model
         self.url = "http://localhost:11434/api/generate"
+
+    def detect_domain(self, text: str) -> str:
+        detected = text.strip().lower()
+        # Code patterns (highest priority — exact syntax match)
+        if re.search(r"^\s*(def |class |import |from |@|if |for |while |with |print|return )", detected):
+            return "codesynt"
+        if re.search(r"synthesize|code|bug|fix|implement|function|test|binary|sort|algorithm", detected):
+            return "codesynt"
+        # Physics keywords
+        if re.search(r"physics|newton|force|mass|accel|f=ma|mechanics|newtonian", detected):
+            return "physics"
+        # Chemistry keywords
+        if re.search(r"chemistry|bond|atom|valence|molecule|electron|h2o|water|covalent|reaction", detected):
+            return "chemistry"
+        # Math patterns (numbers + operators, solve, calculate, etc.)
+        if re.search(r"[\d][\s]*[+\-*\/\(\)\^]", text) and re.search(r"[+\-*\/\(\)\^]", text):
+            return "math"
+        if re.search(r"\b(what is|whats|solve|calculate|compute|how much|evaluate|simplify)\b", detected):
+            return "math"
+        if re.search(r"^[\(\)\d\s+*\/\-\^.]+\s*=", text):
+            return "math"
+        # Science experiment
+        if re.search(r"experiment|hypothesis|lab|science|beaker", detected):
+            return "sciex"
+        return "webnav"
 
     def ground_goal(self, nl_goal: str, domain: str = "webnav") -> RealityGraph:
         """Converts a natural language goal into a RealityGraph using the SLM."""
@@ -151,6 +177,18 @@ class LLMGroundingEngine:
 
         if domain in math_domains:
             g.add_entity(Entity("goal", "GOAL", {"target": "computed", "status": "unresolved"}))
+            return g
+
+        if domain == "physics":
+            g.add_entity(Entity("target", "GOAL", {"required_accel": 5.0, "achieved": False}))
+            g.add_entity(Entity("obj1", "OBJECT", {"mass": 10.0, "acceleration": 0.0}))
+            return g
+
+        if domain == "chemistry":
+            g.add_entity(Entity("molecule", "GOAL", {"stable": False}))
+            g.add_entity(Entity("o1", "ATOM", {"element": "Oxygen", "needed": 2}))
+            g.add_entity(Entity("h1", "ATOM", {"element": "Hydrogen", "needed": 1}))
+            g.add_entity(Entity("h2", "ATOM", {"element": "Hydrogen", "needed": 1}))
             return g
 
         if "deep" in nl_lower:

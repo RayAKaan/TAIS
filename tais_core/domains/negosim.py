@@ -46,11 +46,11 @@ class NegoSimWorld(WorldInterface):
 
     def valid_actions(self, graph: RealityGraph, mote_state: Dict) -> List[Transformation]:
         return [
-            Transformation("make_offer", self.domain_name, "ASK", base_cost=0.4, role_hint="TRANSFORM_TOWARD_GOAL"),
-            Transformation("accept_offer", self.domain_name, "ANSWER", base_cost=0.2, role_hint="APPROACH_GOOD"),
-            Transformation("reject_offer", self.domain_name, "MOVE_AWAY", base_cost=0.2, role_hint="AVOID_BAD"),
-            Transformation("evaluate_proposal", self.domain_name, "VERIFY", base_cost=0.3, role_hint="VERIFY_UNCERTAIN"),
-            Transformation("renegotiate", self.domain_name, "MUTATE", base_cost=0.5, role_hint="REPAIR_MISMATCH"),
+            Transformation("make_offer", self.domain_name, "ASK", base_cost=0.4),
+            Transformation("accept_offer", self.domain_name, "ANSWER", base_cost=0.2),
+            Transformation("reject_offer", self.domain_name, "MOVE_AWAY", base_cost=0.2),
+            Transformation("evaluate_proposal", self.domain_name, "VERIFY", base_cost=0.3),
+            Transformation("renegotiate", self.domain_name, "MUTATE", base_cost=0.5),
         ]
 
     def act(self, graph: RealityGraph, transformation: Transformation, mote_state: Dict) -> Tuple[RealityGraph, Consequence]:

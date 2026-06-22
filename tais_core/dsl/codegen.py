@@ -39,6 +39,8 @@ BUILTIN_SPEC_NAMES = {
     "python_ast": _HERE / "python_ast.yaml",
     "code_repair": _HERE / "code_repair.yaml",
     "math": _HERE / "math.yaml",
+    "physics": _HERE / "physics.yaml",
+    "chemistry": _HERE / "chemistry.yaml",
 }
 
 _CACHE: Dict[str, Any] = {}
@@ -135,6 +137,9 @@ class BuiltinDSLWorld(WorldInterface):
         if hasattr(self._world, "concepts"):
             return self._world.concepts()
         return []
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._world, name)
 
 
 class DeclarativeDSLWorld(WorldInterface):

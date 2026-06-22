@@ -44,11 +44,11 @@ class SciExWorld(WorldInterface):
 
     def valid_actions(self, graph: RealityGraph, mote_state: Dict) -> List[Transformation]:
         return [
-            Transformation("formulate_experiment", self.domain_name, "COMPOSE", base_cost=0.5, role_hint="TRANSFORM_TOWARD_GOAL"),
-            Transformation("control_variable", self.domain_name, "TRANSFORM", base_cost=0.4, role_hint="APPROACH_GOOD"),
-            Transformation("run_experiment", self.domain_name, "TEST", base_cost=0.6, role_hint="VERIFY_UNCERTAIN"),
-            Transformation("analyze_data", self.domain_name, "VERIFY", base_cost=0.3, role_hint="VERIFY_UNCERTAIN"),
-            Transformation("revise_hypothesis", self.domain_name, "MUTATE", base_cost=0.4, role_hint="REPAIR_MISMATCH"),
+            Transformation("formulate_experiment", self.domain_name, "COMPOSE", base_cost=0.5),
+            Transformation("control_variable", self.domain_name, "TRANSFORM", base_cost=0.4),
+            Transformation("run_experiment", self.domain_name, "TEST", base_cost=0.6),
+            Transformation("analyze_data", self.domain_name, "VERIFY", base_cost=0.3),
+            Transformation("revise_hypothesis", self.domain_name, "MUTATE", base_cost=0.4),
         ]
 
     def act(self, graph: RealityGraph, transformation: Transformation, mote_state: Dict) -> Tuple[RealityGraph, Consequence]:

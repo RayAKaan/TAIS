@@ -59,11 +59,11 @@ class WebNavWorld(WorldInterface):
 
     def valid_actions(self, graph: RealityGraph, mote_state: Dict) -> List[Transformation]:
         return [
-            Transformation("click_link", self.domain_name, "MOVE_TOWARD", base_cost=0.3, role_hint="APPROACH_GOOD"),
-            Transformation("submit_form", self.domain_name, "TRANSFORM", base_cost=0.5, role_hint="TRANSFORM_TOWARD_GOAL"),
-            Transformation("scan_page", self.domain_name, "VERIFY", base_cost=0.2, role_hint="VERIFY_UNCERTAIN"),
-            Transformation("close_modal", self.domain_name, "MOVE_AWAY", base_cost=0.2, role_hint="AVOID_BAD"),
-            Transformation("scroll_down", self.domain_name, "OBSERVE", base_cost=0.1, role_hint="EXPLORE_UNCERTAIN"),
+            Transformation("click_link", self.domain_name, "MOVE_TOWARD", base_cost=0.3),
+            Transformation("submit_form", self.domain_name, "TRANSFORM", base_cost=0.5),
+            Transformation("scan_page", self.domain_name, "VERIFY", base_cost=0.2),
+            Transformation("close_modal", self.domain_name, "MOVE_AWAY", base_cost=0.2),
+            Transformation("scroll_down", self.domain_name, "OBSERVE", base_cost=0.1),
         ]
 
     def act(self, graph: RealityGraph, transformation: Transformation, mote_state: Dict) -> Tuple[RealityGraph, Consequence]:

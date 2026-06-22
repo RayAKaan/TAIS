@@ -106,13 +106,13 @@ class MathWorld(WorldInterface):
         if evaluable:
             actions.append(Transformation(
                 "evaluate", self.domain_name, "TRANSFORM",
-                base_cost=0.3, role_hint="TRANSFORM_TOWARD_GOAL",
+                base_cost=0.3,
             ))
 
-        actions.append(Transformation(
-            "verify", self.domain_name, "VERIFY",
-            base_cost=0.2, role_hint="VERIFY_UNCERTAIN",
-        ))
+            actions.append(Transformation(
+                "verify", self.domain_name, "VERIFY",
+                base_cost=0.2,
+            ))
 
         return actions
 

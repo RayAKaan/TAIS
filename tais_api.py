@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
-from tais_core.mote import UniversalMote
+from tais_core.mote import UniversalMote, CognitiveConfig
 from tais_core.llm_grounding import LLMGroundingEngine
 from tais_core.domains.registry import load_domain
 from tais_core.reality import Entity
@@ -40,12 +40,24 @@ async def _broadcast_event(event: Event):
 
 
 class CommandRequest(BaseModel):
-    command: str
+    command: str = ""
+    goal: str = ""
+    text: str = ""
     domain: str = "webnav"
     source_code: Optional[str] = None
     target_code: Optional[str] = None
     expression: Optional[str] = None
     max_ticks: int = 10
+
+    def resolve_command(self) -> str:
+        return self.command or self.goal or self.text or ""
+
+
+class ConfigUpdate(BaseModel):
+    temperature: Optional[float] = None
+    top_p: Optional[float] = None
+    skepticism_weight: Optional[float] = None
+    continuity_lock: Optional[float] = None
 
 
 class AgentResponse(BaseModel):
@@ -54,9 +66,13 @@ class AgentResponse(BaseModel):
     energy: float
     tick: int
     task_signal: Optional[str]
-    graph_summary: Dict[str, Any]
-    action_trace: List[Dict[str, Any]]
-    graph_data: Dict[str, Any]
+    telemetry: Dict[str, Any]
+    trace: List[Dict[str, Any]]
+    graph: Dict[str, Any]
+    brain_state: Dict[str, Any]
+    graph_summary: Dict[str, Any] = {}
+    action_trace: List[Dict[str, Any]] = []
+    graph_data: Dict[str, Any] = {}
     patches: List[Dict[str, Any]] = []
     fixed_code: Optional[str] = None
     answer: Optional[Any] = None
@@ -82,6 +98,27 @@ async def get_status():
         }
 
 
+@app.post("/config")
+async def update_config(update: ConfigUpdate):
+    async with _mote_lock:
+        mote = _mote
+        if update.temperature is not None:
+            mote.config.temperature = update.temperature
+        if update.top_p is not None:
+            mote.config.top_p = update.top_p
+        if update.skepticism_weight is not None:
+            mote.config.skepticism_weight = update.skepticism_weight
+            mote.meta.skepticism = update.skepticism_weight
+        if update.continuity_lock is not None:
+            mote.config.continuity_lock = update.continuity_lock
+        return {"ok": True, "config": {
+            "temperature": mote.config.temperature,
+            "top_p": mote.config.top_p,
+            "skepticism_weight": mote.config.skepticism_weight,
+            "continuity_lock": mote.config.continuity_lock,
+        }}
+
+
 @app.post("/mote/reset")
 async def reset_mote():
     global _mote
@@ -97,12 +134,14 @@ async def handle_command(request: CommandRequest):
     async with _mote_lock:
         mote = _mote
         try:
-            grounded_graph = grounding.ground_goal(request.command, domain=request.domain)
+            cmd = request.resolve_command()
+            domain = grounding.detect_domain(cmd)
+            grounded_graph = grounding.ground_goal(cmd, domain=domain)
 
             # ----- Build world -----
-            if request.domain == "math":
-                from tais_core.domains.math_world import MathWorld
-                expr = request.expression or request.command
+            from tais_core.domains.math_world import MathWorld
+            if domain == "math":
+                expr = request.expression or _extract_math_expr(cmd)
                 world = MathWorld(expression_str=expr)
             elif request.source_code:
                 from tais_core.domains.codesynt import CustomCodeWorld
@@ -111,11 +150,10 @@ async def handle_command(request: CommandRequest):
                     target_code=request.target_code or "",
                 )
             else:
-                world = load_domain(request.domain)
+                world = load_domain(domain)
 
             current_graph = world.initial_graph()
 
-            # ----- Merge grounded entities -----
             for ent in grounded_graph.entities():
                 if ent.id not in [e.id for e in current_graph.entities()]:
                     current_graph.add_entity(ent)
@@ -152,7 +190,6 @@ async def handle_command(request: CommandRequest):
                     }))
                     break
 
-            # ----- Build explanation -----
             delta_info = {}
             if final_cons and final_cons.graph_delta:
                 d = final_cons.graph_delta
@@ -189,12 +226,23 @@ async def handle_command(request: CommandRequest):
             if hasattr(world, "answer") and world.answer is not None:
                 answer = world.answer
 
+            telemetry = mote.metrics()
+            brain_state = {
+                "causal_links": mote.causal.to_dict() if mote.causal is not None else {},
+                "planner_status": mote.planner.active_plan is not None if mote.planner is not None else False,
+                "metacog_confidence": mote.metacog.get_confidence() if mote.metacog is not None else None,
+            }
+
             return AgentResponse(
                 explanation=explanation,
                 mote_id=mote.id,
                 energy=mote.energy,
                 tick=mote.age,
                 task_signal=final_cons.task_signal if final_cons else None,
+                telemetry=telemetry,
+                trace=trace,
+                graph={"nodes": nodes, "links": links},
+                brain_state=brain_state,
                 graph_summary=current_graph.summary(),
                 action_trace=trace,
                 graph_data={"nodes": nodes, "links": links},
@@ -214,7 +262,7 @@ def _build_world(request: CommandRequest):
     """Shared world factory for /chat and /chat/stream."""
     if request.domain == "math":
         from tais_core.domains.math_world import MathWorld
-        expr = request.expression or request.command
+        expr = request.expression or _extract_math_expr(request.resolve_command())
         return MathWorld(expression_str=expr)
     if request.source_code:
         from tais_core.domains.codesynt import CustomCodeWorld
@@ -229,7 +277,10 @@ def _build_world(request: CommandRequest):
 async def handle_command_stream(request: CommandRequest):
     mote = _mote
     try:
-        grounded_graph = grounding.ground_goal(request.command, domain=request.domain)
+        cmd = request.resolve_command()
+        domain = grounding.detect_domain(cmd)
+        grounded_graph = grounding.ground_goal(cmd, domain=domain)
+        request.domain = domain
         world = _build_world(request)
         current_graph = world.initial_graph()
 
@@ -317,6 +368,7 @@ async def handle_command_stream(request: CommandRequest):
                 "energy": mote.energy,
                 "tick": mote.age,
                 "task_signal": final_cons.task_signal if final_cons else None,
+                "telemetry": mote.metrics(),
                 "graph_summary": current_graph.summary(),
                 "action_trace": trace,
                 "graph_data": _graph_data(current_graph),
@@ -335,6 +387,27 @@ async def handle_command_stream(request: CommandRequest):
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+_MATH_PREFIXES = [
+    r"^solve\s+", r"^calculate\s+", r"^compute\s+",
+    r"^what\s+is\s+", r"^whats\s+", r"^evaluate\s+",
+    r"^simplify\s+", r"^how\s+much\s+is\s+", r"^find\s+",
+    r"^what\s+is\s+the\s+(result|value|answer)\s+of\s+",
+]
+
+
+def _extract_math_expr(text: str) -> str:
+    import re
+    cleaned = text.strip()
+    for pat in _MATH_PREFIXES:
+        cleaned = re.sub(pat, "", cleaned, count=1, flags=re.IGNORECASE)
+    cleaned = cleaned.strip().rstrip("?.")
+    # Verify it's parseable; if not, fall back to original
+    try:
+        import ast
+        ast.parse(cleaned, mode="eval")
+        return cleaned
+    except SyntaxError:
+        return text.strip()
 def _graph_data(graph):
     return {
         "nodes": [{"id": e.id, "type": e.etype} for e in graph.entities()],
@@ -350,7 +423,7 @@ def _tick_event(tick, action, graph, mote, world, trace=None, task_signal=None):
         "type": "tick",
         "tick": tick,
         "graph_data": _graph_data(graph),
-        "telemetry": {"energy": mote.energy, "age": mote.age, "id": mote.id},
+        "telemetry": mote.metrics(),
     }
     if action:
         ev["action"] = {

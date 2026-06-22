@@ -1,0 +1,14 @@
+name: Chemistry
+domain_name: chemistry
+version: 1.0
+description: Elementary Covalent Bonding (Valency)
+
+backend:
+  world_class: tais_core.domains.elementary_science.ChemistryWorld
+  graph_factory: tais_core.domains.elementary_science.make_chemistry_graph
+  graph_factory_kwargs: {}
+
+world_defaults:
+  energy: 100
+  horizon: 40
+  step_cost: 0.1
