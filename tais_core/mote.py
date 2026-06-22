@@ -32,11 +32,18 @@ from .role_learning import LearnedRoleCompatibility
 from .speech import SpeechOrgan
 from .metacognition import MetacognitiveEngine
 from .causal import CausalReasoningEngine
+from .causal_intervention import CausalInterventionEngine, structural_key_from_graph
 from .planning import HierarchicalPlanner
 from .role_discovery import RoleDiscoveryEngine
 from .structural_similarity import StructuralCompatibility
 from .analogy_engine import StructuralAnalogyEngine
 from .policy_transfer import CompositionalPolicy, HierarchicalPlannerV2
+from .open_ended_learning import (
+    CuriosityDrive,
+    GoalGenerator,
+    ExplorationController,
+    SelfEvaluator,
+)
 
 
 @dataclass
@@ -125,19 +132,45 @@ class UniversalMote:
         self.planner_v2: Optional[HierarchicalPlannerV2] = None
         self._use_structural_transfer: bool = False
 
+        # ── AGI Roadmap Step 2: Causal Intervention (do-calculus, graph-structure-based) ──
+        self.causal_intervention: Optional[CausalInterventionEngine] = None
+
+        # ── AGI Roadmap Step 5: Open-Ended Learning (curiosity, goals, exploration, self-eval) ──
+        self.curiosity: Optional[CuriosityDrive] = None
+        self.goal_generator: Optional[GoalGenerator] = None
+        self.exploration_controller: Optional[ExplorationController] = None
+        self.self_evaluator: Optional[SelfEvaluator] = None
+
     def enable_cognitive_engines(
         self,
         metacognition: bool = True,
         causal_reasoning: bool = True,
         hierarchical_planning: bool = True,
+        causal_intervention: bool = False,
+        open_ended_learning: bool = False,
     ):
-        """Activate cognitive engines. Call after construction."""
+        """Activate cognitive engines. Call after construction.
+        
+        Args:
+            metacognition: Enable MetacognitiveEngine (confidence, exploration modulation)
+            causal_reasoning: Enable CausalReasoningEngine (Delta-P action-outcome)
+            hierarchical_planning: Enable HierarchicalPlanner (planning from causal links)
+            causal_intervention: Enable CausalInterventionEngine (do-calculus, graph-structured)
+            open_ended_learning: Enable CuriosityDrive, GoalGenerator, ExplorationController, SelfEvaluator
+        """
         if metacognition:
             self.metacog = MetacognitiveEngine()
         if causal_reasoning:
             self.causal = CausalReasoningEngine()
         if hierarchical_planning:
             self.planner = HierarchicalPlanner()
+        if causal_intervention:
+            self.causal_intervention = CausalInterventionEngine()
+        if open_ended_learning:
+            self.curiosity = CuriosityDrive()
+            self.goal_generator = GoalGenerator()
+            self.exploration_controller = ExplorationController()
+            self.self_evaluator = SelfEvaluator()
 
     def enable_learned_role_compatibility(self, alpha: float = 0.3):
         self.learned_role_compatibility = LearnedRoleCompatibility(alpha=alpha)
@@ -264,6 +297,13 @@ class UniversalMote:
                 explore = True
             elif confidence > 0.7 and explore and random.random() > explore_rate:
                 explore = False
+
+        # ── Open-ended learning: exploration controller ──
+        if self.exploration_controller is not None and not explore:
+            if self.curiosity is not None and self.goal_generator is not None:
+                if self.exploration_controller.should_explore(self.curiosity, self.goal_generator):
+                    explore = True
+
         if explore:
             return random.choice(actions)
 
@@ -312,6 +352,14 @@ class UniversalMote:
             if transfer_used:
                 self.transfer_prior_uses += transfer_used
                 self.transfer_prior_total_strength += sum(abs(v) for v in transfer_boosts.values())
+
+        # Causal Intervention Engine: boost actions with known positive causal effects
+        if self.causal_intervention is not None:
+            cskey = structural_key_from_graph(observation)
+            for act in actions:
+                effect = self.causal_intervention.get_causal_effect(cskey, act.name)
+                if effect is not None and effect.is_significant():
+                    structural_boosts[act.name] = structural_boosts.get(act.name, 0.0) + effect.causal_effect
 
         # Transfer priors should help early in a new domain, then yield to local
         # evidence. Otherwise old-domain confidence becomes negative transfer.
@@ -424,6 +472,15 @@ class UniversalMote:
             self.causal.record_action(tick, action.name, outcome_concept, positive)
             self.causal.record_no_action(tick, outcome_concept, not positive)
 
+        # Causal Intervention: record graph-structure-based causal effect
+        if self.causal_intervention is not None:
+            self.causal_intervention.record_intervention(
+                graph=observation,
+                action_name=action.name,
+                outcome=cons.net,
+                expected_outcome=predicted,
+            )
+
         # Metacognitive: record prediction accuracy
         if self.metacog is not None and (self._engine_policy is None or self._engine_policy.use_metacognition):
             pred_correct = abs(predicted - cons.net) < 1.0
@@ -433,6 +490,14 @@ class UniversalMote:
                 outcome={"actual": cons.net, "role": action_role},
                 correct=pred_correct,
                 tick=tick,
+            )
+
+        # Curiosity: observe graph novelty for intrinsic motivation
+        if self.curiosity is not None:
+            self.curiosity.observe(
+                graph=observation,
+                prediction_error=abs(predicted - cons.net),
+                schema_learner=None,
             )
 
         # Planner: advance on success, rollback on failure
@@ -453,6 +518,17 @@ class UniversalMote:
                 self.planner_v2.advance_on_success()
             elif cons.net < -0.5:
                 self.planner_v2.rollback_on_failure()
+
+        # Self-evaluation: record outcome for competence tracking
+        if self.self_evaluator is not None:
+            skey = ""
+            if self._use_structural_transfer and self.role_discovery is not None:
+                skey, _, _ = self.role_discovery.compute_structural_key_rich(observation)
+            self.self_evaluator.record_outcome(
+                domain=world.domain_name,
+                structural_key=skey,
+                success=cons.net > 0,
+            )
 
         action_cost = action.compute_cost(observation, mote_state)
         self.energy += cons.net - action_cost
@@ -564,4 +640,20 @@ class UniversalMote:
                 result["policy_sequences"] = len(self.compositional_policy._sequences)
             if self.planner_v2 is not None:
                 result["planner_v2_active"] = self.planner_v2.active_plan is not None
+
+        # ── AGI Causal Intervention metrics ──
+        if self.causal_intervention is not None:
+            result["causal_intervention_effects"] = len(self.causal_intervention._effects)
+            result["causal_intervention_interventions"] = len(self.causal_intervention._interventions)
+
+        # ── AGI Open-Ended Learning metrics ──
+        if self.curiosity is not None:
+            result["curiosity_average"] = round(self.curiosity.get_average_curiosity(), 3)
+        if self.goal_generator is not None:
+            result["active_goals"] = len(self.goal_generator.get_active_goals())
+            result["achieved_goals"] = len(self.goal_generator.get_achieved_goals())
+        if self.exploration_controller is not None:
+            result["exploration_rate_agi"] = round(self.exploration_controller.get_exploration_rate(), 3)
+        if self.self_evaluator is not None:
+            result["self_evaluator_total_outcomes"] = sum(len(v) for v in self.self_evaluator._outcomes.values())
         return result

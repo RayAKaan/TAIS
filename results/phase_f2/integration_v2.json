@@ -1,0 +1,787 @@
+{
+  "fresh": {
+    "condition": "fresh",
+    "n": 100,
+    "reward": {
+      "fresh": 6.0,
+      "pretrained": 6.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "penalty": {
+      "fresh": 6.0,
+      "pretrained": 6.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "task_completion_rate": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "first_success_tick": {
+      "fresh": 31.0,
+      "pretrained": 31.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "invalid_actions": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "final_energy": {
+      "fresh": 100.0,
+      "pretrained": 100.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "prediction_error": {
+      "fresh": 0.006667,
+      "pretrained": 0.006667,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_uses": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_strength": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_precision": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "policy_sequences": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "discovered_roles": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "structural_recall": {
+      "fresh": 0.234,
+      "pretrained": 0.234,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "causal_intervention_effects": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "curiosity_average": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "exploration_rate_agi": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "self_evaluator_total_outcomes": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    }
+  },
+  "v2_structural": {
+    "condition": "v2_structural",
+    "n": 100,
+    "reward": {
+      "fresh": 6.0,
+      "pretrained": 9.12,
+      "delta": 3.12,
+      "ci_low": 0.142002,
+      "ci_high": 6.097998,
+      "p": 0.038021,
+      "d": 0.207463
+    },
+    "penalty": {
+      "fresh": 6.0,
+      "pretrained": 10.95,
+      "delta": 4.95,
+      "ci_low": 3.99705,
+      "ci_high": 5.90295,
+      "p": 0.0,
+      "d": 1.028595
+    },
+    "task_completion_rate": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "first_success_tick": {
+      "fresh": 31.0,
+      "pretrained": 31.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "invalid_actions": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "final_energy": {
+      "fresh": 100.0,
+      "pretrained": 181.736,
+      "delta": 81.736,
+      "ci_low": 74.800768,
+      "ci_high": 88.671232,
+      "p": 0.0,
+      "d": 2.333791
+    },
+    "prediction_error": {
+      "fresh": 0.006667,
+      "pretrained": 0.010133,
+      "delta": 0.003467,
+      "ci_low": 0.000158,
+      "ci_high": 0.006776,
+      "p": 0.038021,
+      "d": 0.207463
+    },
+    "transfer_uses": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_strength": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_precision": {
+      "fresh": 0.0,
+      "pretrained": 0.56,
+      "delta": 0.56,
+      "ci_low": 0.46121,
+      "ci_high": 0.65879,
+      "p": 0.0,
+      "d": 1.122497
+    },
+    "policy_sequences": {
+      "fresh": 0.0,
+      "pretrained": 291.56,
+      "delta": 291.56,
+      "ci_low": 286.975646,
+      "ci_high": 296.144354,
+      "p": 0.0,
+      "d": 12.593873
+    },
+    "discovered_roles": {
+      "fresh": 0.0,
+      "pretrained": 3.1,
+      "delta": 3.1,
+      "ci_low": 3.033993,
+      "ci_high": 3.166007,
+      "p": 0.0,
+      "d": 9.3
+    },
+    "structural_recall": {
+      "fresh": 0.234,
+      "pretrained": 0.625,
+      "delta": 0.391,
+      "ci_low": 0.391,
+      "ci_high": 0.391,
+      "p": 0.0,
+      "d": 0.0
+    },
+    "causal_intervention_effects": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "curiosity_average": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "exploration_rate_agi": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "self_evaluator_total_outcomes": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    }
+  },
+  "v2_causal_intervention": {
+    "condition": "v2_causal_intervention",
+    "n": 100,
+    "reward": {
+      "fresh": 6.0,
+      "pretrained": 9.09,
+      "delta": 3.09,
+      "ci_low": 0.111362,
+      "ci_high": 6.068638,
+      "p": 0.039953,
+      "d": 0.205424
+    },
+    "penalty": {
+      "fresh": 6.0,
+      "pretrained": 10.71,
+      "delta": 4.71,
+      "ci_low": 3.831479,
+      "ci_high": 5.588521,
+      "p": 0.0,
+      "d": 1.061642
+    },
+    "task_completion_rate": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "first_success_tick": {
+      "fresh": 31.0,
+      "pretrained": 31.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "invalid_actions": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "final_energy": {
+      "fresh": 100.0,
+      "pretrained": 199.343,
+      "delta": 99.343,
+      "ci_low": 91.399529,
+      "ci_high": 107.286471,
+      "p": 0.0,
+      "d": 2.476489
+    },
+    "prediction_error": {
+      "fresh": 0.006667,
+      "pretrained": 0.0101,
+      "delta": 0.003433,
+      "ci_low": 0.000124,
+      "ci_high": 0.006743,
+      "p": 0.039953,
+      "d": 0.205424
+    },
+    "transfer_uses": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_strength": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_precision": {
+      "fresh": 0.0,
+      "pretrained": 0.55,
+      "delta": 0.55,
+      "ci_low": 0.45099,
+      "ci_high": 0.64901,
+      "p": 0.0,
+      "d": 1.1
+    },
+    "policy_sequences": {
+      "fresh": 0.0,
+      "pretrained": 292.13,
+      "delta": 292.13,
+      "ci_low": 287.565011,
+      "ci_high": 296.694989,
+      "p": 0.0,
+      "d": 12.672023
+    },
+    "discovered_roles": {
+      "fresh": 0.0,
+      "pretrained": 3.1,
+      "delta": 3.1,
+      "ci_low": 3.033993,
+      "ci_high": 3.166007,
+      "p": 0.0,
+      "d": 9.3
+    },
+    "structural_recall": {
+      "fresh": 0.234,
+      "pretrained": 0.625,
+      "delta": 0.391,
+      "ci_low": 0.391,
+      "ci_high": 0.391,
+      "p": 0.0,
+      "d": 0.0
+    },
+    "causal_intervention_effects": {
+      "fresh": 0.0,
+      "pretrained": 4.11,
+      "delta": 4.11,
+      "ci_low": 3.930013,
+      "ci_high": 4.289987,
+      "p": 0.0,
+      "d": 4.521779
+    },
+    "curiosity_average": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "exploration_rate_agi": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "self_evaluator_total_outcomes": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    }
+  },
+  "v2_open_ended_learning": {
+    "condition": "v2_open_ended_learning",
+    "n": 100,
+    "reward": {
+      "fresh": 6.0,
+      "pretrained": 12.493,
+      "delta": 6.493,
+      "ci_low": 3.004859,
+      "ci_high": 9.981141,
+      "p": 0.000228,
+      "d": 0.368605
+    },
+    "penalty": {
+      "fresh": 6.0,
+      "pretrained": 11.992,
+      "delta": 5.992,
+      "ci_low": 5.256648,
+      "ci_high": 6.727352,
+      "p": 0.0,
+      "d": 1.613563
+    },
+    "task_completion_rate": {
+      "fresh": 0.0,
+      "pretrained": 0.06,
+      "delta": 0.06,
+      "ci_low": 0.012736,
+      "ci_high": 0.107264,
+      "p": 0.011944,
+      "d": 0.251379
+    },
+    "first_success_tick": {
+      "fresh": 31.0,
+      "pretrained": 30.02,
+      "delta": -0.98,
+      "ci_low": -1.860181,
+      "ci_high": -0.099819,
+      "p": 0.02747,
+      "d": -0.220477
+    },
+    "invalid_actions": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "final_energy": {
+      "fresh": 100.0,
+      "pretrained": 185.384,
+      "delta": 85.384,
+      "ci_low": 79.268939,
+      "ci_high": 91.499061,
+      "p": 0.0,
+      "d": 2.764937
+    },
+    "prediction_error": {
+      "fresh": 0.006667,
+      "pretrained": 0.052863,
+      "delta": 0.046196,
+      "ci_low": 0.037164,
+      "ci_high": 0.055228,
+      "p": 0.0,
+      "d": 1.012845
+    },
+    "transfer_uses": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_strength": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_precision": {
+      "fresh": 0.0,
+      "pretrained": 0.7,
+      "delta": 0.7,
+      "ci_low": 0.608799,
+      "ci_high": 0.791201,
+      "p": 0.0,
+      "d": 1.519868
+    },
+    "policy_sequences": {
+      "fresh": 0.0,
+      "pretrained": 300.81,
+      "delta": 300.81,
+      "ci_low": 295.520191,
+      "ci_high": 306.099809,
+      "p": 0.0,
+      "d": 11.260607
+    },
+    "discovered_roles": {
+      "fresh": 0.0,
+      "pretrained": 3.34,
+      "delta": 3.34,
+      "ci_low": 3.237665,
+      "ci_high": 3.442335,
+      "p": 0.0,
+      "d": 6.462988
+    },
+    "structural_recall": {
+      "fresh": 0.234,
+      "pretrained": 0.625,
+      "delta": 0.391,
+      "ci_low": 0.391,
+      "ci_high": 0.391,
+      "p": 0.0,
+      "d": 0.0
+    },
+    "causal_intervention_effects": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "curiosity_average": {
+      "fresh": 0.0,
+      "pretrained": 0.32026,
+      "delta": 0.32026,
+      "ci_low": 0.311962,
+      "ci_high": 0.328558,
+      "p": 0.0,
+      "d": 7.642693
+    },
+    "exploration_rate_agi": {
+      "fresh": 0.0,
+      "pretrained": 0.22075,
+      "delta": 0.22075,
+      "ci_low": 0.211105,
+      "ci_high": 0.230395,
+      "p": 0.0,
+      "d": 4.532242
+    },
+    "self_evaluator_total_outcomes": {
+      "fresh": 0.0,
+      "pretrained": 80.0,
+      "delta": 80.0,
+      "ci_low": 80.0,
+      "ci_high": 80.0,
+      "p": 0.0,
+      "d": 0.0
+    }
+  },
+  "v2_all_agi": {
+    "condition": "v2_all_agi",
+    "n": 100,
+    "reward": {
+      "fresh": 6.0,
+      "pretrained": 14.553,
+      "delta": 8.553,
+      "ci_low": 4.269631,
+      "ci_high": 12.836369,
+      "p": 7.7e-05,
+      "d": 0.395405
+    },
+    "penalty": {
+      "fresh": 6.0,
+      "pretrained": 12.536,
+      "delta": 6.536,
+      "ci_low": 5.729305,
+      "ci_high": 7.342695,
+      "p": 0.0,
+      "d": 1.604398
+    },
+    "task_completion_rate": {
+      "fresh": 0.0,
+      "pretrained": 0.06,
+      "delta": 0.06,
+      "ci_low": 0.012736,
+      "ci_high": 0.107264,
+      "p": 0.011944,
+      "d": 0.251379
+    },
+    "first_success_tick": {
+      "fresh": 31.0,
+      "pretrained": 30.02,
+      "delta": -0.98,
+      "ci_low": -1.860181,
+      "ci_high": -0.099819,
+      "p": 0.02747,
+      "d": -0.220477
+    },
+    "invalid_actions": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "final_energy": {
+      "fresh": 100.0,
+      "pretrained": 213.922,
+      "delta": 113.922,
+      "ci_low": 107.739415,
+      "ci_high": 120.104585,
+      "p": 0.0,
+      "d": 3.648775
+    },
+    "prediction_error": {
+      "fresh": 0.006667,
+      "pretrained": 0.052837,
+      "delta": 0.04617,
+      "ci_low": 0.037154,
+      "ci_high": 0.055186,
+      "p": 0.0,
+      "d": 1.014065
+    },
+    "transfer_uses": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_strength": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_precision": {
+      "fresh": 0.0,
+      "pretrained": 0.77,
+      "delta": 0.77,
+      "ci_low": 0.686247,
+      "ci_high": 0.853753,
+      "p": 0.0,
+      "d": 1.820535
+    },
+    "policy_sequences": {
+      "fresh": 0.0,
+      "pretrained": 302.18,
+      "delta": 302.18,
+      "ci_low": 296.636264,
+      "ci_high": 307.723736,
+      "p": 0.0,
+      "d": 10.793759
+    },
+    "discovered_roles": {
+      "fresh": 0.0,
+      "pretrained": 3.35,
+      "delta": 3.35,
+      "ci_low": 3.247067,
+      "ci_high": 3.452933,
+      "p": 0.0,
+      "d": 6.444667
+    },
+    "structural_recall": {
+      "fresh": 0.234,
+      "pretrained": 0.625,
+      "delta": 0.391,
+      "ci_low": 0.391,
+      "ci_high": 0.391,
+      "p": 0.0,
+      "d": 0.0
+    },
+    "causal_intervention_effects": {
+      "fresh": 0.0,
+      "pretrained": 6.01,
+      "delta": 6.01,
+      "ci_low": 5.789288,
+      "ci_high": 6.230712,
+      "p": 0.0,
+      "d": 5.39209
+    },
+    "curiosity_average": {
+      "fresh": 0.0,
+      "pretrained": 0.32032,
+      "delta": 0.32032,
+      "ci_low": 0.312017,
+      "ci_high": 0.328623,
+      "p": 0.0,
+      "d": 7.63893
+    },
+    "exploration_rate_agi": {
+      "fresh": 0.0,
+      "pretrained": 0.2209,
+      "delta": 0.2209,
+      "ci_low": 0.211206,
+      "ci_high": 0.230594,
+      "p": 0.0,
+      "d": 4.512132
+    },
+    "self_evaluator_total_outcomes": {
+      "fresh": 0.0,
+      "pretrained": 80.0,
+      "delta": 80.0,
+      "ci_low": 80.0,
+      "ci_high": 80.0,
+      "p": 0.0,
+      "d": 0.0
+    }
+  }
+}

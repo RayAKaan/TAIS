@@ -1,0 +1,728 @@
+{
+  "fresh": {
+    "condition": "fresh",
+    "n": 200,
+    "reward": {
+      "fresh": 4.0,
+      "pretrained": 4.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "penalty": {
+      "fresh": 4.0,
+      "pretrained": 4.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "task_completion_rate": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "first_success_tick": {
+      "fresh": 21.0,
+      "pretrained": 21.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "invalid_actions": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "final_energy": {
+      "fresh": 100.0,
+      "pretrained": 100.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "prediction_error": {
+      "fresh": 0.01,
+      "pretrained": 0.01,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_uses": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_strength": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_precision": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "policy_sequences": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "discovered_roles": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "structural_recall": {
+      "fresh": 0.156,
+      "pretrained": 0.156,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    }
+  },
+  "v2_structural": {
+    "condition": "v2_structural",
+    "n": 200,
+    "reward": {
+      "fresh": 4.0,
+      "pretrained": 5.9105,
+      "delta": 1.9105,
+      "ci_low": 0.631264,
+      "ci_high": 3.189736,
+      "p": 0.00342,
+      "d": 0.206984
+    },
+    "penalty": {
+      "fresh": 4.0,
+      "pretrained": 6.994,
+      "delta": 2.994,
+      "ci_low": 2.550712,
+      "ci_high": 3.437288,
+      "p": 0.0,
+      "d": 0.936068
+    },
+    "task_completion_rate": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "first_success_tick": {
+      "fresh": 21.0,
+      "pretrained": 21.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "invalid_actions": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "final_energy": {
+      "fresh": 100.0,
+      "pretrained": 143.9865,
+      "delta": 43.9865,
+      "ci_low": 40.720315,
+      "ci_high": 47.252685,
+      "p": 0.0,
+      "d": 1.866464
+    },
+    "prediction_error": {
+      "fresh": 0.01,
+      "pretrained": 0.01485,
+      "delta": 0.00485,
+      "ci_low": 0.001651,
+      "ci_high": 0.008049,
+      "p": 0.002966,
+      "d": 0.210098
+    },
+    "transfer_uses": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_strength": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_precision": {
+      "fresh": 0.0,
+      "pretrained": 0.54,
+      "delta": 0.54,
+      "ci_low": 0.470752,
+      "ci_high": 0.609248,
+      "p": 0.0,
+      "d": 1.080761
+    },
+    "policy_sequences": {
+      "fresh": 0.0,
+      "pretrained": 135.925,
+      "delta": 135.925,
+      "ci_low": 133.890909,
+      "ci_high": 137.959091,
+      "p": 0.0,
+      "d": 9.261259
+    },
+    "discovered_roles": {
+      "fresh": 0.0,
+      "pretrained": 3.025,
+      "delta": 3.025,
+      "ci_low": 2.974068,
+      "ci_high": 3.075932,
+      "p": 0.0,
+      "d": 8.231475
+    },
+    "structural_recall": {
+      "fresh": 0.156,
+      "pretrained": 0.391,
+      "delta": 0.235,
+      "ci_low": 0.235,
+      "ci_high": 0.235,
+      "p": 0.0,
+      "d": 0.0
+    }
+  },
+  "legacy_role_hint": {
+    "condition": "legacy_role_hint",
+    "n": 200,
+    "reward": {
+      "fresh": 4.0,
+      "pretrained": 5.89,
+      "delta": 1.89,
+      "ci_low": 0.610478,
+      "ci_high": 3.169522,
+      "p": 0.00379,
+      "d": 0.204718
+    },
+    "penalty": {
+      "fresh": 4.0,
+      "pretrained": 6.83,
+      "delta": 2.83,
+      "ci_low": 2.423231,
+      "ci_high": 3.236769,
+      "p": 0.0,
+      "d": 0.964228
+    },
+    "task_completion_rate": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "first_success_tick": {
+      "fresh": 21.0,
+      "pretrained": 21.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "invalid_actions": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "final_energy": {
+      "fresh": 100.0,
+      "pretrained": 127.5895,
+      "delta": 27.5895,
+      "ci_low": 24.762167,
+      "ci_high": 30.416833,
+      "p": 0.0,
+      "d": 1.352409
+    },
+    "prediction_error": {
+      "fresh": 0.01,
+      "pretrained": 0.014725,
+      "delta": 0.004725,
+      "ci_low": 0.001526,
+      "ci_high": 0.007924,
+      "p": 0.00379,
+      "d": 0.204718
+    },
+    "transfer_uses": {
+      "fresh": 0.0,
+      "pretrained": 19.005,
+      "delta": 19.005,
+      "ci_low": 17.691992,
+      "ci_high": 20.318008,
+      "p": 0.0,
+      "d": 2.006049
+    },
+    "transfer_strength": {
+      "fresh": 0.0,
+      "pretrained": 23.411411,
+      "delta": 23.411411,
+      "ci_low": 20.129312,
+      "ci_high": 26.69351,
+      "p": 0.0,
+      "d": 0.988592
+    },
+    "transfer_precision": {
+      "fresh": 0.0,
+      "pretrained": 0.74,
+      "delta": 0.74,
+      "ci_low": 0.679056,
+      "ci_high": 0.800944,
+      "p": 0.0,
+      "d": 1.682832
+    },
+    "policy_sequences": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "discovered_roles": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "structural_recall": {
+      "fresh": 0.156,
+      "pretrained": 0.391,
+      "delta": 0.235,
+      "ci_low": 0.235,
+      "ci_high": 0.235,
+      "p": 0.0,
+      "d": 0.0
+    }
+  },
+  "v2_high_overlap": {
+    "condition": "v2_high_overlap",
+    "n": 200,
+    "reward": {
+      "fresh": 4.0,
+      "pretrained": 5.85,
+      "delta": 1.85,
+      "ci_low": 0.684905,
+      "ci_high": 3.015095,
+      "p": 0.001857,
+      "d": 0.220065
+    },
+    "penalty": {
+      "fresh": 4.0,
+      "pretrained": 6.9015,
+      "delta": 2.9015,
+      "ci_low": 2.463412,
+      "ci_high": 3.339588,
+      "p": 0.0,
+      "d": 0.917916
+    },
+    "task_completion_rate": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "first_success_tick": {
+      "fresh": 21.0,
+      "pretrained": 21.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "invalid_actions": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "final_energy": {
+      "fresh": 100.0,
+      "pretrained": 142.0305,
+      "delta": 42.0305,
+      "ci_low": 38.77512,
+      "ci_high": 45.28588,
+      "p": 0.0,
+      "d": 1.789385
+    },
+    "prediction_error": {
+      "fresh": 0.01,
+      "pretrained": 0.014675,
+      "delta": 0.004675,
+      "ci_low": 0.001762,
+      "ci_high": 0.007588,
+      "p": 0.001657,
+      "d": 0.222436
+    },
+    "transfer_uses": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_strength": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_precision": {
+      "fresh": 0.0,
+      "pretrained": 0.53,
+      "delta": 0.53,
+      "ci_low": 0.460655,
+      "ci_high": 0.599345,
+      "p": 0.0,
+      "d": 1.059255
+    },
+    "policy_sequences": {
+      "fresh": 0.0,
+      "pretrained": 136.015,
+      "delta": 136.015,
+      "ci_low": 133.969527,
+      "ci_high": 138.060473,
+      "p": 0.0,
+      "d": 9.215821
+    },
+    "discovered_roles": {
+      "fresh": 0.0,
+      "pretrained": 3.075,
+      "delta": 3.075,
+      "ci_low": 3.014537,
+      "ci_high": 3.135463,
+      "p": 0.0,
+      "d": 7.048478
+    },
+    "structural_recall": {
+      "fresh": 0.156,
+      "pretrained": 0.391,
+      "delta": 0.235,
+      "ci_low": 0.235,
+      "ci_high": 0.235,
+      "p": 0.0,
+      "d": 0.0
+    }
+  },
+  "v2_low_overlap": {
+    "condition": "v2_low_overlap",
+    "n": 200,
+    "reward": {
+      "fresh": 4.0,
+      "pretrained": 5.1025,
+      "delta": 1.1025,
+      "ci_low": 0.100564,
+      "ci_high": 2.104436,
+      "p": 0.031027,
+      "d": 0.152503
+    },
+    "penalty": {
+      "fresh": 4.0,
+      "pretrained": 7.0035,
+      "delta": 3.0035,
+      "ci_low": 2.542262,
+      "ci_high": 3.464738,
+      "p": 0.0,
+      "d": 0.902493
+    },
+    "task_completion_rate": {
+      "fresh": 0.0,
+      "pretrained": 0.005,
+      "delta": 0.005,
+      "ci_low": -0.0048,
+      "ci_high": 0.0148,
+      "p": 0.317311,
+      "d": 0.070711
+    },
+    "first_success_tick": {
+      "fresh": 21.0,
+      "pretrained": 20.9,
+      "delta": -0.1,
+      "ci_low": -0.296,
+      "ci_high": 0.096,
+      "p": 0.317311,
+      "d": -0.070711
+    },
+    "invalid_actions": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "final_energy": {
+      "fresh": 100.0,
+      "pretrained": 142.418,
+      "delta": 42.418,
+      "ci_low": 39.016614,
+      "ci_high": 45.819386,
+      "p": 0.0,
+      "d": 1.728365
+    },
+    "prediction_error": {
+      "fresh": 0.01,
+      "pretrained": 0.013962,
+      "delta": 0.003962,
+      "ci_low": 0.000524,
+      "ci_high": 0.007401,
+      "p": 0.023888,
+      "d": 0.159731
+    },
+    "transfer_uses": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_strength": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_precision": {
+      "fresh": 0.0,
+      "pretrained": 0.51,
+      "delta": 0.51,
+      "ci_low": 0.440544,
+      "ci_high": 0.579456,
+      "p": 0.0,
+      "d": 1.01765
+    },
+    "policy_sequences": {
+      "fresh": 0.0,
+      "pretrained": 135.93,
+      "delta": 135.93,
+      "ci_low": 134.076638,
+      "ci_high": 137.783362,
+      "p": 0.0,
+      "d": 10.164735
+    },
+    "discovered_roles": {
+      "fresh": 0.0,
+      "pretrained": 3.05,
+      "delta": 3.05,
+      "ci_low": 2.991463,
+      "ci_high": 3.108537,
+      "p": 0.0,
+      "d": 7.221247
+    },
+    "structural_recall": {
+      "fresh": 0.156,
+      "pretrained": 0.391,
+      "delta": 0.235,
+      "ci_low": 0.235,
+      "ci_high": 0.235,
+      "p": 0.0,
+      "d": 0.0
+    }
+  },
+  "v2_zero_overlap": {
+    "condition": "v2_zero_overlap",
+    "n": 200,
+    "reward": {
+      "fresh": 4.0,
+      "pretrained": 4.09,
+      "delta": 0.09,
+      "ci_low": -0.169633,
+      "ci_high": 0.349633,
+      "p": 0.496872,
+      "d": 0.048042
+    },
+    "penalty": {
+      "fresh": 4.0,
+      "pretrained": 7.1015,
+      "delta": 3.1015,
+      "ci_low": 2.662545,
+      "ci_high": 3.540455,
+      "p": 0.0,
+      "d": 0.979249
+    },
+    "task_completion_rate": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "first_success_tick": {
+      "fresh": 21.0,
+      "pretrained": 21.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "invalid_actions": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "final_energy": {
+      "fresh": 100.0,
+      "pretrained": 140.6145,
+      "delta": 40.6145,
+      "ci_low": 37.54159,
+      "ci_high": 43.68741,
+      "p": 0.0,
+      "d": 1.831776
+    },
+    "prediction_error": {
+      "fresh": 0.01,
+      "pretrained": 0.010275,
+      "delta": 0.000275,
+      "ci_low": -0.000381,
+      "ci_high": 0.000931,
+      "p": 0.411356,
+      "d": 0.05809
+    },
+    "transfer_uses": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_strength": {
+      "fresh": 0.0,
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
+    },
+    "transfer_precision": {
+      "fresh": 0.0,
+      "pretrained": 0.545,
+      "delta": 0.545,
+      "ci_low": 0.475812,
+      "ci_high": 0.614188,
+      "p": 0.0,
+      "d": 1.091702
+    },
+    "policy_sequences": {
+      "fresh": 0.0,
+      "pretrained": 135.435,
+      "delta": 135.435,
+      "ci_low": 133.31778,
+      "ci_high": 137.55222,
+      "p": 0.0,
+      "d": 8.865555
+    },
+    "discovered_roles": {
+      "fresh": 0.0,
+      "pretrained": 3.075,
+      "delta": 3.075,
+      "ci_low": 3.014537,
+      "ci_high": 3.135463,
+      "p": 0.0,
+      "d": 7.048478
+    },
+    "structural_recall": {
+      "fresh": 0.156,
+      "pretrained": 0.391,
+      "delta": 0.235,
+      "ci_low": 0.235,
+      "ci_high": 0.235,
+      "p": 0.0,
+      "d": 0.0
+    }
+  }
+}

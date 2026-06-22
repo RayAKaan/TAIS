@@ -9,6 +9,8 @@ Covers:
 - Plan creation and execution
 - Ablation mode (some engines None, others active)
 - Full integration: mote with all engines in a real domain
+- AGI CausalInterventionEngine integration
+- AGI Open-Ended Learning integration (CuriosityDrive, GoalGenerator, etc.)
 """
 
 import unittest
@@ -16,8 +18,15 @@ from tais_core import (
     UniversalMote,
     MetacognitiveEngine,
     CausalReasoningEngine,
+    CausalInterventionEngine,
     HierarchicalPlanner,
     RuleWorld,
+)
+from tais_core.open_ended_learning import (
+    CuriosityDrive,
+    GoalGenerator,
+    ExplorationController,
+    SelfEvaluator,
 )
 from tais_core.domains.rules import make_rule_graph
 
@@ -217,6 +226,127 @@ class TestMetricsWithEngines(unittest.TestCase):
         self.assertIn("metacog_confidence", m)
         self.assertIn("causal_links_count", m)
         self.assertIn("planner_active", m)
+
+
+class TestCausalInterventionEngine(unittest.TestCase):
+    """CausalInterventionEngine integration (AGI Step 2)."""
+
+    def test_none_by_default(self):
+        mote = UniversalMote(energy=100)
+        self.assertIsNone(mote.causal_intervention)
+
+    def test_enabled(self):
+        mote = UniversalMote(energy=100)
+        mote.enable_cognitive_engines(causal_intervention=True, metacognition=False, causal_reasoning=False, hierarchical_planning=False)
+        self.assertIsInstance(mote.causal_intervention, CausalInterventionEngine)
+
+    def test_records_interventions_on_step(self):
+        mote = UniversalMote(energy=100)
+        mote.enable_cognitive_engines(causal_intervention=True, metacognition=False, causal_reasoning=False, hierarchical_planning=False)
+        world = RuleWorld()
+        graph = make_rule_graph()
+        for tick in range(5):
+            graph, cons, action = mote.step(world, graph, mote_position="rule_ab", tick=tick)
+        self.assertGreater(len(mote.causal_intervention._interventions), 0)
+
+    def test_has_effects_after_steps(self):
+        mote = UniversalMote(energy=100)
+        mote.enable_cognitive_engines(causal_intervention=True, metacognition=False, causal_reasoning=False, hierarchical_planning=False)
+        world = RuleWorld()
+        graph = make_rule_graph()
+        for tick in range(10):
+            graph, cons, action = mote.step(world, graph, mote_position="rule_ab", tick=tick)
+        self.assertGreater(len(mote.causal_intervention._effects), 0)
+
+    def test_metrics_included(self):
+        mote = UniversalMote(energy=100)
+        mote.enable_cognitive_engines(causal_intervention=True, metacognition=False, causal_reasoning=False, hierarchical_planning=False)
+        world = RuleWorld()
+        graph = make_rule_graph()
+        for tick in range(5):
+            graph, cons, action = mote.step(world, graph, mote_position="rule_ab", tick=tick)
+        m = mote.metrics()
+        self.assertIn("causal_intervention_effects", m)
+        self.assertIn("causal_intervention_interventions", m)
+
+
+class TestOpenEndedLearningEngines(unittest.TestCase):
+    """Open-Ended Learning engine integration (AGI Step 5)."""
+
+    def test_none_by_default(self):
+        mote = UniversalMote(energy=100)
+        self.assertIsNone(mote.curiosity)
+        self.assertIsNone(mote.goal_generator)
+        self.assertIsNone(mote.exploration_controller)
+        self.assertIsNone(mote.self_evaluator)
+
+    def test_enabled(self):
+        mote = UniversalMote(energy=100)
+        mote.enable_cognitive_engines(open_ended_learning=True, metacognition=False, causal_reasoning=False, hierarchical_planning=False)
+        self.assertIsInstance(mote.curiosity, CuriosityDrive)
+        self.assertIsInstance(mote.goal_generator, GoalGenerator)
+        self.assertIsInstance(mote.exploration_controller, ExplorationController)
+        self.assertIsInstance(mote.self_evaluator, SelfEvaluator)
+
+    def test_curiosity_updates_on_step(self):
+        mote = UniversalMote(energy=100)
+        mote.enable_cognitive_engines(open_ended_learning=True, metacognition=False, causal_reasoning=False, hierarchical_planning=False)
+        world = RuleWorld()
+        graph = make_rule_graph()
+        r0 = mote.curiosity.get_average_curiosity()
+        for tick in range(5):
+            graph, cons, action = mote.step(world, graph, mote_position="rule_ab", tick=tick)
+        self.assertIsInstance(mote.curiosity.get_average_curiosity(), float)
+
+    def test_self_evaluator_records_outcomes(self):
+        mote = UniversalMote(energy=100)
+        mote.enable_cognitive_engines(open_ended_learning=True, metacognition=False, causal_reasoning=False, hierarchical_planning=False)
+        world = RuleWorld()
+        graph = make_rule_graph()
+        for tick in range(5):
+            graph, cons, action = mote.step(world, graph, mote_position="rule_ab", tick=tick)
+        self.assertGreater(sum(len(v) for v in mote.self_evaluator._outcomes.values()), 0)
+
+    def test_exploration_controller_does_not_crash(self):
+        mote = UniversalMote(energy=100)
+        mote.enable_cognitive_engines(open_ended_learning=True, metacognition=False, causal_reasoning=False, hierarchical_planning=False)
+        world = RuleWorld()
+        graph = make_rule_graph()
+        for tick in range(10):
+            graph, cons, action = mote.step(world, graph, mote_position="rule_ab", tick=tick)
+        self.assertIsInstance(mote.exploration_controller.get_exploration_rate(), float)
+
+    def test_metrics_included_after_steps(self):
+        mote = UniversalMote(energy=100)
+        mote.enable_cognitive_engines(open_ended_learning=True, metacognition=False, causal_reasoning=False, hierarchical_planning=False)
+        world = RuleWorld()
+        graph = make_rule_graph()
+        for tick in range(5):
+            graph, cons, action = mote.step(world, graph, mote_position="rule_ab", tick=tick)
+        m = mote.metrics()
+        self.assertIn("curiosity_average", m)
+        self.assertIn("active_goals", m)
+        self.assertIn("exploration_rate_agi", m)
+        self.assertIn("self_evaluator_total_outcomes", m)
+
+
+class TestEnginesNotInherited(unittest.TestCase):
+    """New AGI engines should NOT be inherited by children (domain-specific)."""
+
+    def test_causal_intervention_not_inherited(self):
+        parent = UniversalMote(energy=100)
+        parent.enable_cognitive_engines(causal_intervention=True, metacognition=False, causal_reasoning=False, hierarchical_planning=False)
+        child = parent.reproduce()
+        self.assertIsNone(child.causal_intervention)
+
+    def test_open_ended_learning_not_inherited(self):
+        parent = UniversalMote(energy=100)
+        parent.enable_cognitive_engines(open_ended_learning=True, metacognition=False, causal_reasoning=False, hierarchical_planning=False)
+        child = parent.reproduce()
+        self.assertIsNone(child.curiosity)
+        self.assertIsNone(child.goal_generator)
+        self.assertIsNone(child.exploration_controller)
+        self.assertIsNone(child.self_evaluator)
 
 
 if __name__ == "__main__":
