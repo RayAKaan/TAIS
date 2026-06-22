@@ -140,6 +140,7 @@ class UniversalMote:
         self.goal_generator: Optional[GoalGenerator] = None
         self.exploration_controller: Optional[ExplorationController] = None
         self.self_evaluator: Optional[SelfEvaluator] = None
+        self._last_action_was_explore: bool = False
 
     def enable_cognitive_engines(
         self,
@@ -301,9 +302,22 @@ class UniversalMote:
         # ── Open-ended learning: exploration controller ──
         if self.exploration_controller is not None and not explore:
             if self.curiosity is not None and self.goal_generator is not None:
-                if self.exploration_controller.should_explore(self.curiosity, self.goal_generator):
+                schema_confidence = None
+                if self.self_evaluator is not None:
+                    domain_outcomes = self.self_evaluator._outcomes.get(observation.domain, [])
+                    if domain_outcomes:
+                        schema_confidence = min(
+                            0.9, sum(domain_outcomes[-20:]) / len(domain_outcomes[-20:])
+                        ) if len(domain_outcomes) >= 5 else None
+                if self.exploration_controller.should_explore(
+                    self.curiosity,
+                    self.goal_generator,
+                    current_energy=self.energy,
+                    schema_confidence=schema_confidence,
+                ):
                     explore = True
 
+        self._last_action_was_explore = explore
         if explore:
             return random.choice(actions)
 
@@ -355,11 +369,23 @@ class UniversalMote:
 
         # Causal Intervention Engine: boost actions with known positive causal effects
         if self.causal_intervention is not None:
+            # Exact key match
             cskey = structural_key_from_graph(observation)
             for act in actions:
                 effect = self.causal_intervention.get_causal_effect(cskey, act.name)
                 if effect is not None and effect.is_significant():
-                    structural_boosts[act.name] = structural_boosts.get(act.name, 0.0) + effect.causal_effect
+                    structural_boosts[act.name] = (
+                        structural_boosts.get(act.name, 0.0) + effect.causal_effect
+                    )
+            # Partial WL similarity match (complements exact match)
+            action_names = [a.name for a in actions]
+            partial_boosts = self.causal_intervention.causal_action_boosts(
+                observation, action_names
+            )
+            for name, boost in partial_boosts.items():
+                structural_boosts[name] = (
+                    structural_boosts.get(name, 0.0) + boost
+                )
 
         # Transfer priors should help early in a new domain, then yield to local
         # evidence. Otherwise old-domain confidence becomes negative transfer.
@@ -530,6 +556,13 @@ class UniversalMote:
                 success=cons.net > 0,
             )
 
+        # Exploration controller: track whether exploration is paying off
+        if self.exploration_controller is not None:
+            self.exploration_controller.record_outcome(
+                was_explore=self._last_action_was_explore,
+                reward=cons.net,
+            )
+
         action_cost = action.compute_cost(observation, mote_state)
         self.energy += cons.net - action_cost
         self.total_reward += cons.reward
@@ -654,6 +687,7 @@ class UniversalMote:
             result["achieved_goals"] = len(self.goal_generator.get_achieved_goals())
         if self.exploration_controller is not None:
             result["exploration_rate_agi"] = round(self.exploration_controller.get_exploration_rate(), 3)
+            result["exploration_payoff"] = round(self.exploration_controller._explore_payoff, 4)
         if self.self_evaluator is not None:
             result["self_evaluator_total_outcomes"] = sum(len(v) for v in self.self_evaluator._outcomes.values())
         return result

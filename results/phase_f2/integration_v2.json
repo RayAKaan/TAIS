@@ -1,10 +1,10 @@
 {
   "fresh": {
     "condition": "fresh",
-    "n": 100,
+    "n": 10,
     "reward": {
-      "fresh": 6.0,
-      "pretrained": 6.0,
+      "fresh": 1.0,
+      "pretrained": 1.0,
       "delta": 0.0,
       "ci_low": 0.0,
       "ci_high": 0.0,
@@ -12,8 +12,8 @@
       "d": 0.0
     },
     "penalty": {
-      "fresh": 6.0,
-      "pretrained": 6.0,
+      "fresh": 1.0,
+      "pretrained": 1.0,
       "delta": 0.0,
       "ci_low": 0.0,
       "ci_high": 0.0,
@@ -30,8 +30,8 @@
       "d": 0.0
     },
     "first_success_tick": {
-      "fresh": 31.0,
-      "pretrained": 31.0,
+      "fresh": 6.0,
+      "pretrained": 6.0,
       "delta": 0.0,
       "ci_low": 0.0,
       "ci_high": 0.0,
@@ -57,8 +57,8 @@
       "d": 0.0
     },
     "prediction_error": {
-      "fresh": 0.006667,
-      "pretrained": 0.006667,
+      "fresh": 0.04,
+      "pretrained": 0.04,
       "delta": 0.0,
       "ci_low": 0.0,
       "ci_high": 0.0,
@@ -111,8 +111,8 @@
       "d": 0.0
     },
     "structural_recall": {
-      "fresh": 0.234,
-      "pretrained": 0.234,
+      "fresh": 0.039,
+      "pretrained": 0.039,
       "delta": 0.0,
       "ci_low": 0.0,
       "ci_high": 0.0,
@@ -158,24 +158,24 @@
   },
   "v2_structural": {
     "condition": "v2_structural",
-    "n": 100,
+    "n": 10,
     "reward": {
-      "fresh": 6.0,
-      "pretrained": 9.12,
-      "delta": 3.12,
-      "ci_low": 0.142002,
-      "ci_high": 6.097998,
-      "p": 0.038021,
-      "d": 0.207463
+      "fresh": 1.0,
+      "pretrained": 0.9,
+      "delta": -0.1,
+      "ci_low": -0.245481,
+      "ci_high": 0.045481,
+      "p": 0.133614,
+      "d": -0.474342
     },
     "penalty": {
-      "fresh": 6.0,
-      "pretrained": 10.95,
-      "delta": 4.95,
-      "ci_low": 3.99705,
-      "ci_high": 5.90295,
-      "p": 0.0,
-      "d": 1.028595
+      "fresh": 1.0,
+      "pretrained": 1.6,
+      "delta": 0.6,
+      "ci_low": 0.065467,
+      "ci_high": 1.134533,
+      "p": 0.014306,
+      "d": 0.774597
     },
     "task_completion_rate": {
       "fresh": 0.0,
@@ -187,8 +187,8 @@
       "d": 0.0
     },
     "first_success_tick": {
-      "fresh": 31.0,
-      "pretrained": 31.0,
+      "fresh": 6.0,
+      "pretrained": 6.0,
       "delta": 0.0,
       "ci_low": 0.0,
       "ci_high": 0.0,
@@ -206,21 +206,21 @@
     },
     "final_energy": {
       "fresh": 100.0,
-      "pretrained": 181.736,
-      "delta": 81.736,
-      "ci_low": 74.800768,
-      "ci_high": 88.671232,
-      "p": 0.0,
-      "d": 2.333791
+      "pretrained": 107.18,
+      "delta": 7.18,
+      "ci_low": 2.041414,
+      "ci_high": 12.318586,
+      "p": 0.002295,
+      "d": 0.964228
     },
     "prediction_error": {
-      "fresh": 0.006667,
-      "pretrained": 0.010133,
-      "delta": 0.003467,
-      "ci_low": 0.000158,
-      "ci_high": 0.006776,
-      "p": 0.038021,
-      "d": 0.207463
+      "fresh": 0.04,
+      "pretrained": 0.036,
+      "delta": -0.004,
+      "ci_low": -0.009819,
+      "ci_high": 0.001819,
+      "p": 0.133614,
+      "d": -0.474342
     },
     "transfer_uses": {
       "fresh": 0.0,
@@ -242,37 +242,37 @@
     },
     "transfer_precision": {
       "fresh": 0.0,
-      "pretrained": 0.56,
-      "delta": 0.56,
-      "ci_low": 0.46121,
-      "ci_high": 0.65879,
-      "p": 0.0,
-      "d": 1.122497
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
     },
     "policy_sequences": {
       "fresh": 0.0,
-      "pretrained": 291.56,
-      "delta": 291.56,
-      "ci_low": 286.975646,
-      "ci_high": 296.144354,
+      "pretrained": 13.3,
+      "delta": 13.3,
+      "ci_low": 12.377023,
+      "ci_high": 14.222977,
       "p": 0.0,
-      "d": 12.593873
+      "d": 9.943973
     },
     "discovered_roles": {
       "fresh": 0.0,
-      "pretrained": 3.1,
-      "delta": 3.1,
-      "ci_low": 3.033993,
-      "ci_high": 3.166007,
+      "pretrained": 2.5,
+      "delta": 2.5,
+      "ci_low": 2.136296,
+      "ci_high": 2.863704,
       "p": 0.0,
-      "d": 9.3
+      "d": 4.743416
     },
     "structural_recall": {
-      "fresh": 0.234,
-      "pretrained": 0.625,
-      "delta": 0.391,
-      "ci_low": 0.391,
-      "ci_high": 0.391,
+      "fresh": 0.039,
+      "pretrained": 0.117,
+      "delta": 0.078,
+      "ci_low": 0.078,
+      "ci_high": 0.078,
       "p": 0.0,
       "d": 0.0
     },
@@ -315,24 +315,24 @@
   },
   "v2_causal_intervention": {
     "condition": "v2_causal_intervention",
-    "n": 100,
+    "n": 10,
     "reward": {
-      "fresh": 6.0,
-      "pretrained": 9.09,
-      "delta": 3.09,
-      "ci_low": 0.111362,
-      "ci_high": 6.068638,
-      "p": 0.039953,
-      "d": 0.205424
+      "fresh": 1.0,
+      "pretrained": 0.93,
+      "delta": -0.07,
+      "ci_low": -0.239191,
+      "ci_high": 0.099191,
+      "p": 0.3666,
+      "d": -0.28551
     },
     "penalty": {
-      "fresh": 6.0,
-      "pretrained": 10.71,
-      "delta": 4.71,
-      "ci_low": 3.831479,
-      "ci_high": 5.588521,
-      "p": 0.0,
-      "d": 1.061642
+      "fresh": 1.0,
+      "pretrained": 1.84,
+      "delta": 0.84,
+      "ci_low": 0.201537,
+      "ci_high": 1.478463,
+      "p": 0.004091,
+      "d": 0.907909
     },
     "task_completion_rate": {
       "fresh": 0.0,
@@ -344,8 +344,8 @@
       "d": 0.0
     },
     "first_success_tick": {
-      "fresh": 31.0,
-      "pretrained": 31.0,
+      "fresh": 6.0,
+      "pretrained": 6.0,
       "delta": 0.0,
       "ci_low": 0.0,
       "ci_high": 0.0,
@@ -363,21 +363,21 @@
     },
     "final_energy": {
       "fresh": 100.0,
-      "pretrained": 199.343,
-      "delta": 99.343,
-      "ci_low": 91.399529,
-      "ci_high": 107.286471,
-      "p": 0.0,
-      "d": 2.476489
+      "pretrained": 110.17,
+      "delta": 10.17,
+      "ci_low": 3.254345,
+      "ci_high": 17.085655,
+      "p": 0.001332,
+      "d": 1.014814
     },
     "prediction_error": {
-      "fresh": 0.006667,
-      "pretrained": 0.0101,
-      "delta": 0.003433,
-      "ci_low": 0.000124,
-      "ci_high": 0.006743,
-      "p": 0.039953,
-      "d": 0.205424
+      "fresh": 0.04,
+      "pretrained": 0.042,
+      "delta": 0.002,
+      "ci_low": -0.013189,
+      "ci_high": 0.017189,
+      "p": 0.773846,
+      "d": 0.090867
     },
     "transfer_uses": {
       "fresh": 0.0,
@@ -399,48 +399,48 @@
     },
     "transfer_precision": {
       "fresh": 0.0,
-      "pretrained": 0.55,
-      "delta": 0.55,
-      "ci_low": 0.45099,
-      "ci_high": 0.64901,
-      "p": 0.0,
-      "d": 1.1
+      "pretrained": 0.4,
+      "delta": 0.4,
+      "ci_low": 0.043645,
+      "ci_high": 0.756355,
+      "p": 0.014306,
+      "d": 0.774597
     },
     "policy_sequences": {
       "fresh": 0.0,
-      "pretrained": 292.13,
-      "delta": 292.13,
-      "ci_low": 287.565011,
-      "ci_high": 296.694989,
+      "pretrained": 13.4,
+      "delta": 13.4,
+      "ci_low": 12.361054,
+      "ci_high": 14.438946,
       "p": 0.0,
-      "d": 12.672023
+      "d": 8.90043
     },
     "discovered_roles": {
       "fresh": 0.0,
-      "pretrained": 3.1,
-      "delta": 3.1,
-      "ci_low": 3.033993,
-      "ci_high": 3.166007,
+      "pretrained": 2.5,
+      "delta": 2.5,
+      "ci_low": 2.136296,
+      "ci_high": 2.863704,
       "p": 0.0,
-      "d": 9.3
+      "d": 4.743416
     },
     "structural_recall": {
-      "fresh": 0.234,
-      "pretrained": 0.625,
-      "delta": 0.391,
-      "ci_low": 0.391,
-      "ci_high": 0.391,
+      "fresh": 0.039,
+      "pretrained": 0.117,
+      "delta": 0.078,
+      "ci_low": 0.078,
+      "ci_high": 0.078,
       "p": 0.0,
       "d": 0.0
     },
     "causal_intervention_effects": {
       "fresh": 0.0,
-      "pretrained": 4.11,
-      "delta": 4.11,
-      "ci_low": 3.930013,
-      "ci_high": 4.289987,
+      "pretrained": 2.4,
+      "delta": 2.4,
+      "ci_low": 2.043645,
+      "ci_high": 2.756355,
       "p": 0.0,
-      "d": 4.521779
+      "d": 4.64758
     },
     "curiosity_average": {
       "fresh": 0.0,
@@ -472,42 +472,42 @@
   },
   "v2_open_ended_learning": {
     "condition": "v2_open_ended_learning",
-    "n": 100,
+    "n": 10,
     "reward": {
-      "fresh": 6.0,
-      "pretrained": 12.493,
-      "delta": 6.493,
-      "ci_low": 3.004859,
-      "ci_high": 9.981141,
-      "p": 0.000228,
-      "d": 0.368605
+      "fresh": 1.0,
+      "pretrained": 1.0,
+      "delta": -0.0,
+      "ci_low": -0.203154,
+      "ci_high": 0.203154,
+      "p": 1.0,
+      "d": -0.0
     },
     "penalty": {
-      "fresh": 6.0,
-      "pretrained": 11.992,
-      "delta": 5.992,
-      "ci_low": 5.256648,
-      "ci_high": 6.727352,
-      "p": 0.0,
-      "d": 1.613563
+      "fresh": 1.0,
+      "pretrained": 1.93,
+      "delta": 0.93,
+      "ci_low": 0.485091,
+      "ci_high": 1.374909,
+      "p": 5e-06,
+      "d": 1.442482
     },
     "task_completion_rate": {
       "fresh": 0.0,
-      "pretrained": 0.06,
-      "delta": 0.06,
-      "ci_low": 0.012736,
-      "ci_high": 0.107264,
-      "p": 0.011944,
-      "d": 0.251379
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
     },
     "first_success_tick": {
-      "fresh": 31.0,
-      "pretrained": 30.02,
-      "delta": -0.98,
-      "ci_low": -1.860181,
-      "ci_high": -0.099819,
-      "p": 0.02747,
-      "d": -0.220477
+      "fresh": 6.0,
+      "pretrained": 6.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
     },
     "invalid_actions": {
       "fresh": 0.0,
@@ -520,21 +520,21 @@
     },
     "final_energy": {
       "fresh": 100.0,
-      "pretrained": 185.384,
-      "delta": 85.384,
-      "ci_low": 79.268939,
-      "ci_high": 91.499061,
+      "pretrained": 113.01,
+      "delta": 13.01,
+      "ci_low": 7.563622,
+      "ci_high": 18.456378,
       "p": 0.0,
-      "d": 2.764937
+      "d": 1.648422
     },
     "prediction_error": {
-      "fresh": 0.006667,
-      "pretrained": 0.052863,
-      "delta": 0.046196,
-      "ci_low": 0.037164,
-      "ci_high": 0.055228,
-      "p": 0.0,
-      "d": 1.012845
+      "fresh": 0.04,
+      "pretrained": 0.084,
+      "delta": 0.044,
+      "ci_low": 0.013623,
+      "ci_high": 0.074377,
+      "p": 0.001573,
+      "d": 0.999541
     },
     "transfer_uses": {
       "fresh": 0.0,
@@ -556,37 +556,37 @@
     },
     "transfer_precision": {
       "fresh": 0.0,
-      "pretrained": 0.7,
-      "delta": 0.7,
-      "ci_low": 0.608799,
-      "ci_high": 0.791201,
-      "p": 0.0,
-      "d": 1.519868
+      "pretrained": 0.4,
+      "delta": 0.4,
+      "ci_low": 0.043645,
+      "ci_high": 0.756355,
+      "p": 0.014306,
+      "d": 0.774597
     },
     "policy_sequences": {
       "fresh": 0.0,
-      "pretrained": 300.81,
-      "delta": 300.81,
-      "ci_low": 295.520191,
-      "ci_high": 306.099809,
+      "pretrained": 13.9,
+      "delta": 13.9,
+      "ci_low": 12.799233,
+      "ci_high": 15.000767,
       "p": 0.0,
-      "d": 11.260607
+      "d": 8.714015
     },
     "discovered_roles": {
       "fresh": 0.0,
-      "pretrained": 3.34,
-      "delta": 3.34,
-      "ci_low": 3.237665,
-      "ci_high": 3.442335,
+      "pretrained": 2.8,
+      "delta": 2.8,
+      "ci_low": 2.509037,
+      "ci_high": 3.090963,
       "p": 0.0,
-      "d": 6.462988
+      "d": 6.640783
     },
     "structural_recall": {
-      "fresh": 0.234,
-      "pretrained": 0.625,
-      "delta": 0.391,
-      "ci_low": 0.391,
-      "ci_high": 0.391,
+      "fresh": 0.039,
+      "pretrained": 0.117,
+      "delta": 0.078,
+      "ci_low": 0.078,
+      "ci_high": 0.078,
       "p": 0.0,
       "d": 0.0
     },
@@ -601,70 +601,70 @@
     },
     "curiosity_average": {
       "fresh": 0.0,
-      "pretrained": 0.32026,
-      "delta": 0.32026,
-      "ci_low": 0.311962,
-      "ci_high": 0.328558,
+      "pretrained": 0.4616,
+      "delta": 0.4616,
+      "ci_low": 0.43372,
+      "ci_high": 0.48948,
       "p": 0.0,
-      "d": 7.642693
+      "d": 11.425369
     },
     "exploration_rate_agi": {
       "fresh": 0.0,
-      "pretrained": 0.22075,
-      "delta": 0.22075,
-      "ci_low": 0.211105,
-      "ci_high": 0.230395,
+      "pretrained": 0.2478,
+      "delta": 0.2478,
+      "ci_low": 0.149168,
+      "ci_high": 0.346432,
       "p": 0.0,
-      "d": 4.532242
+      "d": 1.733731
     },
     "self_evaluator_total_outcomes": {
       "fresh": 0.0,
-      "pretrained": 80.0,
-      "delta": 80.0,
-      "ci_low": 80.0,
-      "ci_high": 80.0,
+      "pretrained": 15.0,
+      "delta": 15.0,
+      "ci_low": 15.0,
+      "ci_high": 15.0,
       "p": 0.0,
       "d": 0.0
     }
   },
   "v2_all_agi": {
     "condition": "v2_all_agi",
-    "n": 100,
+    "n": 10,
     "reward": {
-      "fresh": 6.0,
-      "pretrained": 14.553,
-      "delta": 8.553,
-      "ci_low": 4.269631,
-      "ci_high": 12.836369,
-      "p": 7.7e-05,
-      "d": 0.395405
+      "fresh": 1.0,
+      "pretrained": 1.09,
+      "delta": 0.09,
+      "ci_low": -0.224472,
+      "ci_high": 0.404472,
+      "p": 0.532274,
+      "d": 0.197496
     },
     "penalty": {
-      "fresh": 6.0,
-      "pretrained": 12.536,
-      "delta": 6.536,
-      "ci_low": 5.729305,
-      "ci_high": 7.342695,
-      "p": 0.0,
-      "d": 1.604398
+      "fresh": 1.0,
+      "pretrained": 1.96,
+      "delta": 0.96,
+      "ci_low": 0.530645,
+      "ci_high": 1.389355,
+      "p": 1e-06,
+      "d": 1.542956
     },
     "task_completion_rate": {
       "fresh": 0.0,
-      "pretrained": 0.06,
-      "delta": 0.06,
-      "ci_low": 0.012736,
-      "ci_high": 0.107264,
-      "p": 0.011944,
-      "d": 0.251379
+      "pretrained": 0.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
     },
     "first_success_tick": {
-      "fresh": 31.0,
-      "pretrained": 30.02,
-      "delta": -0.98,
-      "ci_low": -1.860181,
-      "ci_high": -0.099819,
-      "p": 0.02747,
-      "d": -0.220477
+      "fresh": 6.0,
+      "pretrained": 6.0,
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "d": 0.0
     },
     "invalid_actions": {
       "fresh": 0.0,
@@ -677,21 +677,21 @@
     },
     "final_energy": {
       "fresh": 100.0,
-      "pretrained": 213.922,
-      "delta": 113.922,
-      "ci_low": 107.739415,
-      "ci_high": 120.104585,
+      "pretrained": 114.17,
+      "delta": 14.17,
+      "ci_low": 8.142074,
+      "ci_high": 20.197926,
       "p": 0.0,
-      "d": 3.648775
+      "d": 1.622187
     },
     "prediction_error": {
-      "fresh": 0.006667,
-      "pretrained": 0.052837,
-      "delta": 0.04617,
-      "ci_low": 0.037154,
-      "ci_high": 0.055186,
-      "p": 0.0,
-      "d": 1.014065
+      "fresh": 0.04,
+      "pretrained": 0.09,
+      "delta": 0.05,
+      "ci_low": 0.017307,
+      "ci_high": 0.082693,
+      "p": 0.000846,
+      "d": 1.055396
     },
     "transfer_uses": {
       "fresh": 0.0,
@@ -713,73 +713,73 @@
     },
     "transfer_precision": {
       "fresh": 0.0,
-      "pretrained": 0.77,
-      "delta": 0.77,
-      "ci_low": 0.686247,
-      "ci_high": 0.853753,
-      "p": 0.0,
-      "d": 1.820535
+      "pretrained": 0.5,
+      "delta": 0.5,
+      "ci_low": 0.136296,
+      "ci_high": 0.863704,
+      "p": 0.0027,
+      "d": 0.948683
     },
     "policy_sequences": {
       "fresh": 0.0,
-      "pretrained": 302.18,
-      "delta": 302.18,
-      "ci_low": 296.636264,
-      "ci_high": 307.723736,
+      "pretrained": 14.1,
+      "delta": 14.1,
+      "ci_low": 12.999233,
+      "ci_high": 15.200767,
       "p": 0.0,
-      "d": 10.793759
+      "d": 8.839397
     },
     "discovered_roles": {
       "fresh": 0.0,
-      "pretrained": 3.35,
-      "delta": 3.35,
-      "ci_low": 3.247067,
-      "ci_high": 3.452933,
+      "pretrained": 2.8,
+      "delta": 2.8,
+      "ci_low": 2.509037,
+      "ci_high": 3.090963,
       "p": 0.0,
-      "d": 6.444667
+      "d": 6.640783
     },
     "structural_recall": {
-      "fresh": 0.234,
-      "pretrained": 0.625,
-      "delta": 0.391,
-      "ci_low": 0.391,
-      "ci_high": 0.391,
+      "fresh": 0.039,
+      "pretrained": 0.117,
+      "delta": 0.078,
+      "ci_low": 0.078,
+      "ci_high": 0.078,
       "p": 0.0,
       "d": 0.0
     },
     "causal_intervention_effects": {
       "fresh": 0.0,
-      "pretrained": 6.01,
-      "delta": 6.01,
-      "ci_low": 5.789288,
-      "ci_high": 6.230712,
+      "pretrained": 2.7,
+      "delta": 2.7,
+      "ci_low": 2.36666,
+      "ci_high": 3.03334,
       "p": 0.0,
-      "d": 5.39209
+      "d": 5.589531
     },
     "curiosity_average": {
       "fresh": 0.0,
-      "pretrained": 0.32032,
-      "delta": 0.32032,
-      "ci_low": 0.312017,
-      "ci_high": 0.328623,
+      "pretrained": 0.4648,
+      "delta": 0.4648,
+      "ci_low": 0.438239,
+      "ci_high": 0.491361,
       "p": 0.0,
-      "d": 7.63893
+      "d": 12.075737
     },
     "exploration_rate_agi": {
       "fresh": 0.0,
-      "pretrained": 0.2209,
-      "delta": 0.2209,
-      "ci_low": 0.211206,
-      "ci_high": 0.230594,
+      "pretrained": 0.2395,
+      "delta": 0.2395,
+      "ci_low": 0.143022,
+      "ci_high": 0.335978,
       "p": 0.0,
-      "d": 4.512132
+      "d": 1.713073
     },
     "self_evaluator_total_outcomes": {
       "fresh": 0.0,
-      "pretrained": 80.0,
-      "delta": 80.0,
-      "ci_low": 80.0,
-      "ci_high": 80.0,
+      "pretrained": 15.0,
+      "delta": 15.0,
+      "ci_low": 15.0,
+      "ci_high": 15.0,
       "p": 0.0,
       "d": 0.0
     }

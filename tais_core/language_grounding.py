@@ -229,122 +229,402 @@ class ParsedPattern:
 class NLGraphParser:
     """Parse natural language descriptions into structured graph patterns.
 
-    Uses regex-based templates for known structural patterns.
+    Uses a robust token-based semantic parser that handles arbitrary
+    sentence structures via multiple extraction strategies:
+        1. SVO triples (subject-verb-object)
+        2. Copular + property (X is Y)
+        3. Copular + spatial (X is near Y)
+        4. Verb + preposition (X verb prep Y)
+        5. Possessive (X's Y)
+        6. Verb scan fallback
+        7. Comma-separated lists
+
     This is NOT an LLM — it's a deterministic parser for controlled
-    vocabulary.
+    vocabulary with semantic word classification.
     """
 
-    def __init__(self):
-        self._patterns: List[Dict[str, Any]] = self._build_patterns()
+    # ── Semantic word maps ─────────────────────────────────────────────────
 
-    def _build_patterns(self) -> List[Dict[str, Any]]:
-        """Build the pattern template library."""
-        return [
-            {
-                "name": "threat_near_resource",
-                "regex": r"(?:threat|danger|hazard)\s+(?:near|next to|adjacent to|beside)\s+(?:resource|treasure|item|supply)",
-                "entity_types": ["THREAT", "RESOURCE"],
-                "relation_type": "NEAR",
-                "confidence": 0.9,
-            },
-            {
-                "name": "agent_approaches_goal",
-                "regex": r"(?:agent|player|character|robot)\s+(?:approaches|moves toward|goes to|heads to|approaching)\s+(?:goal|target|objective|destination)",
-                "entity_types": ["AGENT", "GOAL"],
-                "relation_type": "APPROACHES",
-                "confidence": 0.85,
-            },
-            {
-                "name": "threat_visible_to_agent",
-                "regex": r"(?:agent|player|character|robot)\s+(?:sees|spots|detects|observes|notices)\s+(?:threat|danger|enemy|hazard)",
-                "entity_types": ["AGENT", "THREAT"],
-                "relation_type": "SEES",
-                "confidence": 0.85,
-            },
-            {
-                "name": "resource_visible_to_agent",
-                "regex": r"(?:agent|player|character|robot)\s+(?:sees|spots|detects|observes|notices)\s+(?:resource|treasure|item|supply)",
-                "entity_types": ["AGENT", "RESOURCE"],
-                "relation_type": "SEES",
-                "confidence": 0.8,
-            },
-            {
-                "name": "agent_avoids_threat",
-                "regex": r"(?:agent|player|character|robot)\s+(?:avoids|flees from|runs from|escapes|avoids)\s+(?:threat|danger|enemy|hazard)",
-                "entity_types": ["AGENT", "THREAT"],
-                "relation_type": "AVOIDS",
-                "confidence": 0.8,
-            },
-            {
-                "name": "resource_requires_other",
-                "regex": r"(?:resource|treasure|item|supply)\s+(?:requires|needs|depends on|uses)\s+(?:resource|tool|key|item)",
-                "entity_types": ["RESOURCE", "RESOURCE"],
-                "relation_type": "REQUIRES",
-                "confidence": 0.7,
-            },
-            {
-                "name": "dangerous_resource",
-                "regex": r"(?:dangerous|unsafe|risky|hazardous)\s+(?:resource|treasure|item|supply|area)",
-                "entity_types": ["THREAT", "RESOURCE"],
-                "relation_type": "NEAR",
-                "confidence": 0.7,
-            },
-            {
-                "name": "safe_resource",
-                "regex": r"(?:safe|secure|protected|clear)\s+(?:resource|treasure|item|supply|area)",
-                "entity_types": ["RESOURCE"],
-                "relation_type": "SAFE",
-                "confidence": 0.7,
-            },
-            {
-                "name": "generic_relation",
-                "regex": r"(.+?)\s+(?:is|are)\s+(.+?)\s+(?:a|an|the)\s+(.+)",
-                "entity_types": ["ENTITY", "ENTITY"],
-                "relation_type": "LINKED",
-                "confidence": 0.3,
-            },
+    ENTITY_WORDS: Dict[str, str] = {
+        "agent": "AGENT",
+        "player": "AGENT",
+        "character": "AGENT",
+        "robot": "AGENT",
+        "threat": "THREAT",
+        "danger": "THREAT",
+        "hazard": "THREAT",
+        "enemy": "THREAT",
+        "resource": "RESOURCE",
+        "treasure": "RESOURCE",
+        "item": "RESOURCE",
+        "supply": "RESOURCE",
+        "tool": "RESOURCE",
+        "key": "RESOURCE",
+        "goal": "GOAL",
+        "target": "GOAL",
+        "objective": "GOAL",
+        "destination": "GOAL",
+        "obstacle": "OBSTACLE",
+        "barrier": "OBSTACLE",
+        "trap": "OBSTACLE",
+        "path": "PATH",
+        "exit": "EXIT",
+        "lock": "LOCK",
+        "bridge": "BRIDGE",
+        "reward": "REWARD",
+        "portal": "PORTAL",
+        "shield": "SHIELD",
+        "weapon": "WEAPON",
+        "ally": "ALLY",
+        "variable": "VARIABLE",
+        "clause": "CLAUSE",
+        "formula": "FORMULA",
+        "atom": "ATOM",
+        "symbol": "SYMBOL",
+        "body": "BODY",
+        "head": "HEAD",
+        "information": "INFO",
+        "area": "AREA",
+    }
+
+    VERB_RELATION_MAP: Dict[str, str] = {
+        "approaches": "APPROACHES",
+        "approach": "APPROACHES",
+        "approaching": "APPROACHES",
+        "moves": "APPROACHES",
+        "move": "APPROACHES",
+        "goes": "APPROACHES",
+        "go": "APPROACHES",
+        "heads": "APPROACHES",
+        "head": "APPROACHES",
+        "sees": "SEES",
+        "see": "SEES",
+        "spots": "SEES",
+        "spot": "SEES",
+        "detects": "SEES",
+        "detect": "SEES",
+        "observes": "SEES",
+        "observe": "SEES",
+        "notices": "SEES",
+        "notice": "SEES",
+        "avoids": "AVOIDS",
+        "avoid": "AVOIDS",
+        "flees": "AVOIDS",
+        "flee": "AVOIDS",
+        "escapes": "AVOIDS",
+        "escape": "AVOIDS",
+        "requires": "REQUIRES",
+        "require": "REQUIRES",
+        "needs": "REQUIRES",
+        "need": "REQUIRES",
+        "uses": "USES",
+        "use": "USES",
+        "reaches": "REACHES",
+        "reach": "REACHES",
+        "reaching": "REACHES",
+    }
+
+    SPATIAL_PREPOSITIONS: Set[str] = {
+        "near", "next", "adjacent", "beside", "behind",
+        "in front of", "across", "beyond", "above", "below",
+        "under", "over", "inside", "outside", "between",
+        "among", "through", "around", "along",
+    }
+
+    SPATIAL_RELATION_MAP: Dict[str, str] = {
+        "near": "NEAR",
+        "next": "ADJACENT",
+        "adjacent": "ADJACENT",
+        "beside": "BESIDE",
+        "behind": "BEHIND",
+        "above": "ABOVE",
+        "below": "BELOW",
+        "under": "UNDER",
+        "over": "OVER",
+        "inside": "INSIDE",
+        "outside": "OUTSIDE",
+    }
+
+    COPULAR_VERBS: Set[str] = {"is", "are", "was", "were", "be", "been", "being"}
+
+    PROPERTY_VALENCE_MAP: Dict[str, str] = {
+        "dangerous": "DANGEROUS",
+        "unsafe": "DANGEROUS",
+        "risky": "DANGEROUS",
+        "hazardous": "DANGEROUS",
+        "safe": "SAFE",
+        "secure": "SAFE",
+        "protected": "SAFE",
+        "clear": "SAFE",
+        "visible": "VISIBLE",
+        "hidden": "HIDDEN",
+        "blocked": "BLOCKED",
+        "open": "OPEN",
+        "closed": "CLOSED",
+        "nearby": "NEARBY",
+        "far": "FAR",
+    }
+
+    STOP_WORDS: Set[str] = {
+        "the", "a", "an", "this", "that", "these", "those",
+        "it", "its", "they", "them", "their",
+        "there", "here",
+        "is", "are", "was", "were", "be", "been", "being",
+        "has", "have", "had", "do", "does", "did",
+        "will", "would", "can", "could", "may", "might",
+        "shall", "should", "must",
+        "not", "no", "nor",
+        "and", "or", "but", "if", "then", "else",
+        "to", "of", "in", "for", "on", "with", "at",
+        "by", "from", "as", "into", "through", "during",
+        "before", "after", "above", "below",
+        "very", "just", "also", "too",
+    }
+
+    def __init__(self):
+        pass
+
+    def _tokenize(self, text: str) -> List[str]:
+        """Split text into tokens, preserving multi-word expressions."""
+        text_lower = text.lower().strip()
+        if not text_lower:
+            return []
+
+        # Handle multi-word prepositions first
+        for mwe in ["in front of", "next to", "adjacent to"]:
+            text_lower = text_lower.replace(mwe, mwe.replace(" ", "_"))
+
+        # Split on whitespace and punctuation
+        tokens = re.findall(r"[a-zA-Z_]+", text_lower)
+        # Restore multi-word tokens
+        tokens = [t.replace("_", " ") for t in tokens]
+        return tokens
+
+    def _canonicalize_entity_name(self, token: str) -> Optional[str]:
+        """Map a token to a canonical entity type, or None if not an entity.
+
+        Filters out stop words, verbs, prepositions, and property words
+        that should not be treated as entities.
+        """
+        t = token.lower().strip()
+        if t in self.STOP_WORDS:
+            return None
+        if t in self.VERB_RELATION_MAP:
+            return None
+        if t in self.SPATIAL_PREPOSITIONS:
+            return None
+        if t in self.PROPERTY_VALENCE_MAP:
+            return None
+        if t in self.COPULAR_VERBS:
+            return None
+        return self.ENTITY_WORDS.get(t, t.upper())
+
+    def _extract_svo(
+        self, tokens: List[str]
+    ) -> List[Tuple[str, str, str, float]]:
+        """Extract (subject, verb_relation, object, confidence) triples."""
+        results: List[Tuple[str, str, str, float]] = []
+
+        # Pattern 1: SVO — subject verb object
+        for i in range(1, len(tokens) - 1):
+            subj = self._canonicalize_entity_name(tokens[i - 1])
+            verb = tokens[i].lower().strip()
+            obj = self._canonicalize_entity_name(tokens[i + 1])
+            if subj is not None and obj is not None and verb in self.VERB_RELATION_MAP:
+                results.append((subj, self.VERB_RELATION_MAP[verb], obj, 0.85))
+
+        # Pattern 2: copular + property — "X is Y" / "X is a Y"
+        for i in range(1, len(tokens) - 1):
+            prev = self._canonicalize_entity_name(tokens[i - 1])
+            cop = tokens[i].lower().strip()
+            if prev is not None and cop in self.COPULAR_VERBS:
+                # Check next token for property or entity
+                nxt = tokens[i + 1].lower().strip()
+                if nxt in self.PROPERTY_VALENCE_MAP:
+                    # X is [dangerous/safe/...] → property relation
+                    property_type = self.PROPERTY_VALENCE_MAP[nxt]
+                    results.append((prev, property_type, prev, 0.7))
+                elif nxt in ("a", "an", "the"):
+                    # "X is a Y" — skip determiner
+                    if i + 2 < len(tokens):
+                        obj = self._canonicalize_entity_name(tokens[i + 2])
+                        if obj is not None:
+                            results.append((prev, "LINKED", obj, 0.6))
+                elif nxt in self.SPATIAL_PREPOSITIONS:
+                    # "X is near Y"
+                    if i + 2 < len(tokens):
+                        obj = self._canonicalize_entity_name(tokens[i + 2])
+                        if obj is not None:
+                            rel = nxt.upper()
+                            if rel == "NEAR":
+                                rel = "NEAR"
+                            elif rel == "NEXT":
+                                rel = "ADJACENT"
+                            else:
+                                rel = rel.upper()
+                            results.append((prev, rel, obj, 0.75))
+                else:
+                    obj = self._canonicalize_entity_name(nxt)
+                    if obj is not None:
+                        results.append((prev, "LINKED", obj, 0.5))
+
+        # Pattern 3: verb + preposition — "X [verb] [prep] Y"
+        for i in range(1, len(tokens) - 2):
+            subj = self._canonicalize_entity_name(tokens[i - 1])
+            verb = tokens[i].lower().strip()
+            prep = tokens[i + 1].lower().strip()
+            obj = self._canonicalize_entity_name(tokens[i + 2])
+            if (
+                subj is not None
+                and obj is not None
+                and verb in self.VERB_RELATION_MAP
+                and prep in self.SPATIAL_PREPOSITIONS
+            ):
+                results.append(
+                    (subj, self.VERB_RELATION_MAP[verb], obj, 0.75)
+                )
+
+        # Pattern 4: possessive — "X's Y"
+        for i in range(len(tokens) - 1):
+            if tokens[i + 1].lower().strip() == "'s" or tokens[i].endswith("'s"):
+                base_token = tokens[i].rstrip("'s")
+                subj = self._canonicalize_entity_name(base_token)
+                if i + 2 < len(tokens):
+                    obj = self._canonicalize_entity_name(tokens[i + 2])
+                else:
+                    obj = None
+                if subj is not None and obj is not None:
+                    results.append((subj, "HAS", obj, 0.7))
+
+        # Pattern 5: spatial relation — "X near Y", "X beside Y", etc.
+        for i in range(1, len(tokens) - 1):
+            subj = self._canonicalize_entity_name(tokens[i - 1])
+            mid = tokens[i].lower().strip()
+            obj = self._canonicalize_entity_name(tokens[i + 1])
+            if subj is not None and obj is not None and mid in self.SPATIAL_RELATION_MAP:
+                results.append((subj, self.SPATIAL_RELATION_MAP[mid], obj, 0.8))
+
+        # Pattern 6: verb scan fallback — find any entity-verb-entity
+        # after filtering nouns
+        nouns = [
+            (i, t) for i, t in enumerate(tokens)
+            if self._canonicalize_entity_name(t) is not None
         ]
+        for j in range(1, len(nouns)):
+            i1, _ = nouns[j - 1]
+            i2, _ = nouns[j]
+            # Look for verbs between them
+            for k in range(i1 + 1, i2):
+                verb = tokens[k].lower().strip()
+                if verb in self.VERB_RELATION_MAP:
+                    subj = self._canonicalize_entity_name(tokens[i1])
+                    obj = self._canonicalize_entity_name(tokens[i2])
+                    if subj is not None and obj is not None:
+                        results.append(
+                            (subj, self.VERB_RELATION_MAP[verb], obj, 0.5)
+                        )
+
+        # Pattern 6: comma-separated adjacency — "X, Y, Z"
+        for i in range(len(tokens) - 2):
+            if tokens[i + 1] == "," or tokens[i + 1] == "and":
+                subj = self._canonicalize_entity_name(tokens[i])
+                obj = self._canonicalize_entity_name(tokens[i + 2])
+                if subj is not None and obj is not None:
+                    results.append((subj, "ADJACENT", obj, 0.4))
+
+        return results
+
+    def _classify_pattern_type(
+        self, subj: str, rel: str, obj: str
+    ) -> str:
+        """Classify a triple into a named pattern type for backward compat."""
+        pair = (subj, rel, obj)
+        if subj == "THREAT" and rel == "NEAR" and obj == "RESOURCE":
+            return "threat_near_resource"
+        if subj == "AGENT" and rel == "APPROACHES" and obj == "GOAL":
+            return "agent_approaches_goal"
+        if subj == "AGENT" and rel == "SEES" and obj == "THREAT":
+            return "threat_visible_to_agent"
+        if subj == "AGENT" and rel == "SEES" and obj == "RESOURCE":
+            return "resource_visible_to_agent"
+        if subj == "AGENT" and rel == "AVOIDS" and obj == "THREAT":
+            return "agent_avoids_threat"
+        if subj == "RESOURCE" and rel == "REQUIRES" and obj == "RESOURCE":
+            return "resource_requires_other"
+        if subj == "AGENT" and rel == "REACHES" and obj == "GOAL":
+            return "agent_approaches_goal"
+        if rel == "ADJACENT":
+            return "adjacent_entities"
+        if rel in ("DANGEROUS", "SAFE", "VISIBLE", "HIDDEN", "BLOCKED"):
+            return "property_descriptor"
+        return "generic_relation"
+
+    def _parse_robust(self, text: str) -> List[ParsedPattern]:
+        """Robust token-based semantic parser.
+
+        Handles arbitrary sentence structures by decomposing into
+        SVO triples and entity-relation-entity patterns.
+        """
+        text_lower = text.lower().strip()
+        if not text_lower:
+            return []
+
+        tokens = self._tokenize(text_lower)
+        if len(tokens) < 2:
+            return []
+
+        triples = self._extract_svo(tokens)
+        if not triples:
+            return []
+
+        seen: Set[Tuple[str, str, str]] = set()
+        results: List[ParsedPattern] = []
+        for subj, rel, obj, conf in triples:
+            key = (subj, rel, obj)
+            if key in seen:
+                continue
+            seen.add(key)
+
+            entity_types: List[str] = [subj]
+            if obj != subj:
+                entity_types.append(obj)
+
+            entities: List[Entity] = []
+            for i, etype in enumerate(entity_types):
+                entities.append(
+                    Entity(f"nl_e_{i}", etype, {"source": "nl_parser"})
+                )
+
+            relations: List[Relation] = []
+            if len(entity_types) >= 2:
+                e0_id = f"nl_e_{0}"
+                e1_id = f"nl_e_{1}"
+                relations.append(
+                    Relation(e0_id, rel, e1_id, {"source": "nl_parser"})
+                )
+
+            pattern_type = self._classify_pattern_type(subj, rel, obj)
+
+            results.append(
+                ParsedPattern(
+                    pattern_type=pattern_type,
+                    entities=entities,
+                    relations=relations,
+                    confidence=conf,
+                    raw_text=text,
+                )
+            )
+
+        results.sort(key=lambda x: x.confidence, reverse=True)
+        return results
 
     def parse(self, text: str) -> List[ParsedPattern]:
         """Parse NL text into structured patterns.
 
+        Primary method uses robust token-based parsing.
         Returns a list of ParsedPatterns sorted by confidence (highest first).
         """
-        text_lower = text.lower().strip()
-        results: List[ParsedPattern] = []
-
-        for pattern_def in self._patterns:
-            match = re.search(pattern_def["regex"], text_lower)
-            if match:
-                entity_types = pattern_def["entity_types"]
-                relation_type = pattern_def["relation_type"]
-
-                entities: List[Entity] = []
-                relations: List[Relation] = []
-
-                for i, etype in enumerate(entity_types):
-                    eid = f"nl_e_{i}"
-                    entities.append(Entity(eid, etype, {"source": "nl_parser"}))
-
-                if len(entity_types) >= 2:
-                    e0 = f"nl_e_{0}"
-                    e1 = f"nl_e_{1}"
-                    relations.append(
-                        Relation(e0, relation_type, e1, {"source": "nl_parser"})
-                    )
-
-                results.append(
-                    ParsedPattern(
-                        pattern_type=pattern_def["name"],
-                        entities=entities,
-                        relations=relations,
-                        confidence=pattern_def["confidence"],
-                        raw_text=text,
-                    )
-                )
-
-        results.sort(key=lambda x: x.confidence, reverse=True)
-        return results
+        return self._parse_robust(text)
 
     def parse_schema_description(self, text: str) -> Optional[AbstractSchema]:
         """Parse a schema description into an AbstractSchema.

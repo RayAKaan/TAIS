@@ -28,7 +28,11 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 from .reality import Consequence, Entity, GraphPattern, RealityGraph, Relation
-from .structural_similarity import wl_pattern_histogram, wl_similarity
+from .structural_similarity import (
+    wl_pattern_histogram,
+    wl_relabeled_graph,
+    wl_similarity,
+)
 
 
 # ─── ABSTRACT SCHEMA ─────────────────────────────────────────────────────────
@@ -334,9 +338,17 @@ class SchemaLearner:
     4. Promotes high-confidence schemas for cross-domain transfer
     """
 
-    def __init__(self, min_confidence: float = 0.3, promote_threshold: float = 0.7):
+    def __init__(
+        self,
+        min_confidence: float = 0.3,
+        promote_threshold: float = 0.7,
+        wl_iterations: int = 3,
+        wl_match_threshold: float = 0.4,
+    ):
         self.min_confidence = min_confidence
         self.promote_threshold = promote_threshold
+        self.wl_iterations = wl_iterations
+        self.wl_match_threshold = wl_match_threshold
         self._schemas: Dict[str, AbstractSchema] = {}
         self._extractor = SchemaExtractor()
 
@@ -377,11 +389,98 @@ class SchemaLearner:
         self._schemas[fp] = candidate
         return candidate.name
 
-    def _find_matching_schema(self, candidate: AbstractSchema) -> Optional[AbstractSchema]:
-        """Find an existing schema that matches this candidate."""
+    def _schema_to_synthetic_graph(self, schema: AbstractSchema) -> RealityGraph:
+        """Build a synthetic graph from a schema for WL comparison."""
+        g = RealityGraph("schema", f"synth_{schema.name}")
+        for slot in schema.slots:
+            g.add_entity(
+                Entity(slot.slot_id, slot.structural_role)
+            )
+        for rel in schema.relations:
+            g.add_relation(
+                Relation(
+                    rel.source_role, rel.relation_type, rel.target_role,
+                    directed=rel.directed,
+                )
+            )
+        return g
+
+    def _schema_wl_similarity(
+        self, a: AbstractSchema, b: AbstractSchema
+    ) -> float:
+        """WL similarity between two schemas' structural patterns."""
+        g_a = self._schema_to_synthetic_graph(a)
+        g_b = self._schema_to_synthetic_graph(b)
+        hist_a = wl_relabeled_graph(g_a, self.wl_iterations)
+        hist_b = wl_relabeled_graph(g_b, self.wl_iterations)
+        try:
+            return wl_similarity(hist_a, hist_b, self.wl_iterations)
+        except Exception:
+            return 0.0
+
+    def _partial_slot_match(
+        self,
+        a_slots: List[VariableSlot],
+        b_slots: List[VariableSlot],
+    ) -> bool:
+        """Relaxed slot matching with role compatibility and degree tolerance."""
+        compatible_roles: Dict[str, Set[str]] = {
+            "central": {"central", "bridge"},
+            "bridge": {"central", "bridge", "peripheral"},
+            "peripheral": {"bridge", "peripheral", "leaf"},
+            "leaf": {"peripheral", "leaf"},
+        }
+
+        if len(a_slots) == 0 or len(b_slots) == 0:
+            return False
+
+        matched = 0
+        used_b: Set[int] = set()
+        for a_slot in a_slots:
+            for j, b_slot in enumerate(b_slots):
+                if j in used_b:
+                    continue
+                if b_slot.structural_role in compatible_roles.get(
+                    a_slot.structural_role, {a_slot.structural_role}
+                ):
+                    a_min, a_max = a_slot.degree_range
+                    b_min, b_max = b_slot.degree_range
+                    overlap = min(a_max, b_max) - max(a_min, b_min)
+                    width = max(a_max - a_min, b_max - b_min, 1)
+                    if overlap / width >= -0.5:
+                        matched += 1
+                        used_b.add(j)
+                        break
+
+        match_ratio = matched / max(len(a_slots), len(b_slots))
+        return match_ratio >= 0.5
+
+    def _find_matching_schema(
+        self, candidate: AbstractSchema
+    ) -> Optional[AbstractSchema]:
+        """Find an existing schema that matches this candidate.
+
+        Tries exact match first, then falls back to WL similarity
+        and partial slot matching.
+        """
+        # Phase 1: exact match
         for schema in self._schemas.values():
             if self._schemas_match(schema, candidate):
                 return schema
+
+        # Phase 2: partial match via WL similarity + relaxed slots
+        best_sim = 0.0
+        best_schema: Optional[AbstractSchema] = None
+        for schema in self._schemas.values():
+            if self._partial_slot_match(schema.slots, candidate.slots):
+                wl_sim = self._schema_wl_similarity(schema, candidate)
+                if wl_sim > best_sim:
+                    best_sim = wl_sim
+                    best_schema = schema
+
+        if best_schema is not None and best_sim >= self.wl_match_threshold:
+            return best_schema
+
         return None
 
     def _schemas_match(

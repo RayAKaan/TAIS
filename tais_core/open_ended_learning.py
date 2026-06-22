@@ -411,9 +411,9 @@ class ExplorationController:
     + Bump from curiosity: 0.3 * average_curiosity
     + Bump from active goals: 0.2 * sqrt(active_goals/max_goals)
     - Decay over time: 0.9^tick
-
-    This ensures the mote explores more early on and when it's curious,
-    but exploits more as it gains experience.
+    - Reward-aware payoff: reduces exploration if exploit consistently pays more
+    - Energy safety: suppresses exploration when energy is low
+    - Schema confidence: explores less when domain is well-understood
     """
 
     def __init__(
@@ -422,21 +422,59 @@ class ExplorationController:
         curiosity_influence: float = 0.3,
         goal_influence: float = 0.2,
         decay_rate: float = 0.999,
+        energy_safety_margin: float = 20.0,
+        explore_reward_window: int = 50,
     ):
         self.base_explore_rate = base_explore_rate
         self.curiosity_influence = curiosity_influence
         self.goal_influence = goal_influence
         self.decay_rate = decay_rate
+        self.energy_safety_margin = energy_safety_margin
+        self.explore_reward_window = explore_reward_window
 
         self._tick = 0
         self._exploration_history: List[bool] = []
+        self._explore_rewards: List[float] = []
+        self._exploit_rewards: List[float] = []
+        self._explore_payoff: float = 0.0
+
+    def record_outcome(self, was_explore: bool, reward: float):
+        """Record whether exploration or exploitation paid off.
+
+        Positive payoff means exploring yields higher rewards than exploiting.
+        """
+        if was_explore:
+            self._explore_rewards.append(reward)
+            if len(self._explore_rewards) > self.explore_reward_window:
+                self._explore_rewards.pop(0)
+        else:
+            self._exploit_rewards.append(reward)
+            if len(self._exploit_rewards) > self.explore_reward_window:
+                self._exploit_rewards.pop(0)
+
+        explore_avg = (
+            sum(self._explore_rewards) / max(1, len(self._explore_rewards))
+        )
+        exploit_avg = (
+            sum(self._exploit_rewards) / max(1, len(self._exploit_rewards))
+        )
+        self._explore_payoff = explore_avg - exploit_avg
 
     def should_explore(
         self,
         curiosity_drive: CuriosityDrive,
         goal_generator: GoalGenerator,
+        current_energy: Optional[float] = None,
+        schema_confidence: Optional[float] = None,
     ) -> bool:
-        """Decide whether to explore in the current step."""
+        """Decide whether to explore in the current step.
+
+        Args:
+            curiosity_drive: Provides curiosity signal
+            goal_generator: Provides active goals
+            current_energy: If provided, reduces exploration when energy is low
+            schema_confidence: If provided, reduces exploration when domain is well-understood
+        """
         self._tick += 1
 
         # Base rate with decay
@@ -453,6 +491,21 @@ class ExplorationController:
         )
 
         explore_prob = base + curiosity_bump + goal_bump
+
+        # Reward-aware modulation
+        if self._explore_payoff < -0.5:
+            explore_prob *= 0.7
+        elif self._explore_payoff > 0.5:
+            explore_prob *= 1.3
+
+        # Energy safety: suppress exploration when low energy
+        if current_energy is not None and current_energy < self.energy_safety_margin:
+            explore_prob *= 0.5
+
+        # Schema confidence: explore less when domain is well-understood
+        if schema_confidence is not None:
+            explore_prob *= max(0.2, 1.0 - 0.5 * schema_confidence)
+
         explore_prob = min(0.95, max(0.01, explore_prob))
 
         decision = random.random() < explore_prob
@@ -467,11 +520,21 @@ class ExplorationController:
         return sum(self._exploration_history[-100:]) / min(100, len(self._exploration_history))
 
     def to_dict(self) -> dict:
-        return {
+        d = {
             "exploration_rate": round(self.get_exploration_rate(), 4),
+            "explore_payoff": round(self._explore_payoff, 4),
             "total_explorations": sum(1 for d in self._exploration_history if d),
             "total_decisions": len(self._exploration_history),
         }
+        if self._explore_rewards:
+            d["mean_explore_reward"] = round(
+                sum(self._explore_rewards) / len(self._explore_rewards), 4
+            )
+        if self._exploit_rewards:
+            d["mean_exploit_reward"] = round(
+                sum(self._exploit_rewards) / len(self._exploit_rewards), 4
+            )
+        return d
 
 
 # ─── SELF EVALUATOR ──────────────────────────────────────────────────────────

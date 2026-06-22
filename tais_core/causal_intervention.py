@@ -159,9 +159,17 @@ class CausalInterventionEngine:
     enabling cross-domain causal transfer.
     """
 
-    def __init__(self, min_samples: int = 3, significance_threshold: float = 0.1):
+    def __init__(
+        self,
+        min_samples: int = 3,
+        significance_threshold: float = 0.1,
+        wl_iterations: int = 3,
+        min_wl_similarity: float = 0.25,
+    ):
         self.min_samples = min_samples
         self.significance_threshold = significance_threshold
+        self.wl_iterations = wl_iterations
+        self.min_wl_similarity = min_wl_similarity
 
         # Index: structural_key -> action_name -> list of outcomes
         self._outcomes: Dict[str, Dict[str, List[float]]] = defaultdict(
@@ -173,6 +181,10 @@ class CausalInterventionEngine:
 
         # Intervention history
         self._interventions: List[InterventionRecord] = []
+
+        # WL histograms: structural_key -> histogram for partial matching
+        self._wl_histograms: Dict[str, Dict[str, float]] = {}
+
         self._tick = 0
 
     def record_intervention(
@@ -192,6 +204,13 @@ class CausalInterventionEngine:
         """
         s_key = structural_key_from_graph(graph)
         self._outcomes[s_key][action_name].append(outcome)
+
+        # Store WL histogram for partial matching
+        if s_key not in self._wl_histograms:
+            self._wl_histograms[s_key] = wl_relabeled_graph(
+                graph, self.wl_iterations
+            )
+
         self._tick += 1
 
         record = InterventionRecord(
@@ -294,10 +313,67 @@ class CausalInterventionEngine:
             p_value=p_value,
         )
 
+    def _compute_wl_similarity(self, key_a: str, key_b: str) -> float:
+        """Compute WL similarity between two structural keys' histograms."""
+        hist_a = self._wl_histograms.get(key_a)
+        hist_b = self._wl_histograms.get(key_b)
+        if hist_a is None or hist_b is None:
+            return 0.0
+        try:
+            return wl_similarity(hist_a, hist_b, self.wl_iterations)
+        except Exception:
+            return 0.0
+
     def get_causal_effect(
         self, structural_key: str, action_name: str
     ) -> Optional[CausalEffect]:
-        return self._effects.get(f"{structural_key}::{action_name}")
+        # Exact match first
+        exact = self._effects.get(f"{structural_key}::{action_name}")
+        if exact is not None:
+            return exact
+
+        # Fall back to WL similarity partial matching
+        best_sim = 0.0
+        best_key: Optional[str] = None
+        for skey in list(self._outcomes.keys()):
+            if action_name in self._outcomes[skey] and skey != structural_key:
+                sim = self._compute_wl_similarity(structural_key, skey)
+                if sim > best_sim:
+                    best_sim = sim
+                    best_key = skey
+
+        if best_key is not None and best_sim >= self.min_wl_similarity:
+            source_effect = self._effects.get(f"{best_key}::{action_name}")
+            if source_effect is not None:
+                return CausalEffect(
+                    structural_key=structural_key,
+                    action_name=action_name,
+                    causal_effect=source_effect.causal_effect * best_sim,
+                    confidence=source_effect.confidence * best_sim,
+                    sample_count=source_effect.sample_count,
+                    actual_mean=source_effect.actual_mean,
+                    counterfactual_mean=source_effect.counterfactual_mean,
+                    p_value=source_effect.p_value,
+                )
+
+        return None
+
+    def causal_action_boosts(
+        self, graph: RealityGraph, actions: List[str]
+    ) -> Dict[str, float]:
+        """Compute action boosts via partial WL similarity matching.
+
+        Returns a dict mapping action_name -> boost score for actions
+        with a significant positive causal effect in any structurally
+        similar context.
+        """
+        s_key = structural_key_from_graph(graph)
+        boosts: Dict[str, float] = {}
+        for action_name in actions:
+            effect = self.get_causal_effect(s_key, action_name)
+            if effect is not None and effect.is_significant():
+                boosts[action_name] = effect.causal_effect
+        return boosts
 
     def get_best_action(self, structural_key: str) -> Optional[str]:
         """Find the action with the strongest positive causal effect."""

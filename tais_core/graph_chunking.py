@@ -55,13 +55,64 @@ class CommunityDetection:
         self.resolution = resolution
         self.min_community_size = min_community_size
 
+    def _compute_structural_ranks(
+        self, graph: RealityGraph
+    ) -> Dict[str, Tuple[float, ...]]:
+        """Compute a canonical structural rank tuple for each entity.
+
+        The rank is (degree, avg_neighbor_degree, degree_entropy) and is
+        surface-invariant — two entities with the same topological position
+        get the same rank regardless of entity name/type.
+        """
+        entities = list(graph.entities())
+        degree: Dict[str, int] = {}
+        neighbor_degrees: Dict[str, List[int]] = defaultdict(list)
+        for e in entities:
+            deg = len(list(graph.neighbors_out(e.id))) + len(
+                list(graph.neighbors_in(e.id))
+            )
+            degree[e.id] = deg
+            for _, nb in graph.neighbors_out(e.id):
+                nb_deg = (
+                    len(list(graph.neighbors_out(nb.id)))
+                    + len(list(graph.neighbors_in(nb.id)))
+                )
+                neighbor_degrees[e.id].append(nb_deg)
+            for _, nb in graph.neighbors_in(e.id):
+                nb_deg = (
+                    len(list(graph.neighbors_out(nb.id)))
+                    + len(list(graph.neighbors_in(nb.id)))
+                )
+                neighbor_degrees[e.id].append(nb_deg)
+
+        ranks: Dict[str, Tuple[float, ...]] = {}
+        for e in entities:
+            d = degree[e.id]
+            nds = neighbor_degrees.get(e.id, [])
+            avg_nd = sum(nds) / len(nds) if nds else 0.0
+            # Degree entropy: how uniform is the neighbor degree distribution
+            if nds:
+                total = sum(nds)
+                entropy = -sum((x / total) * math.log(x / total + 1e-10) for x in nds)
+            else:
+                entropy = 0.0
+            ranks[e.id] = (d, avg_nd, entropy)
+
+        return ranks
+
     def detect(self, graph: RealityGraph) -> List[Community]:
         """Partition graph into communities. Returns list of Community objects."""
         if len(graph._entities) == 0:
             return []
 
         n_entities = len(graph._entities)
-        entity_ids = list(graph.entities())
+
+        # Surface-independent entity ordering by structural rank
+        structural_ranks = self._compute_structural_ranks(graph)
+        entity_ids = sorted(
+            graph.entities(),
+            key=lambda e: structural_ranks.get(e.id, (0, 0, 0)),
+        )
         entity_id_set = {e.id for e in entity_ids}
 
         # Build adjacency
